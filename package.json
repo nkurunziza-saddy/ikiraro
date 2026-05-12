@@ -1,0 +1,64 @@
+{
+  "name": "sensa",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "catalog": {
+      "dotenv": "^17.4.2",
+      "zod": "^4.4.3",
+      "typescript": "^6.0.3",
+      "@types/node": "^25.6.2",
+      "@cloudflare/workers-types": "^4.20260511.1",
+      "better-auth": "^1.6.10",
+      "valibot": "^1.4.0",
+      "i18next": "^26.1.0",
+      "alchemy": "^0.93.7",
+      "wrangler": "^4.90.0",
+      "vitest": "^4.1.5",
+      "@vitest/ui": "^4.1.5",
+      "@vitest/coverage-v8": "^4.1.5",
+      "jsdom": "^29.1.1",
+      "@libsql/client": "^0.17.3",
+      "libsql": "^0.5.29"
+    }
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "check-types": "turbo check-types",
+    "dev:native": "turbo -F native dev",
+    "dev:web": "turbo -F web dev",
+    "dev:server": "turbo -F server dev",
+    "db:push": "turbo -F @sensa/db db:push",
+    "db:generate": "turbo -F @sensa/db db:generate",
+    "check": "oxlint && oxfmt --write",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@sensa/env": "workspace:*",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "@sensa/config": "workspace:*",
+    "@types/node": "catalog:",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "oxfmt": "^0.48.0",
+    "oxlint": "^1.63.0",
+    "turbo": "^2.9.12",
+    "typescript": "catalog:"
+  },
+  "lint-staged": {
+    "*": [
+      "oxlint",
+      "oxfmt --write"
+    ]
+  },
+  "packageManager": "bun@1.3.11"
+}
