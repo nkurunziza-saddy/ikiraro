@@ -5,14 +5,14 @@ import {
   type HandLandmarks,
 } from "@sensa/shared";
 
-import { ASL_ALPHABET, matchHandshape } from "./handshapes";
+import { ASL_ALPHABET, type HandshapeDefinition } from "./handshapes";
 
 export class SensaSurgicalClassifier {
   private smoother = new LandmarkSmoother();
 
   private history: Array<string | null> = [];
 
-  private readonly windowSize = 5;
+  private readonly windowSize = 7;
 
   private readonly rawScoreThreshold = 0.55;
 
@@ -24,10 +24,32 @@ export class SensaSurgicalClassifier {
 
   private readonly unlockThreshold = 3;
 
+  private definitionsByFingerprint = new Map<string, HandshapeDefinition[]>();
+
+  constructor() {
+    for (const definition of ASL_ALPHABET) {
+      const list = this.definitionsByFingerprint.get(definition.fingerprint) || [];
+      list.push(definition);
+      this.definitionsByFingerprint.set(definition.fingerprint, list);
+    }
+  }
+
   process(landmarks: HandLandmarks): ClassificationResult {
     const smoothed = this.smoother.smooth(landmarks);
     const vector = extractFeatureVector(smoothed);
-    const match = matchHandshape(vector, ASL_ALPHABET);
+
+    // Efficient lookup by fingerprint
+    const relevantDefinitions = this.definitionsByFingerprint.get(vector.fingerprint) || [];
+    const candidates: Array<{ name: string; score: number }> = [];
+
+    for (const definition of relevantDefinitions) {
+      const score = definition.disambiguate ? definition.disambiguate(vector) : 0.7;
+      candidates.push({ name: definition.name, score });
+    }
+
+    candidates.sort((a, b) => b.score - a.score);
+
+    const match = candidates.length > 0 ? candidates[0]! : null;
     const rawSign = match && match.score >= this.rawScoreThreshold ? match.name : null;
 
     this.history.push(rawSign);
@@ -43,8 +65,14 @@ export class SensaSurgicalClassifier {
       sign: stableSign,
       confidence,
       vector,
-      candidates: match?.candidates ?? [],
+      candidates: candidates.slice(0, 3),
     };
+  }
+
+  getTopCandidates(): Array<{ name: string; score: number }> {
+    // This would ideally return candidates from the most recent 'process' call
+    // The ClassificationResult already returns them, so this might be for external use.
+    return [];
   }
 
   private getConsensus(): string | null {
@@ -66,7 +94,8 @@ export class SensaSurgicalClassifier {
       }
     }
 
-    return bestCount >= 2 ? best : null;
+    // Require at least 3 frames of consensus in a window of 7
+    return bestCount >= 3 ? best : null;
   }
 
   private applyHysteresis(consensus: string | null): string | null {

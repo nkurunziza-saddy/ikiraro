@@ -18,6 +18,10 @@ export class WordBuffer {
 
   private lastSignTime = 0;
 
+  private lastInitialSignTime = 0;
+
+  private doubleLetterCommitted = false;
+
   private options: WordBufferOptions;
 
   constructor(options: Partial<WordBufferOptions> = {}) {
@@ -29,19 +33,27 @@ export class WordBuffer {
   }
 
   update(sign: string | null): string | null {
-    const now = Date.now();
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
 
     if (sign && sign !== this.lastSign) {
+      // Small buffer to avoid jitter
       if (now - this.lastSignTime > this.options.minSignDurationMs) {
         this.currentWord += sign;
         this.lastSign = sign;
         this.lastSignTime = now;
+        this.lastInitialSignTime = now;
+        this.doubleLetterCommitted = false;
       }
 
       return null;
     }
 
     if (sign && sign === this.lastSign) {
+      // Double-letter detection: if held for > 1.5s
+      if (!this.doubleLetterCommitted && now - this.lastInitialSignTime > 1500) {
+        this.currentWord += sign;
+        this.doubleLetterCommitted = true;
+      }
       this.lastSignTime = now;
       return null;
     }
@@ -53,6 +65,10 @@ export class WordBuffer {
     return null;
   }
 
+  forceCommit(): string | null {
+    return this.commitWord();
+  }
+
   private commitWord(): string | null {
     if (!this.currentWord) {
       return null;
@@ -62,6 +78,7 @@ export class WordBuffer {
     this.sentence.push(word);
     this.currentWord = "";
     this.lastSign = null;
+    this.doubleLetterCommitted = false;
     return word;
   }
 
@@ -95,6 +112,7 @@ export class WordBuffer {
     this.currentWord = "";
     this.lastSign = null;
     this.lastSignTime = 0;
+    this.doubleLetterCommitted = false;
   }
 
   clearAll(): void {
@@ -102,5 +120,6 @@ export class WordBuffer {
     this.sentence = [];
     this.lastSign = null;
     this.lastSignTime = 0;
+    this.doubleLetterCommitted = false;
   }
 }

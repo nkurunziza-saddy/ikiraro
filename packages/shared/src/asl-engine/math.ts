@@ -64,6 +64,10 @@ export function normalizeVector(vector: Point3D): Point3D {
     : vector;
 }
 
+export function dotProduct(v1: Point3D, v2: Point3D): number {
+  return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
 export function getAngle(a: Point3D, b: Point3D, c: Point3D): number {
   const v1 = subtract(a, b);
   const v2 = subtract(c, b);

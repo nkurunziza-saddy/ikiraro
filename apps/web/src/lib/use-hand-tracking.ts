@@ -247,7 +247,9 @@ export function useHandTracking() {
           const committedWord = wordBufferRef.current.update(classification.sign);
 
           if (committedWord) {
-            void WebSpeechProvider.speak(committedWord).catch(() => undefined);
+            void WebSpeechProvider.getInstance()
+              .speak(committedWord)
+              .catch(() => undefined);
           }
 
           const state = wordBufferRef.current.getState();
@@ -301,7 +303,9 @@ export function useHandTracking() {
         }
         const committedWord = wordBufferRef.current.update(null);
         if (committedWord) {
-          void WebSpeechProvider.speak(committedWord).catch(() => undefined);
+          void WebSpeechProvider.getInstance()
+            .speak(committedWord)
+            .catch(() => undefined);
         }
 
         const state = wordBufferRef.current.getState();

@@ -1,101 +1,359 @@
 import { useMemo } from "react";
 
-export function AslHandSvg({ letter, className = "" }: { letter: string; className?: string }) {
-  const normalizedLetter = letter.toUpperCase();
+type JointAngles = {
+  mcp: number;
+  pip: number;
+  dip: number;
+  spread: number;
+};
 
-  // A simplified approach for the stylized silhouette:
-  // We use a beautiful geometric representation of a hand, and
-  // animate the fingers based on the letter. Since we don't have 26
-  // full paths, we'll use a dynamic component with glowing typography
-  // and abstract finger positions.
+type HandState = {
+  thumb: JointAngles;
+  index: JointAngles;
+  middle: JointAngles;
+  ring: JointAngles;
+  pinky: JointAngles;
+  wristRotation?: number;
+};
 
-  const seed = normalizedLetter.charCodeAt(0) - 65;
-  const isVowel = ["A", "E", "I", "O", "U"].includes(normalizedLetter);
+const STRETCHED: JointAngles = { mcp: 0, pip: 0, dip: 0, spread: 0 };
+const CURLED: JointAngles = { mcp: 95, pip: 100, dip: 50, spread: 0 };
+const HALF_CURLED: JointAngles = { mcp: 45, pip: 45, dip: 20, spread: 0 };
+const HOOKED: JointAngles = { mcp: 0, pip: 90, dip: 90, spread: 0 };
 
-  // Abstract finger states (1 = extended, 0 = curled) based loosely on ASL
-  const fingerStates = useMemo(() => {
-    switch (normalizedLetter) {
-      case "A":
-        return [1, 0, 0, 0, 0];
-      case "B":
-        return [0, 1, 1, 1, 1];
-      case "C":
-        return [0.5, 0.5, 0.5, 0.5, 0.5];
-      case "D":
-        return [0, 1, 0, 0, 0];
-      case "E":
-        return [0, 0.2, 0.2, 0.2, 0.2];
-      case "F":
-        return [0, 0, 1, 1, 1];
-      case "G":
-        return [1, 1, 0, 0, 0];
-      case "H":
-        return [1, 1, 1, 0, 0];
-      case "I":
-        return [0, 0, 0, 0, 1];
-      case "L":
-        return [1, 1, 0, 0, 0];
-      case "O":
-        return [0.3, 0.3, 0.3, 0.3, 0.3];
-      case "V":
-        return [0, 1, 1, 0, 0];
-      case "W":
-        return [0, 1, 1, 1, 0];
-      case "Y":
-        return [1, 0, 0, 0, 1];
-      default:
-        // Procedural fallback for other letters
-        return [
-          (seed % 2) * 0.8,
-          ((seed + 1) % 3) * 0.4,
-          ((seed + 2) % 2) * 0.9,
-          ((seed + 3) % 4) * 0.25,
-          ((seed + 4) % 2) * 0.7,
-        ];
-    }
-  }, [normalizedLetter, seed]);
+const LETTER_STATES: Record<string, HandState> = {
+  A: {
+    thumb: { mcp: 0, pip: 0, dip: 0, spread: 45 },
+    index: CURLED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: CURLED,
+  },
+  B: {
+    thumb: { mcp: 90, pip: 45, dip: 0, spread: 0 },
+    index: STRETCHED,
+    middle: STRETCHED,
+    ring: STRETCHED,
+    pinky: STRETCHED,
+  },
+  C: {
+    thumb: HALF_CURLED,
+    index: HALF_CURLED,
+    middle: HALF_CURLED,
+    ring: HALF_CURLED,
+    pinky: HALF_CURLED,
+  },
+  D: {
+    thumb: { mcp: 45, pip: 45, dip: 20, spread: 0 },
+    index: STRETCHED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: CURLED,
+  },
+  E: {
+    thumb: { mcp: 90, pip: 90, dip: 45, spread: 0 },
+    index: { mcp: 110, pip: 110, dip: 60, spread: 0 },
+    middle: { mcp: 110, pip: 110, dip: 60, spread: 0 },
+    ring: { mcp: 110, pip: 110, dip: 60, spread: 0 },
+    pinky: { mcp: 110, pip: 110, dip: 60, spread: 0 },
+  },
+  F: {
+    thumb: { mcp: 0, pip: 45, dip: 45, spread: 0 },
+    index: { mcp: 90, pip: 90, dip: 45, spread: 0 },
+    middle: STRETCHED,
+    ring: STRETCHED,
+    pinky: STRETCHED,
+  },
+  G: {
+    thumb: STRETCHED,
+    index: STRETCHED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: CURLED,
+    wristRotation: 90,
+  },
+  H: {
+    thumb: STRETCHED,
+    index: STRETCHED,
+    middle: STRETCHED,
+    ring: CURLED,
+    pinky: CURLED,
+    wristRotation: 90,
+  },
+  I: {
+    thumb: { mcp: 90, pip: 45, dip: 0, spread: 0 },
+    index: CURLED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: STRETCHED,
+  },
+  J: {
+    thumb: { mcp: 90, pip: 45, dip: 0, spread: 0 },
+    index: CURLED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: STRETCHED,
+    wristRotation: 20,
+  },
+  K: {
+    thumb: { mcp: 0, pip: 0, dip: 0, spread: 20 },
+    index: STRETCHED,
+    middle: { mcp: 0, pip: 0, dip: 0, spread: 30 },
+    ring: CURLED,
+    pinky: CURLED,
+  },
+  L: {
+    thumb: { mcp: 0, pip: 0, dip: 0, spread: 90 },
+    index: STRETCHED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: CURLED,
+  },
+  M: {
+    thumb: { mcp: 45, pip: 45, dip: 0, spread: 60 },
+    index: CURLED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: CURLED,
+  },
+  N: {
+    thumb: { mcp: 45, pip: 45, dip: 0, spread: 40 },
+    index: CURLED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: CURLED,
+  },
+  O: {
+    thumb: { mcp: 45, pip: 90, dip: 45, spread: 0 },
+    index: { mcp: 45, pip: 90, dip: 45, spread: 0 },
+    middle: { mcp: 45, pip: 90, dip: 45, spread: 0 },
+    ring: { mcp: 45, pip: 90, dip: 45, spread: 0 },
+    pinky: { mcp: 45, pip: 90, dip: 45, spread: 0 },
+  },
+  P: {
+    thumb: { mcp: 0, pip: 0, dip: 0, spread: 20 },
+    index: STRETCHED,
+    middle: { mcp: 0, pip: 0, dip: 0, spread: 30 },
+    ring: CURLED,
+    pinky: CURLED,
+    wristRotation: 90,
+  },
+  Q: {
+    thumb: STRETCHED,
+    index: STRETCHED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: CURLED,
+    wristRotation: 180,
+  },
+  R: {
+    thumb: { mcp: 90, pip: 45, dip: 0, spread: 0 },
+    index: { mcp: 0, pip: 0, dip: 0, spread: 15 },
+    middle: { mcp: 0, pip: 0, dip: 0, spread: -15 },
+    ring: CURLED,
+    pinky: CURLED,
+  },
+  S: {
+    thumb: { mcp: 90, pip: 90, dip: 45, spread: 0 },
+    index: CURLED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: CURLED,
+  },
+  T: {
+    thumb: { mcp: 45, pip: 45, dip: 0, spread: 20 },
+    index: CURLED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: CURLED,
+  },
+  U: {
+    thumb: { mcp: 90, pip: 45, dip: 0, spread: 0 },
+    index: { mcp: 0, pip: 0, dip: 0, spread: 5 },
+    middle: { mcp: 0, pip: 0, dip: 0, spread: -5 },
+    ring: CURLED,
+    pinky: CURLED,
+  },
+  V: {
+    thumb: { mcp: 90, pip: 45, dip: 0, spread: 0 },
+    index: { mcp: 0, pip: 0, dip: 0, spread: 15 },
+    middle: { mcp: 0, pip: 0, dip: 0, spread: -15 },
+    ring: CURLED,
+    pinky: CURLED,
+  },
+  W: {
+    thumb: { mcp: 90, pip: 45, dip: 0, spread: 0 },
+    index: { mcp: 0, pip: 0, dip: 0, spread: 15 },
+    middle: STRETCHED,
+    ring: { mcp: 0, pip: 0, dip: 0, spread: -15 },
+    pinky: CURLED,
+  },
+  X: {
+    thumb: { mcp: 90, pip: 45, dip: 0, spread: 0 },
+    index: HOOKED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: CURLED,
+  },
+  Y: {
+    thumb: STRETCHED,
+    index: CURLED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: STRETCHED,
+  },
+  Z: {
+    thumb: { mcp: 90, pip: 45, dip: 0, spread: 0 },
+    index: STRETCHED,
+    middle: CURLED,
+    ring: CURLED,
+    pinky: CURLED,
+    wristRotation: -30,
+  },
+};
+
+const Finger = ({
+  angles,
+  x,
+  y,
+  rotation,
+  scale = 1,
+  color = "currentColor",
+}: {
+  angles: JointAngles;
+  x: number;
+  y: number;
+  rotation: number;
+  scale?: number;
+  color?: string;
+}) => {
+  const segmentLen = 18 * scale;
+  const width = 10 * scale;
 
   return (
-    <div className={`relative flex items-center justify-center ${className}`}>
-      <svg viewBox="0 0 100 120" className="absolute inset-0 h-full w-full text-white/12">
-        <path
-          d="M 30,60 C 30,90 40,110 50,110 C 60,110 70,90 70,60 C 70,40 30,40 30,60 Z"
-          fill="currentColor"
+    <g
+      transform={`translate(${x}, ${y}) rotate(${rotation + (angles.spread || 0)})`}
+      style={{ transition: "transform 0.2s ease-in-out" }}
+    >
+      {/* MCP segment */}
+      <rect
+        x={-width / 2}
+        y={-segmentLen}
+        width={width}
+        height={segmentLen + 2}
+        rx={width / 2}
+        fill={color}
+        transform={`rotate(${angles.mcp}, 0, 0)`}
+        style={{ transition: "transform 0.2s ease-in-out" }}
+      />
+      <g
+        transform={`translate(0, ${-segmentLen}) rotate(${angles.mcp}) translate(0, 0) rotate(${angles.pip})`}
+        style={{ transition: "transform 0.2s ease-in-out" }}
+      >
+        {/* PIP segment */}
+        <rect
+          x={-width / 2}
+          y={-segmentLen}
+          width={width}
+          height={segmentLen + 2}
+          rx={width / 2}
+          fill={color}
         />
-        {[
-          { x: 20, y: 70, h: 30, a: -45, w: 12 },
-          { x: 35, y: 40, h: 45, a: -10, w: 10 },
-          { x: 50, y: 35, h: 50, a: 0, w: 10 },
-          { x: 65, y: 40, h: 45, a: 10, w: 10 },
-          { x: 80, y: 50, h: 35, a: 25, w: 8 },
-        ].map((finger, i) => (
+        <g
+          transform={`translate(0, ${-segmentLen}) rotate(${angles.dip})`}
+          style={{ transition: "transform 0.2s ease-in-out" }}
+        >
+          {/* DIP segment */}
           <rect
-            key={i}
-            x={finger.x - finger.w / 2}
-            y={finger.y - finger.h}
-            width={finger.w}
-            height={finger.h}
-            rx={finger.w / 2}
-            fill="currentColor"
-            style={{
-              transformOrigin: `${finger.x}px ${finger.y}px`,
-              transform: `rotate(${finger.a}deg) scaleY(${0.3 + fingerStates[i] * 0.7})`,
-              transition: "transform 0.18s ease-out",
-            }}
+            x={-width / 2}
+            y={-segmentLen * 0.8}
+            width={width}
+            height={segmentLen * 0.8 + 2}
+            rx={width / 2}
+            fill={color}
           />
-        ))}
-      </svg>
+        </g>
+      </g>
+    </g>
+  );
+};
 
-      <span
-        className={`relative z-10 font-sans font-bold tracking-tighter ${
-          isVowel ? "text-white" : "text-stone-100"
-        }`}
+export function AslHandSvg({
+  letter,
+  className = "",
+  size = 120,
+}: {
+  letter: string;
+  className?: string;
+  size?: number;
+}) {
+  const normalizedLetter = letter.toUpperCase();
+  const state = useMemo(
+    () => LETTER_STATES[normalizedLetter] || LETTER_STATES.A,
+    [normalizedLetter],
+  );
+
+  return (
+    <div
+      className={`relative flex items-center justify-center ${className}`}
+      style={{ width: size, height: size }}
+    >
+      <svg
+        viewBox="0 0 100 120"
+        className="h-full w-full"
         style={{
-          fontSize: "clamp(2rem, 4cqw, 4rem)",
+          transform: `rotate(${state.wristRotation || 0}deg)`,
+          transition: "transform 0.3s ease-in-out",
         }}
       >
-        {normalizedLetter}
-      </span>
+        {/* Palm */}
+        <path
+          d="M 30,70 C 25,100 40,115 50,115 C 60,115 75,100 70,70 C 65,55 35,55 30,70 Z"
+          fill="currentColor"
+          className="text-stone-800"
+        />
+
+        {/* Fingers */}
+        <Finger
+          angles={state.thumb}
+          x={30}
+          y={85}
+          rotation={-130}
+          scale={1.1}
+          color="currentColor"
+        />
+        <Finger
+          angles={state.index}
+          x={35}
+          y={65}
+          rotation={-15}
+          scale={1.0}
+          color="currentColor"
+        />
+        <Finger
+          angles={state.middle}
+          x={50}
+          y={60}
+          rotation={0}
+          scale={1.05}
+          color="currentColor"
+        />
+        <Finger angles={state.ring} x={65} y={65} rotation={15} scale={1.0} color="currentColor" />
+        <Finger
+          angles={state.pinky}
+          x={75}
+          y={75}
+          rotation={30}
+          scale={0.85}
+          color="currentColor"
+        />
+      </svg>
+
+      <div className="absolute -bottom-2 flex w-full justify-center">
+        <span className="text-[10px] font-bold tracking-widest text-stone-500">
+          {normalizedLetter}
+        </span>
+      </div>
     </div>
   );
 }

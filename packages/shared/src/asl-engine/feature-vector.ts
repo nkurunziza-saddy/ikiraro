@@ -1,4 +1,4 @@
-import { getDistance } from "./math";
+import { crossProduct, dotProduct, getAngle, getDistance, normalizeVector, subtract } from "./math";
 import type { FeatureVector, HandLandmarks } from "./types";
 
 function isFingerExtended(
@@ -47,7 +47,13 @@ const EMPTY_VECTOR: FeatureVector = {
   fingerCurls: [0, 0, 0, 0, 0],
   thumbToIndexDist: 0,
   thumbToMiddleDist: 0,
+  thumbToPinkyDist: 0,
   indexMiddleSpread: 0,
+  ringPinkySpread: 0,
+  palmOrientation: 0,
+  thumbPosition: 0,
+  fingerAngles: [0, 0, 0, 0, 0],
+  wristAngle: 0,
   fingerprint: "00000",
 };
 
@@ -76,7 +82,31 @@ export function extractFeatureVector(landmarks: HandLandmarks): FeatureVector {
   const normalizedPalm = palmSize > 0 ? palmSize : 1;
   const thumbToIndexDist = getDistance(landmarks[4]!, landmarks[8]!) / normalizedPalm;
   const thumbToMiddleDist = getDistance(landmarks[4]!, landmarks[12]!) / normalizedPalm;
+  const thumbToPinkyDist = getDistance(landmarks[4]!, landmarks[20]!) / normalizedPalm;
   const indexMiddleSpread = getDistance(landmarks[8]!, landmarks[12]!) / normalizedPalm;
+  const ringPinkySpread = getDistance(landmarks[16]!, landmarks[20]!) / normalizedPalm;
+
+  const v05 = subtract(landmarks[5]!, landmarks[0]!);
+  const v017 = subtract(landmarks[17]!, landmarks[0]!);
+  const palmNormal = normalizeVector(crossProduct(v05, v017));
+  const palmOrientation = Math.abs(dotProduct(palmNormal, { x: 0, y: 0, z: 1 }));
+
+  const thumbPosition = landmarks[4]!.y < landmarks[5]!.y ? 1 : 0;
+
+  const fingerAngles: [number, number, number, number, number] = [
+    getAngle(landmarks[2]!, landmarks[3]!, landmarks[4]!),
+    getAngle(landmarks[5]!, landmarks[6]!, landmarks[7]!),
+    getAngle(landmarks[9]!, landmarks[10]!, landmarks[11]!),
+    getAngle(landmarks[13]!, landmarks[14]!, landmarks[15]!),
+    getAngle(landmarks[17]!, landmarks[18]!, landmarks[19]!),
+  ];
+
+  const wristAngle = getAngle(landmarks[9]!, landmarks[0]!, {
+    x: landmarks[0]!.x,
+    y: landmarks[0]!.y - 1,
+    z: landmarks[0]!.z,
+  });
+
   const fingerprint = fingerStates.map((state) => (state ? "1" : "0")).join("");
 
   return {
@@ -84,7 +114,13 @@ export function extractFeatureVector(landmarks: HandLandmarks): FeatureVector {
     fingerCurls,
     thumbToIndexDist,
     thumbToMiddleDist,
+    thumbToPinkyDist,
     indexMiddleSpread,
+    ringPinkySpread,
+    palmOrientation,
+    thumbPosition,
+    fingerAngles,
+    wristAngle,
     fingerprint,
   };
 }

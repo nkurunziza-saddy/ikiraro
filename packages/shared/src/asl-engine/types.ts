@@ -11,7 +11,13 @@ export interface FeatureVector {
   fingerCurls: [number, number, number, number, number];
   thumbToIndexDist: number;
   thumbToMiddleDist: number;
+  thumbToPinkyDist: number;
   indexMiddleSpread: number;
+  ringPinkySpread: number;
+  palmOrientation: number;
+  thumbPosition: number;
+  fingerAngles: [number, number, number, number, number];
+  wristAngle: number;
   fingerprint: string;
 }
 
