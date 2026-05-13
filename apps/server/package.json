@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@sensa/auth": "workspace:*",
+    "@sensa/communication": "workspace:*",
     "@sensa/db": "workspace:*",
     "@sensa/env": "workspace:*",
     "better-auth": "catalog:",

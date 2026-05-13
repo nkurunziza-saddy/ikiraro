@@ -32,6 +32,7 @@ export const server = await Worker("server", {
   bindings: {
     DB: db,
     CORS_ORIGIN: alchemy.env.CORS_ORIGIN!,
+    GROQ_API_KEY: alchemy.secret.env.GROQ_API_KEY!,
     BETTER_AUTH_SECRET: alchemy.secret.env.BETTER_AUTH_SECRET!,
     BETTER_AUTH_URL: alchemy.env.BETTER_AUTH_URL!,
   },

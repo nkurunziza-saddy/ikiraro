@@ -19,7 +19,11 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "My App",
+        title: "Sensa — Accessible Communication",
+      },
+      {
+        name: "description",
+        content: "An accessible sign language translation dashboard and ASL engine.",
       },
     ],
     links: [
@@ -39,10 +43,12 @@ function RootDocument() {
       <head>
         <HeadContent />
       </head>
-      <body>
-        <div className="grid h-svh grid-rows-[auto_1fr]">
+      <body className="bg-black text-stone-100 antialiased selection:bg-amber-300/30">
+        <div className="flex min-h-svh flex-col">
           <Header />
-          <Outlet />
+          <main className="flex-1">
+            <Outlet />
+          </main>
         </div>
         <Toaster richColors />
 

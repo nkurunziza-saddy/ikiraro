@@ -1,0 +1,12 @@
+{
+  "extends": "@sensa/config/tsconfig.base.json",
+  "include": ["src/**/*.ts"],
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "composite": true
+  }
+}

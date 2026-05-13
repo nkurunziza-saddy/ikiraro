@@ -1,0 +1,22 @@
+{
+  "name": "@sensa/shared",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "check-types": "tsc -b --pretty false"
+  },
+  "devDependencies": {
+    "@sensa/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
