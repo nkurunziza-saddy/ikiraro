@@ -7,6 +7,9 @@ export type {
   ASLModelInterface,
   HandshapeDefinition,
   ClassifierConfig,
+  IFeatureExtractor,
+  ISignMatcher,
+  ITemporalSmoother,
   WordBufferOptions,
   BufferState,
   VisionStatus,
@@ -20,6 +23,9 @@ export { evaluateHandGeometry } from "./quality";
 export { extractFeatureVector } from "./feature-vector";
 export { LandmarkSmoother } from "./smoothing";
 export { ASL_ALPHABET } from "./handshapes";
+export { SensaFeatureExtractor } from "./implementations/feature-extractor";
+export { SensaSurgicalMatcher } from "./implementations/surgical-matcher";
+export { SensaTemporalSmoother } from "./implementations/temporal-smoother";
 export { SensaSurgicalClassifier, DEFAULT_CLASSIFIER_CONFIG } from "./classifier";
 export { WordBuffer, DOUBLE_LETTER_HOLD_MS } from "./word-buffer";
 export { VisionSystem } from "./vision-system";

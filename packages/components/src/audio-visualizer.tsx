@@ -16,19 +16,19 @@ export function AudioVisualizer({
   const bars = useMemo(() => Array.from({ length: count }), [count]);
 
   return (
-    <div className={`flex items-end gap-1 h-12 px-1 ${className}`}>
+    <div className={`flex items-end gap-1.5 h-12 px-1 ${className}`}>
       {bars.map((_, i) => {
         // Add a bit of pseudo-randomness per bar for organic feel
         const randomFactor = 0.5 + (Math.sin(i * 0.5) * 0.2 + Math.cos(i * 0.3) * 0.3);
-        const height = Math.max(8, level * 100 * randomFactor);
+        const height = Math.max(12, level * 100 * randomFactor);
 
         return (
           <div
             key={i}
-            className="flex-1 bg-primary/40 rounded-t-full transition-all duration-75 ease-out"
+            className="flex-1 bg-primary rounded-t-full transition-all duration-100 ease-out"
             style={{
               height: `${height}%`,
-              opacity: 0.2 + level * 0.8,
+              opacity: 0.15 + level * 0.85,
             }}
           />
         );

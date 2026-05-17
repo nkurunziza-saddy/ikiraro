@@ -4,16 +4,8 @@ import { useDeferredValue, useEffect, useState } from "react";
 
 import { PipelineView } from "@sensa/components";
 import { Button } from "@sensa/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@sensa/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@sensa/components/ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@sensa/components/ui/tabs";
-import { useHandTracking } from "@/lib/use-hand-tracking";
+import { useHandTracking } from "@sensa/communication";
 import { useCommunicationSession, type ComposerMode } from "@/hooks/use-communication-session";
 
 import { CameraPanel } from "@/components/camera-panel";
@@ -56,12 +48,12 @@ function createEntry(envelope: TranslationEnvelope): ConversationEntry {
 
 function OverviewStat({ label, value, hint }: { label: string; value: string; hint: string }) {
   return (
-    <div className="rounded-[1.35rem] border border-border/70 bg-background/70 p-4 backdrop-blur-sm">
-      <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+    <div className="flex flex-col gap-1 px-1">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
         {label}
       </p>
-      <p className="mt-3 text-2xl font-semibold tracking-tight">{value}</p>
-      <p className="mt-1 text-xs leading-5 text-muted-foreground">{hint}</p>
+      <p className="text-2xl font-bold tracking-tight">{value}</p>
+      <p className="text-[11px] leading-relaxed text-muted-foreground/50">{hint}</p>
     </div>
   );
 }
@@ -70,7 +62,7 @@ function RouteComponent() {
   const camera = useHandTracking();
   const [entries, setEntries] = useState<ConversationEntry[]>([]);
 
-  const session = useCommunicationSession(entries, (envelope) => {
+  const session = useCommunicationSession((envelope) => {
     setEntries((prev) => [...prev, createEntry(envelope)]);
   });
 
@@ -82,17 +74,18 @@ function RouteComponent() {
 
   const commitCameraSentence = async () => {
     const sentence = camera.tracking.sentenceText || camera.tracking.currentWord;
-    if (!sentence) return;
+    if (!sentence || !session.runtime) return;
 
     try {
-      const context = session.bridge.buildContext(entries);
-      const rawEnvelope = await session.bridge.translate({
-        mode: "text",
-        text: sentence,
-        context,
+      session.runtime.dispatch({
+        type: "translation:cmd:request",
+        payload: {
+          mode: "text",
+          text: sentence,
+        },
+        timestamp: Date.now(),
+        source: "vision-commit",
       });
-      const envelope = { ...rawEnvelope, mode: "camera-fingerspell" as const };
-      setEntries((prev) => [...prev, createEntry(envelope)]);
       camera.clear();
     } catch {
       // Handled by bridge/session eventually if integrated
@@ -100,219 +93,166 @@ function RouteComponent() {
   };
 
   return (
-    <div className="min-h-full bg-background text-foreground">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 lg:py-10">
-        <section className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/90 p-6 shadow-[0_32px_120px_-56px_rgba(0,0,0,0.65)] lg:p-8">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(212,159,72,0.20),transparent_34%),radial-gradient(circle_at_80%_18%,rgba(118,92,51,0.22),transparent_28%)]" />
-          <div className="relative grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
-            <div className="space-y-5">
-              <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.32em] text-primary">
-                Sensa Bridge
-              </div>
-              <div className="space-y-3">
-                <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-                  Translation control room for speech, text, and live fingerspelling.
-                </h1>
-                <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-                  Keep capture, planning, playback, and conversation history in one working surface.
-                  The current pass favors deterministic plans and clear operator feedback.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 text-[11px] font-medium text-muted-foreground">
-                <span className="rounded-full border border-border/70 bg-background/70 px-3 py-1.5">
-                  {MODE_LABELS[session.mode]} mode
-                </span>
-                <span className="rounded-full border border-border/70 bg-background/70 px-3 py-1.5">
-                  {entries.length} committed turn{entries.length === 1 ? "" : "s"}
-                </span>
-                <span className="rounded-full border border-border/70 bg-background/70 px-3 py-1.5">
-                  {camera.isReady ? `${camera.delegate ?? "Ready"} vision` : "Vision booting"}
-                </span>
-              </div>
+    <div className="min-h-full bg-background text-foreground selection:bg-primary/10">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-12 px-6 py-12 lg:py-16">
+        {/* Minimal Hero */}
+        <section className="space-y-10">
+          <div className="flex flex-col gap-4">
+            <div className="inline-flex w-fit items-center rounded-full bg-muted px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              Sensa Console
             </div>
+            <h1 className="max-w-4xl text-5xl font-bold tracking-tight text-balance sm:text-6xl">
+              Clean intelligence for sign translation.
+            </h1>
+            <p className="max-w-2xl text-base leading-relaxed text-muted-foreground/80">
+              A professional environment for coordinating speech, text, and vision-based tracking.
+            </p>
+          </div>
 
-            <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-              <OverviewStat
-                label="Current Mode"
-                value={MODE_LABELS[session.mode]}
-                hint={MODE_COPY[session.mode]}
-              />
-              <OverviewStat
-                label="Vision Status"
-                value={camera.isActive ? `${camera.fps} FPS` : camera.isReady ? "Ready" : "Booting"}
-                hint={
-                  camera.error
-                    ? camera.error
-                    : camera.isActive
-                      ? "Live hand tracking is actively sampling frames."
-                      : "Camera capture is idle until you start it."
-                }
-              />
-              <OverviewStat
-                label="Recent Context"
-                value={`${Math.min(entries.length, 4)} turns`}
-                hint="The planner carries the last few conversation turns into each new request."
-              />
-            </div>
+          <div className="grid gap-8 border-y py-10 sm:grid-cols-3 border-border/40">
+            <OverviewStat
+              label="Mode"
+              value={MODE_LABELS[session.mode]}
+              hint={MODE_COPY[session.mode]}
+            />
+            <OverviewStat
+              label="Vision"
+              value={camera.isActive ? `${camera.fps} FPS` : camera.isReady ? "Ready" : "Offline"}
+              hint={camera.error || "Live hand tracking status."}
+            />
+            <OverviewStat
+              label="Context"
+              value={`${Math.min(entries.length, 4)} turns`}
+              hint="Active conversation window size."
+            />
           </div>
         </section>
 
-        <section className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_22rem]">
-          <div className="flex min-w-0 flex-col gap-8">
-            <Card className="rounded-[1.75rem] border border-border/70 bg-card/95">
-              <CardHeader className="border-b border-border/60">
-                <CardTitle>Compose Message</CardTitle>
-                <CardDescription>
-                  Choose an intake path, capture the message, and commit it into the shared
-                  conversation.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <Tabs
-                  value={session.mode}
-                  onValueChange={(value) => session.setMode(value as ComposerMode)}
-                >
-                  <div className="border-b border-border/60 px-4 py-4">
-                    <TabsList className="h-auto flex-wrap gap-2 rounded-[1rem] border border-border/70 bg-background/80 p-1">
-                      {(Object.keys(MODE_LABELS) as ComposerMode[]).map((nextMode) => (
-                        <TabsTrigger
-                          key={nextMode}
-                          value={nextMode}
-                          className="rounded-[0.85rem] px-4 py-2 text-sm"
-                        >
-                          {MODE_LABELS[nextMode]}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
+        <section className="grid gap-16 xl:grid-cols-[1fr_24rem]">
+          <div className="flex min-w-0 flex-col gap-16">
+            {/* Input Section */}
+            <div className="space-y-8">
+              <div className="flex items-center justify-between border-b pb-4 border-border/40">
+                <h2 className="text-xl font-bold tracking-tight">Compose</h2>
+                <div className="flex gap-2">
+                  {(Object.keys(MODE_LABELS) as ComposerMode[]).map((nextMode) => (
+                    <button
+                      key={nextMode}
+                      onClick={() => session.setMode(nextMode)}
+                      className={`rounded-md px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest transition-all ${
+                        session.mode === nextMode
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      }`}
+                    >
+                      {MODE_LABELS[nextMode]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="min-h-60">
+                {session.mode === "speech" && (
+                  <SpeechComposer
+                    sttModel={session.sttModel}
+                    setSttModel={session.setSttModel}
+                    speechPrompt={session.speechPrompt}
+                    setSpeechPrompt={session.setSpeechPrompt}
+                    isWorking={session.isWorking}
+                    captureStatus={session.captureStatus}
+                    captureLevel={session.captureLevel}
+                    onStart={session.startSpeechCapture}
+                    onStop={session.commit}
+                    onCancel={session.cancelSpeechCapture}
+                  />
+                )}
+                {session.mode === "text" && (
+                  <TextComposer
+                    textDraft={session.textDraft}
+                    setTextDraft={session.setTextDraft}
+                    isWorking={session.isWorking}
+                  />
+                )}
+                {session.mode === "sign" && (
+                  <div className="rounded-xl border bg-muted/10 p-8 text-center border-border/40">
+                    <p className="font-mono text-3xl font-bold tracking-tighter sm:text-4xl">
+                      {session.signUnits.join(" ") || "—"}
+                    </p>
+                    <p className="mt-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">
+                      Manual Sequence Preview
+                    </p>
                   </div>
+                )}
+              </div>
 
-                  <div className="space-y-6 p-6">
-                    <div className="max-w-2xl">
-                      <p className="text-sm leading-7 text-muted-foreground">
-                        {MODE_COPY[session.mode]}
-                      </p>
-                    </div>
-
-                    <TabsContent value="speech" className="mt-0">
-                      <SpeechComposer
-                        sttModel={session.sttModel}
-                        setSttModel={session.setSttModel}
-                        speechPrompt={session.speechPrompt}
-                        setSpeechPrompt={session.setSpeechPrompt}
-                        isWorking={session.isWorking}
-                        captureStatus={session.captureStatus}
-                        captureLevel={session.captureLevel}
-                        onStart={session.startSpeechCapture}
-                        onStop={session.commit}
-                        onCancel={session.cancelSpeechCapture}
-                      />
-                    </TabsContent>
-
-                    <TabsContent value="text" className="mt-0">
-                      <TextComposer
-                        textDraft={session.textDraft}
-                        setTextDraft={session.setTextDraft}
-                        isWorking={session.isWorking}
-                      />
-                    </TabsContent>
-
-                    <TabsContent value="sign" className="mt-0">
-                      <div className="rounded-[1.6rem] border border-border/70 bg-muted/50 p-5">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-muted-foreground">
-                          Current Sequence
-                        </p>
-                        <p className="mt-4 min-h-12 font-mono text-xl font-medium tracking-tight sm:text-2xl">
-                          {session.signUnits.join(" ") ||
-                            "Select keys below to build a sign sequence."}
-                        </p>
-                        <p className="mt-3 text-xs leading-6 text-muted-foreground">
-                          Manual sequences stay local and deterministic, which makes them useful for
-                          demos, QA, and exact fingerspelling.
-                        </p>
-                      </div>
-                    </TabsContent>
-                  </div>
-                </Tabs>
-              </CardContent>
               {session.mode !== "speech" && (
-                <div className="flex flex-col gap-4 border-t border-border/60 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex flex-wrap gap-3">
-                    <Button
-                      onClick={session.commit}
-                      disabled={
-                        session.isWorking ||
-                        (session.mode === "text" && !session.textDraft.trim()) ||
-                        (session.mode === "sign" && session.signUnits.length === 0)
-                      }
-                      size="lg"
-                      className="min-w-36"
-                    >
-                      {session.isWorking ? "Processing..." : "Commit Message"}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="lg"
-                      onClick={() => {
-                        session.setSignUnits([]);
-                        session.setTextDraft("");
-                      }}
-                    >
-                      Clear Draft
-                    </Button>
-                  </div>
-                  <p className="max-w-sm text-xs leading-6 text-muted-foreground">
-                    Text and manual entries stay fully local to the current translation flow.
-                  </p>
+                <div className="flex items-center gap-4 pt-4 border-t border-border/40">
+                  <Button
+                    onClick={session.commit}
+                    disabled={
+                      session.isWorking ||
+                      (session.mode === "text" && !session.textDraft.trim()) ||
+                      (session.mode === "sign" && session.signUnits.length === 0)
+                    }
+                    size="lg"
+                    className="min-w-40 font-bold uppercase tracking-widest"
+                  >
+                    {session.isWorking ? "Processing..." : "Commit"}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      session.setSignUnits([]);
+                      session.setTextDraft("");
+                    }}
+                    className="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                  >
+                    Clear Draft
+                  </Button>
                 </div>
               )}
-            </Card>
+            </div>
 
-            <Card className="rounded-[1.75rem] border border-border/70 bg-card/95">
-              <CardHeader className="border-b border-border/60">
-                <CardTitle>Active Translation</CardTitle>
-                <CardDescription>
-                  Review the latest committed output or the in-progress manual preview.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
+            {/* Translation Result */}
+            <div className="space-y-8">
+              <h2 className="text-xl font-bold tracking-tight border-b pb-4 border-border/40">
+                Translation
+              </h2>
+              <div className="rounded-2xl border bg-card/30 p-8 shadow-sm border-border/40">
                 <PipelineView envelope={session.previewEnvelope} />
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="rounded-[1.75rem] border border-border/70 bg-card/95">
-              <CardHeader className="border-b border-border/60">
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>
-                  Every committed turn stays visible with history controls.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
-                <ConversationThread entries={deferredEntries} />
-              </CardContent>
-            </Card>
+            {/* History */}
+            <div className="space-y-8">
+              <h2 className="text-xl font-bold tracking-tight border-b pb-4 border-border/40">
+                Activity
+              </h2>
+              <ConversationThread entries={deferredEntries} />
+            </div>
           </div>
 
-          <aside className="flex min-w-0 flex-col gap-8">
-            <Card className="rounded-[1.75rem] border border-border/70 bg-card/95">
-              <CardHeader className="border-b border-border/60">
-                <CardTitle>Vision Tracker</CardTitle>
-                <CardDescription>Live hand-tracking and correction flows.</CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
+          <aside className="flex flex-col gap-16">
+            {/* Vision */}
+            <div className="space-y-8">
+              <h2 className="text-xl font-bold tracking-tight border-b pb-4 border-border/40">
+                Vision
+              </h2>
+              <div className="rounded-2xl border bg-card/30 p-6 shadow-sm border-border/40">
                 <CameraPanel
                   camera={camera}
                   commitCameraSentence={commitCameraSentence}
                   isWorking={session.isWorking}
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="rounded-[1.75rem] border border-border/70 bg-card/95">
-              <CardHeader className="border-b border-border/60">
-                <CardTitle>Lexicon Keys</CardTitle>
-                <CardDescription>Compose exact sequences manually.</CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
+            {/* Lexicon */}
+            <div className="space-y-8">
+              <h2 className="text-xl font-bold tracking-tight border-b pb-4 border-border/40">
+                Lexicon
+              </h2>
+              <div className="rounded-2xl border bg-card/30 p-6 shadow-sm border-border/40">
                 <SignKeyboard
                   appendSignUnit={(unit) => {
                     session.setMode("sign");
@@ -320,14 +260,14 @@ function RouteComponent() {
                   }}
                   setSignUnits={session.setSignUnits}
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </aside>
         </section>
 
         {session.error && (
-          <Alert variant="destructive" className="rounded-[1.5rem]">
-            <AlertTitle>Pipeline Error</AlertTitle>
+          <Alert variant="destructive" className="mt-8">
+            <AlertTitle>Error</AlertTitle>
             <AlertDescription>{session.error}</AlertDescription>
           </Alert>
         )}

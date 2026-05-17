@@ -9,12 +9,18 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@effect/platform": "catalog:",
+    "@effect/platform-browser": "catalog:",
+    "@mediapipe/tasks-vision": "0.10.35",
     "@sensa/components": "workspace:*",
     "@sensa/engine": "workspace:*",
-    "@sensa/env": "workspace:*"
+    "effect": "catalog:"
   },
   "devDependencies": {
     "@sensa/config": "workspace:*",
-    "typescript": "catalog:"
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "typescript": "catalog:",
+    "vite": "^8.0.12"
   }
 }

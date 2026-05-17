@@ -1,5 +1,5 @@
 import { AslHandSvg } from "./asl-hand-svg";
-import type { FrameItem } from "./frame-queue";
+import type { FrameItem } from "@sensa/engine/planning";
 
 export function SignDisplay({ frame }: { frame: FrameItem }) {
   if (frame.type === "pause") {
@@ -24,11 +24,11 @@ export function SignDisplay({ frame }: { frame: FrameItem }) {
   if (frame.type === "number") {
     return (
       <div className="flex flex-col items-center gap-4">
-        <div className="flex size-32 items-center justify-center rounded-2xl border border-border bg-muted">
+        <div className="flex size-32 items-center justify-center rounded-xl border bg-muted">
           <span className="font-mono text-6xl font-bold text-foreground">{frame.value}</span>
         </div>
         {frame.sublabel && (
-          <span className="text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
             {frame.sublabel}
           </span>
         )}
@@ -37,8 +37,8 @@ export function SignDisplay({ frame }: { frame: FrameItem }) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="rounded-2xl border border-border bg-muted p-4">
+    <div className="flex flex-col items-center gap-6">
+      <div className="rounded-xl border bg-muted p-6 shadow-sm">
         <AslHandSvg
           letter={frame.value}
           motion={frame.motion}
@@ -49,32 +49,34 @@ export function SignDisplay({ frame }: { frame: FrameItem }) {
       </div>
 
       {/* Token info */}
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-3">
         {frame.type === "lexeme" && (
-          <span className="rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-[0.28em] text-primary-foreground">
+          <span className="rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary-foreground shadow-sm">
             {frame.label}
           </span>
         )}
         {frame.type === "fingerspell" && (
-          <span className="rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-[0.28em] text-accent-foreground">
+          <span className="rounded-full bg-secondary px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-secondary-foreground border shadow-sm">
             FS: {frame.label}
           </span>
         )}
 
         {frame.sublabel && (
-          <span className="text-[10px] text-muted-foreground">{frame.sublabel}</span>
+          <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            {frame.sublabel}
+          </span>
         )}
       </div>
 
       {/* Advanced Indicators */}
-      <div className="flex gap-2 mt-2">
+      <div className="flex gap-2">
         {frame.facialExpression && (
-          <span className="rounded border border-primary/30 px-1.5 py-0.5 text-[8px] font-bold uppercase text-primary">
+          <span className="rounded-md border bg-primary/5 px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest text-primary">
             🎭 {frame.facialExpression}
           </span>
         )}
         {frame.coarticulation === "blend" && (
-          <span className="rounded border border-accent/30 px-1.5 py-0.5 text-[8px] font-bold uppercase text-accent">
+          <span className="rounded-md border bg-secondary px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest text-secondary-foreground">
             〰 blend
           </span>
         )}

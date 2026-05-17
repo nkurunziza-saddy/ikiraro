@@ -5,22 +5,12 @@ export type {
   ClassificationResult,
   CameraTrackingState,
   ASLModelInterface,
+  IFeatureExtractor,
+  ISignMatcher,
+  ITemporalSmoother,
+  HandshapeDefinition,
+  ClassifierConfig,
 } from "../types";
-
-export interface HandshapeDefinition {
-  name: string;
-  fingerprint: string;
-  requiresMotion?: boolean;
-  disambiguate?: (vector: import("../types").FeatureVector) => number;
-}
-
-export interface ClassifierConfig {
-  windowSize: number;
-  rawScoreThreshold: number;
-  lockThreshold: number;
-  unlockThreshold: number;
-  motionVelocityThreshold: number;
-}
 
 export interface WordBufferOptions {
   pauseThresholdMs: number;
@@ -31,6 +21,12 @@ export interface BufferState {
   currentWord: string;
   sentence: string[];
   sentenceText: string;
+}
+
+export interface WordBufferContext {
+  isTransitioning?: boolean;
+  gesture?: "double-letter-slide" | "double-letter-bounce" | "none";
+  confidence?: number;
 }
 
 // ─── Vision System ────────────────────────────────────────────────────────────

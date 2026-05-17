@@ -1,87 +1,50 @@
 # sensa
 
-This project was created with [Better Fullstack](https://github.com/Marve10s/Better-Fullstack), a modern TypeScript stack that combines React, TanStack Start, Hono, and more.
+Sensa is a type-safe, local-first ASL (American Sign Language) translation SDK. It provides a robust pipeline for handling multimodal communication (speech, text, and manual sign input) and orchestrating computer vision to map hand tracking to a semantic sign sequence.
 
-## Features
+## Architecture
 
-- **TypeScript** - For type safety and improved developer experience
-- **TanStack Start** - SSR framework with TanStack Router
-- **TailwindCSS** - CSS framework
-- **shadcn/ui** - UI components
-- **Hono** - Lightweight, performant server framework
-- **workers** - Runtime environment
-- **Drizzle** - TypeScript-first ORM
-- **SQLite/Turso** - Database engine
-- **Authentication** - Better Auth
-- **Husky** - Git hooks for code quality
-- **Oxlint** - Oxlint + Oxfmt (linting & formatting)
-- **Turborepo** - Optimized monorepo build system
+This project is structured as a standalone SDK rather than a monolithic fullstack application. All heavy lifting—including LLM-based Gloss generation and high-frequency hand tracking—has been pushed to the edges (browser or local runtime) via `@effect/platform`.
+
+### Packages
+
+- `@sensa/engine` - The core mathematical, planning, and vision logic. Pure, dependency-free TypeScript. Contains the surgical gesture classifier.
+- `@sensa/communication` - The orchestrator. Exposes the `SensaSDK` powered by `effect` and `SensaRuntime` which acts as an event bus for combining streams of signs and speech.
+- `@sensa/components` - A specialized suite of React components for visualizing hand tracking, pipelines, and ASL rendering.
+- `web` - A reference implementation dashboard that consumes the SDK.
 
 ## Getting Started
 
-First, install the dependencies:
+You will need a [Groq API Key](https://console.groq.com/keys) to power the speech-to-text (Whisper) and English-to-Gloss (LLaMA 3) translations.
 
 ```bash
 bun install
+
+# Create local environment config for the dashboard
+echo "VITE_GROQ_API_KEY=your_key_here" > apps/web/.env.local
+
+# Run the local-first console
+bun run dev:web
 ```
 
-## Database Setup
+## SDK Usage
 
-This project uses SQLite with Drizzle ORM.
+To use Sensa in a React app, initialize the runtime with your config:
 
-1. Start the local SQLite database (optional):
-   D1 local development and migrations are handled automatically by Alchemy during dev and deploy.
+```tsx
+import { createSensa, useSensa } from "@sensa/communication";
 
-2. Update your `.env` file in the `apps/server` directory with the appropriate connection details if needed.
+const runtime = await createSensa({
+  sdk: { groqApiKey: "YOUR_KEY" },
+});
 
-3. Apply the schema to your database:
-
-```bash
-bun run db:push
+// React
+const { state } = useSensa(runtime);
 ```
 
-Then, run the development server:
+## Workflows
 
-```bash
-bun run dev
-```
-
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
-
-## Deployment (Cloudflare via Alchemy)
-
-- Dev: bun run dev
-- Deploy: bun run deploy
-- Destroy: bun run destroy
-
-For more details, see the guide on [Deploying to Cloudflare with Alchemy](https://better-fullstack-web.vercel.app/docs/guides/cloudflare-alchemy).
-
-## Git Hooks and Formatting
-
-- Initialize hooks: `bun run prepare`
-- Format and lint fix: `bun run check`
-
-## Project Structure
-
-```
-sensa/
-├── apps/
-│   ├── web/         # Frontend application (React + TanStack Start)
-│   └── server/      # Backend API (Hono)
-├── packages/
-│   ├── api/         # API layer / business logic
-│   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
-```
-
-## Available Scripts
-
-- `bun run dev`: Start all applications in development mode
-- `bun run build`: Build all applications
-- `bun run dev:web`: Start only the web application
-- `bun run dev:server`: Start only the server
+- `bun run dev:web`: Start the console locally
 - `bun run check-types`: Check TypeScript types across all apps
-- `bun run db:push`: Push schema changes to database
-- `bun run db:studio`: Open database studio UI
 - `bun run check`: Run Oxlint and Oxfmt
+- `bun run test`: Run the Vitest test suites

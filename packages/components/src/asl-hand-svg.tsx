@@ -134,18 +134,10 @@ export function AslHandSvg({
         role="img"
         aria-label={`ASL letter ${normalizedLetter}`}
       >
-        <defs>
-          {/* Subtle gradient for depth */}
-          <linearGradient id={`hand-grad-${normalizedLetter}`} x1="0" y1="0" x2="0.3" y2="1">
-            <stop offset="0%" stopColor="currentColor" stopOpacity="1" />
-            <stop offset="100%" stopColor="currentColor" stopOpacity="0.75" />
-          </linearGradient>
-        </defs>
-
-        {/* Main hand silhouette */}
+        {/* Main hand silhouette - solid theme color */}
         <path
           d={path}
-          fill={`url(#hand-grad-${normalizedLetter})`}
+          fill="currentColor"
           className="text-foreground transition-all duration-300 ease-out"
           style={{
             transition: animate ? "d 0.25s ease-in-out" : undefined,
@@ -161,9 +153,9 @@ export function AslHandSvg({
               }
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
               strokeLinecap="round"
-              strokeDasharray="4 3"
+              strokeDasharray="4 4"
               className="text-primary"
               style={{
                 animation: animate ? "motionPulse 2s ease-in-out infinite" : undefined,
@@ -173,7 +165,7 @@ export function AslHandSvg({
             <circle
               cx={normalizedLetter === "J" ? 76 : 76}
               cy={normalizedLetter === "J" ? 52 : 24}
-              r="2.5"
+              r="3"
               fill="currentColor"
               className="text-primary"
             />
@@ -185,7 +177,7 @@ export function AslHandSvg({
       {showLabel && (
         <div className="absolute -bottom-1 flex w-full justify-center">
           <span
-            className="rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-bold tracking-[0.2em] text-muted-foreground"
+            className="rounded-full bg-muted border border-border px-2 py-0.5 text-[9px] font-bold tracking-widest text-muted-foreground shadow-sm"
             style={{ fontSize: Math.max(8, size * 0.08) }}
           >
             {normalizedLetter}

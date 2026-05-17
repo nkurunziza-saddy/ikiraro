@@ -46,6 +46,7 @@ function getFingerCurl(
 }
 
 const EMPTY_VECTOR: FeatureVector = {
+  isValid: false,
   fingerStates: [false, false, false, false, false],
   fingerCurls: [0, 0, 0, 0, 0],
   thumbToIndexDist: 0,
@@ -146,6 +147,7 @@ export function extractFeatureVector(
   else if (centerY > 0.6) spatialZone = "chest";
 
   return {
+    isValid: true,
     fingerStates,
     fingerCurls,
     thumbToIndexDist,

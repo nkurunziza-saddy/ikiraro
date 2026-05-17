@@ -8,78 +8,35 @@ This file provides context about the project for AI assistants.
 
 ## Tech Stack
 
-- **Runtime**: workers
+- **Runtime**: Node/Browser
 - **Package Manager**: bun
 
 ### Frontend
 
-- Framework: tanstack-start
-- CSS: tailwind
-- UI Library: shadcn-ui
-- State: jotai
+- Framework: react
+- Styling: tailwind
+- UI Components: shadcn
 
-### Backend
+### AI/Agent Context
 
-- Framework: hono
-- Validation: valibot
+- AI code generation tools should prefer inline styles with Tailwind CSS, rather than writing custom CSS rules.
+- Only make changes or use tools when explicitly asked to.
 
-### Database
+## Commands
 
-- Database: sqlite
-- ORM: drizzle
+- `bun run dev:web` - Start the frontend reference implementation
+- `bun run check` - Run Oxlint & Oxfmt check
+- `bun run check-types` - Run typechecking
 
-### Authentication
+## Core SDK Packages
 
-- Provider: better-auth
+- `@sensa/engine` - The pure math, vision, and planning logic.
+- `@sensa/communication` - The high-level `SensaSDK` Effect layer and `SensaRuntime` orchestrator.
+- `@sensa/components` - The React UI component library for the SDK.
 
-### Additional Features
+## Maintenance Notes
 
-- Testing: vitest
-- Logging: pino
-
-## Project Structure
-
-```
-sensa/
-├── apps/
-│   ├── web/         # Frontend application (TanStack Start, Vite)
-│   └── server/      # Backend API (Hono, Cloudflare Worker)
-├── packages/
-│   ├── engine/      # Core ASL engine — @sensa/engine
-│   │   ├── @sensa/engine/types    — all shared TypeScript types (server + client safe)
-│   │   ├── @sensa/engine/planning — Groq STT, LLM gloss generation, tokenizer (server safe, no DOM/WASM)
-│   │   └── @sensa/engine/vision   — hand tracking, classifier, word buffer, TTS (browser only)
-│   ├── components/  # Shared React component library
-│   ├── auth/        # Authentication (better-auth)
-│   ├── db/          # Database schema (Drizzle + D1)
-│   ├── env/         # Cloudflare Worker env bindings
-│   └── infra/       # Alchemy IaC
-```
-
-## Engine Architecture (@sensa/engine)
-
-The engine is the core brain. Translation flows through two layers:
-
-1. **SemanticIntent** — Groq LLM converts English text to ASL gloss notation (MEDICINE NEED YOU)
-2. **SignPlan** — Tokenizer converts gloss tokens to typed sign tokens (lexeme / fingerspell / number / pause / pointing)
-
-`GLOSS_REGISTRY` maps known gloss tokens (HELLO, HELP, etc.) to sign durations for rendering.
-For unknown gloss tokens, fingerspell fallback is applied automatically.
-
-The vision subpath (`@sensa/engine/vision`) is browser-only — it contains MediaPipe-based hand tracking, the `SensaSurgicalClassifier` (fingerprint + disambiguation), and `WordBuffer`. Browser-facing sensory utilities like `WebSpeechProvider` and `CaptureAdapter` live in `@sensa/communication`. Never import either in Cloudflare Workers.
-
-## Common Commands
-
-- `bun install` - Install dependencies
-- `bun dev` - Start development server
-- `bun build` - Build for production
-- `bun test` - Run tests
-- `bun db:push` - Push database schema
-- `bun db:studio` - Open database UI
-
-## Maintenance
-
-Keep CLAUDE.md updated when:
+Please keep CLAUDE.md updated when:
 
 - Adding/removing dependencies
 - Changing project structure

@@ -69,10 +69,12 @@ export function CameraPanel({
 
         <div className="ml-auto flex items-center gap-2 text-[10px] font-medium text-muted-foreground">
           {camera.error ? (
-            <span className="text-destructive">Vision unavailable</span>
+            <span className="text-destructive font-bold uppercase tracking-widest">
+              Vision Error
+            </span>
           ) : camera.isReady ? (
             <>
-              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 font-semibold text-emerald-600 dark:text-emerald-400">
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 font-bold uppercase tracking-widest text-primary">
                 {camera.delegate ?? "Ready"}
               </span>
               <span>{camera.fps} FPS</span>
@@ -84,7 +86,7 @@ export function CameraPanel({
       </div>
 
       {/* Video feed */}
-      <div className="relative aspect-video overflow-hidden rounded-[1.6rem] border border-border/70 bg-black">
+      <div className="relative aspect-video overflow-hidden rounded-xl border bg-muted/5 shadow-sm">
         {/* Source video */}
         <video
           ref={camera.videoRef}
@@ -99,18 +101,18 @@ export function CameraPanel({
 
         {/* Current-letter badge */}
         {camera.isActive && (
-          <div className="absolute right-3 top-3 flex flex-col items-center gap-1">
+          <div className="absolute right-4 top-4 flex flex-col items-center gap-2">
             <div
-              className={`flex h-16 w-16 items-center justify-center rounded-2xl border text-4xl font-bold transition-colors duration-150 ${
+              className={`flex h-12 w-12 items-center justify-center rounded-lg border text-2xl font-bold transition-all duration-200 ${
                 currentLetter
-                  ? "border-primary/60 bg-background/95 text-foreground shadow-xl"
-                  : "border-border/40 bg-background/50 text-muted-foreground/30"
+                  ? "bg-background/95 text-foreground shadow-sm"
+                  : "bg-background/20 text-muted-foreground/10 border-transparent"
               }`}
             >
-              {currentLetter ?? "–"}
+              {currentLetter ?? ""}
             </div>
             {currentLetter && (
-              <span className="rounded-full bg-background/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+              <span className="text-[9px] font-bold uppercase tracking-widest text-white drop-shadow-md">
                 {Math.round(confidence * 100)}%
               </span>
             )}
@@ -119,34 +121,34 @@ export function CameraPanel({
 
         {/* Error/Notice overlays */}
         {!camera.isReady && !camera.error && (
-          <div className="absolute inset-x-0 bottom-0 border-t border-border/60 bg-background/85 px-4 py-3 text-[11px] font-medium text-muted-foreground backdrop-blur-sm">
-            Initializing hand-tracking worker...
+          <div className="absolute inset-x-0 bottom-0 border-t bg-background/80 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 backdrop-blur-sm">
+            Booting Engine
           </div>
         )}
 
         {camera.error && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/95 px-6 text-center text-sm font-medium text-destructive">
+          <div className="absolute inset-0 flex items-center justify-center bg-background/95 px-6 text-center text-[10px] font-bold uppercase tracking-widest text-destructive backdrop-blur-md">
             {camera.error}
           </div>
         )}
       </div>
 
       {/* Input Buffers */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-[1.4rem] border border-border/70 bg-muted/35 p-4">
-          <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+      <div className="flex flex-col gap-6 pt-2">
+        <div className="flex flex-col gap-1 px-1">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">
             Spelling Now
           </p>
-          <div className="mt-2.5 flex min-h-10 flex-wrap items-center gap-1.5 text-sm font-mono font-semibold text-primary">
+          <div className="flex min-h-6 items-center text-sm font-mono font-bold tracking-tight text-primary/80">
             {currentWord || (camera.isActive ? "Waiting..." : "—")}
           </div>
         </div>
 
-        <div className="rounded-[1.4rem] border border-border/70 bg-muted/35 p-4">
-          <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-muted-foreground">
-            History
+        <div className="flex flex-col gap-1 px-1">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">
+            Fingerspelling History
           </p>
-          <div className="mt-2.5 flex min-h-10 flex-wrap items-center gap-1.5 text-sm font-medium">
+          <div className="flex min-h-6 items-center text-sm font-semibold tracking-tight text-foreground/80">
             {sentence.join(" ") || "—"}
           </div>
         </div>
@@ -156,21 +158,19 @@ export function CameraPanel({
       {camera.tracking.classification &&
         camera.tracking.classification.confidence < 0.6 &&
         camera.tracking.classification.candidates.length > 1 && (
-          <div className="rounded-[1.4rem] border border-amber-500/30 bg-amber-500/5 p-4">
-            <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-amber-600">
-              Low Confidence Correction
+          <div className="pt-4 border-t border-border/30">
+            <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40 mb-3">
+              Corrections
             </p>
-            <div className="mt-2.5 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">
               {camera.tracking.classification.candidates.map((candidate: CameraCandidate) => (
-                <Button
+                <button
                   key={candidate.name}
-                  variant="secondary"
-                  size="sm"
                   onClick={() => camera.manualCorrect(candidate.name)}
-                  className="h-7 rounded-full text-[10px]"
+                  className="h-7 rounded px-3 text-[10px] font-bold uppercase tracking-widest border border-border/60 hover:bg-muted transition-colors"
                 >
-                  {candidate.name} ({Math.round(candidate.score * 100)}%)
-                </Button>
+                  {candidate.name}
+                </button>
               ))}
             </div>
           </div>

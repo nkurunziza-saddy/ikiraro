@@ -21,7 +21,8 @@ export function TtsControls({ text }: { text: string }) {
       const availableVoices = speech.getVoices();
       setVoices(availableVoices);
       if (availableVoices.length > 0 && !selectedVoice) {
-        const defaultVoice = availableVoices.find((v) => v.default) || availableVoices[0];
+        const defaultVoice =
+          availableVoices.find((v: SpeechSynthesisVoice) => v.default) || availableVoices[0];
         if (defaultVoice) {
           setSelectedVoice(defaultVoice.name);
         }
@@ -47,17 +48,17 @@ export function TtsControls({ text }: { text: string }) {
   };
 
   return (
-    <div className="flex items-center gap-4 rounded-xl border bg-muted p-2.5">
+    <div className="flex items-center gap-4 rounded-xl border bg-muted/30 p-2 shadow-sm">
       <Button
         size="sm"
         variant={isSpeaking ? "outline" : "default"}
         onClick={isSpeaking ? handleStop : handleSpeak}
-        className="h-8 min-w-[4.5rem] text-[11px] font-bold uppercase tracking-wider"
+        className="h-9 min-w-[5.5rem] text-[11px] font-bold uppercase tracking-wider"
       >
         {isSpeaking ? "Stop" : "Speak"}
       </Button>
 
-      <div className="flex flex-col gap-0.5">
+      <div className="flex flex-col gap-0.5 min-w-0">
         <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
           Voice
         </span>
@@ -66,34 +67,39 @@ export function TtsControls({ text }: { text: string }) {
             render={
               <Button
                 variant="ghost"
-                size="xs"
-                className="h-5 px-1.5 text-[11px] font-medium text-muted-foreground hover:text-foreground"
+                size="sm"
+                className="h-6 px-1 text-[11px] font-bold text-muted-foreground hover:text-foreground justify-start truncate"
               />
             }
           >
             {selectedVoice
-              ? selectedVoice.length > 15
-                ? selectedVoice.slice(0, 12) + "..."
+              ? selectedVoice.length > 20
+                ? selectedVoice.slice(0, 18) + "..."
                 : selectedVoice
               : "Select Voice"}
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="max-h-60 overflow-y-auto">
+          <DropdownMenuContent className="max-h-60 overflow-y-auto w-64">
             {voices.map((voice) => (
               <DropdownMenuItem
                 key={voice.name}
                 onClick={() => setSelectedVoice(voice.name)}
-                className="text-xs"
+                className="text-xs py-2"
               >
-                {voice.name} ({voice.lang})
+                <div className="flex flex-col">
+                  <span className="font-bold">{voice.name}</span>
+                  <span className="text-[10px] opacity-60 uppercase tracking-widest">
+                    {voice.lang}
+                  </span>
+                </div>
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      <div className="flex flex-col gap-1 px-2 border-l">
+      <div className="flex flex-col gap-1.5 px-3 border-l ml-auto sm:ml-0">
         <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-          Speed
+          STT Rate
         </span>
         <input
           type="range"
@@ -102,11 +108,11 @@ export function TtsControls({ text }: { text: string }) {
           step="0.1"
           value={rate}
           onChange={(e) => setRate(parseFloat(e.target.value))}
-          className="h-1 w-20 cursor-pointer accent-primary"
+          className="h-1 w-24 cursor-pointer accent-primary appearance-none bg-secondary rounded-full"
         />
       </div>
 
-      <div className="ml-auto pr-2 text-[9px] font-bold tracking-widest text-muted-foreground">
+      <div className="hidden sm:block ml-auto pr-2 text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">
         TTS
       </div>
     </div>

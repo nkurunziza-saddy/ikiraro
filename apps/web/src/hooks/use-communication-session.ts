@@ -1,30 +1,31 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
-import type { TranslationEnvelope, SttModel } from "@sensa/engine/types";
+import { useState, useEffect, useCallback, useRef } from "react";
+import type { TranslationEnvelope, SttModel, SensaToken } from "@sensa/engine/types";
 import {
-  CommunicationBridge,
-  SpeechCaptureAdapter,
-  type CaptureSession,
+  createSensa,
+  type SensaRuntime,
+  SensaDirector,
   type CaptureStatus,
 } from "@sensa/communication";
-import { env } from "@sensa/env/web";
 
 export type ComposerMode = "speech" | "text" | "sign";
 
 /**
  * useCommunicationSession consolidates the logical flow of the dashboard.
- * It manages the draft state, translation sessions, and history context.
- * This keeps the Dashboard UI distilled and focused on layout.
+ * It manages the runtime lifecycle, composition state, and translation sessions.
  */
-export function useCommunicationSession(
-  initialEntries: any[],
-  onCommit: (env: TranslationEnvelope) => void,
-) {
-  const bridge = useMemo(() => new CommunicationBridge(env.VITE_SERVER_URL), []);
+export function useCommunicationSession(onCommit: (env: TranslationEnvelope) => void) {
+  const onCommitRef = useRef(onCommit);
+  onCommitRef.current = onCommit;
 
+  const [runtime, setRuntime] = useState<SensaRuntime | null>(null);
   const [mode, setMode] = useState<ComposerMode>("text");
-  const [activeEnvelope, setActiveEnvelope] = useState<TranslationEnvelope | null>(null);
   const [isWorking, setIsWorking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeEnvelope, setActiveEnvelope] = useState<TranslationEnvelope | null>(null);
+
+  // Composition state from runtime
+  const [compositionTokens, setCompositionTokens] = useState<SensaToken[]>([]);
+  const [compositionText, setCompositionText] = useState("");
 
   // Draft states
   const [textDraft, setTextDraft] = useState("");
@@ -32,78 +33,110 @@ export function useCommunicationSession(
   const [sttModel, setSttModel] = useState<SttModel>("whisper-large-v3");
   const [speechPrompt, setSpeechPrompt] = useState("");
 
-  // Capture session state
-  const [captureSession, setCaptureSession] = useState<CaptureSession | null>(null);
+  // Speech state from runtime
   const [captureStatus, setCaptureStatus] = useState<CaptureStatus>("idle");
   const [captureLevel, setCaptureLevel] = useState(0);
 
-  const context = useMemo(() => bridge.buildContext(initialEntries), [bridge, initialEntries]);
-
-  const previewEnvelope = useMemo(() => {
-    if (mode === "sign" && signUnits.length > 0) {
-      return bridge.previewSignPlan(signUnits);
-    }
-    return activeEnvelope;
-  }, [bridge, mode, signUnits, activeEnvelope]);
+  // Playback Director
+  const [director] = useState(() => new SensaDirector());
 
   useEffect(() => {
-    if (!captureSession) return;
-    return captureSession.subscribe((state) => {
-      setCaptureStatus(state.status);
-      setCaptureLevel(state.level);
-    });
-  }, [captureSession]);
+    let active = true;
+    let rInstance: SensaRuntime | null = null;
+
+    const init = async () => {
+      try {
+        const r = await createSensa({
+          sdk: {
+            groqApiKey: import.meta.env.VITE_GROQ_API_KEY || "YOUR_GROQ_API_KEY",
+          },
+        });
+        if (!active) {
+          r.stop();
+          return;
+        }
+        rInstance = r;
+        setRuntime(r);
+
+        // Listen for composition updates
+        r.subscribe("composition:update", () => {
+          setCompositionTokens(r.getState().plugins.composition?.tokens || []);
+          setCompositionText(r.getState().plugins.composition?.text || "");
+        });
+
+        // Listen for speech updates
+        r.subscribe("speech:status-change", (event) => {
+          setCaptureStatus(event.payload);
+        });
+
+        r.subscribe("speech:level-update", (event) => {
+          setCaptureLevel(event.payload);
+        });
+
+        // Listen for translation results
+        r.subscribe("translation:finished", (event) => {
+          const envelope = event.payload;
+          setActiveEnvelope(envelope);
+          onCommitRef.current(envelope);
+          setIsWorking(false);
+        });
+
+        r.subscribe("translation:started", () => setIsWorking(true));
+        r.subscribe("translation:error", (event) => {
+          setError(event.payload);
+          setIsWorking(false);
+        });
+      } catch {
+        if (!active) return;
+        setError("Failed to initialize communication runtime.");
+      }
+    };
+
+    init();
+    return () => {
+      active = false;
+      rInstance?.stop();
+    };
+  }, []);
 
   const commit = useCallback(async () => {
-    setIsWorking(true);
+    if (!runtime) return;
     setError(null);
 
     try {
-      let envelope: TranslationEnvelope;
-
       if (mode === "text") {
-        envelope = await bridge.translate({ mode: "text", text: textDraft, context });
+        runtime.dispatch({
+          type: "translation:cmd:request",
+          payload: { mode: "text", text: textDraft },
+          timestamp: Date.now(),
+          source: "ui",
+        });
         setTextDraft("");
       } else if (mode === "sign") {
-        envelope = await bridge.translate({ mode: "sign-keys", units: signUnits, context });
+        runtime.dispatch({
+          type: "translation:cmd:request",
+          payload: { mode: "sign-keys", units: signUnits },
+          timestamp: Date.now(),
+          source: "ui",
+        });
         setSignUnits([]);
       } else if (mode === "speech") {
-        if (!captureSession) throw new Error("No active speech session.");
-        envelope = await captureSession.stop();
-        setCaptureSession(null);
-      } else {
-        throw new Error("Unsupported mode.");
+        runtime.dispatch({
+          type: "speech:cmd:stop",
+          payload: { sttModel, context: { locale: "en-US", previousTurns: [] } },
+          timestamp: Date.now(),
+          source: "ui",
+        });
       }
-
-      setActiveEnvelope(envelope);
-      onCommit(envelope);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Translation failed.");
-    } finally {
-      setIsWorking(false);
+      setError(err instanceof Error ? err.message : "Request failed.");
     }
-  }, [bridge, mode, textDraft, signUnits, captureSession, context, onCommit]);
-
-  const startSpeechCapture = useCallback(async () => {
-    setError(null);
-    const adapter = new SpeechCaptureAdapter();
-    try {
-      const session = await bridge.startCapture(adapter, context);
-      setCaptureSession(session);
-    } catch {
-      setError("Failed to start speech capture.");
-    }
-  }, [bridge, context]);
-
-  const cancelSpeechCapture = useCallback(() => {
-    captureSession?.cancel();
-    setCaptureSession(null);
-  }, [captureSession]);
+  }, [runtime, mode, textDraft, signUnits, sttModel]);
 
   return {
     mode,
     setMode,
-    previewEnvelope,
+    previewEnvelope: activeEnvelope,
     isWorking,
     error,
     textDraft,
@@ -115,10 +148,27 @@ export function useCommunicationSession(
     speechPrompt,
     setSpeechPrompt,
     commit,
-    startSpeechCapture,
-    cancelSpeechCapture,
+    startSpeechCapture: () => {
+      runtime?.dispatch({
+        type: "speech:cmd:start",
+        payload: undefined,
+        timestamp: Date.now(),
+        source: "ui",
+      });
+    },
+    cancelSpeechCapture: () => {
+      runtime?.dispatch({
+        type: "speech:cmd:cancel",
+        payload: undefined,
+        timestamp: Date.now(),
+        source: "ui",
+      });
+    },
     captureStatus,
     captureLevel,
-    bridge,
+    compositionTokens,
+    compositionText,
+    runtime,
+    director,
   };
 }

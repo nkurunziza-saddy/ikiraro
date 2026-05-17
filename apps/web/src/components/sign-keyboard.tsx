@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AslHandSvg, Button } from "@sensa/components";
+import { AslHandSvg } from "@sensa/components";
 
 const LETTER_KEYS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -13,79 +13,79 @@ export function SignKeyboard({
   const [visualMode, setVisualMode] = useState<"normal" | "sign">("normal");
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between border-b pb-4">
-        <div>
-          <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
-            Sign Keyboard
+    <div className="space-y-10">
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1">
+          <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+            Sign Lexicon
           </h3>
-          <p className="text-xs text-muted-foreground">Alphabet interaction.</p>
         </div>
-        <div className="flex rounded-full border bg-muted p-1">
+        <div className="flex gap-4">
           <button
             onClick={() => setVisualMode("normal")}
-            className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest transition-all ${
+            className={`text-[9px] font-bold uppercase tracking-widest transition-all ${
               visualMode === "normal"
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground"
+                ? "text-primary underline underline-offset-4"
+                : "text-muted-foreground/40 hover:text-foreground"
             }`}
           >
             Alpha
           </button>
           <button
             onClick={() => setVisualMode("sign")}
-            className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest transition-all ${
+            className={`text-[9px] font-bold uppercase tracking-widest transition-all ${
               visualMode === "sign"
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground"
+                ? "text-primary underline underline-offset-4"
+                : "text-muted-foreground/40 hover:text-foreground"
             }`}
           >
-            Sign
+            Signs
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-6 gap-2">
+      <div className="grid grid-cols-6 gap-3">
         {LETTER_KEYS.map((letter) => (
           <button
             key={letter}
             type="button"
             onClick={() => appendSignUnit(letter)}
-            className="group relative flex aspect-square items-center justify-center rounded-xl border bg-muted text-sm font-bold transition-all hover:border-primary/50 hover:bg-muted active:scale-95"
+            className="group relative flex aspect-square items-center justify-center rounded-lg bg-muted/20 text-xs font-bold transition-all hover:bg-muted active:scale-95 border border-transparent hover:border-border/40"
           >
             {visualMode === "normal" ? (
               letter
             ) : (
-              <AslHandSvg letter={letter} size={40} className="scale-75 opacity-90" />
+              <AslHandSvg letter={letter} size={32} className="opacity-90" />
             )}
 
-            <div className="pointer-events-none absolute -top-16 left-1/2 z-50 -translate-x-1/2 opacity-0 transition-all group-hover:opacity-100 group-hover:-translate-y-1">
-              <div className="rounded-xl border bg-card p-3 shadow-xl">
-                {visualMode === "normal" ? (
-                  <AslHandSvg letter={letter} size={64} />
-                ) : (
-                  <span className="text-xl font-bold">{letter}</span>
-                )}
+            <div className="pointer-events-none absolute -top-12 left-1/2 z-50 -translate-x-1/2 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="rounded border bg-popover px-2 py-1 shadow-sm text-[9px] font-bold uppercase tracking-widest">
+                {letter}
               </div>
             </div>
           </button>
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-2 pt-2 border-t">
-        <Button variant="outline" size="sm" onClick={() => appendSignUnit("/")}>
-          Boundary
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setSignUnits((current) => current.slice(0, -1))}
+      <div className="flex flex-wrap gap-4 pt-6 border-t border-border/30">
+        <button
+          onClick={() => appendSignUnit("/")}
+          className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-primary transition-colors"
         >
-          Backspace
-        </Button>
-        <Button variant="ghost" size="sm" onClick={() => setSignUnits([])}>
-          Clear
-        </Button>
+          [ Boundary ]
+        </button>
+        <button
+          onClick={() => setSignUnits((current) => current.slice(0, -1))}
+          className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-primary transition-colors"
+        >
+          [ Backspace ]
+        </button>
+        <button
+          onClick={() => setSignUnits([])}
+          className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-destructive transition-colors ml-auto"
+        >
+          [ Clear ]
+        </button>
       </div>
     </div>
   );

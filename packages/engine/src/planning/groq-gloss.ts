@@ -1,9 +1,11 @@
+import { Effect } from "effect";
 import type { SemanticIntent } from "../types";
 import { GlossOutputSchema, GroqChatResponseSchema } from "./schemas";
 import { SYSTEM_PROMPT_HINT } from "./gloss-registry";
 import { normalizeText } from "./normalizer";
+import { Groq } from "./groq-client";
 
-const GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions";
+const DEFAULT_GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 export const GLOSS_MODELS = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"] as const;
 export type GlossModel = (typeof GLOSS_MODELS)[number];
@@ -35,74 +37,77 @@ function buildFingerspellFallback(text: string): SemanticIntent {
   };
 }
 
-export async function generateGloss(options: {
-  text: string;
-  apiKey: string;
-  model?: GlossModel;
-}): Promise<SemanticIntent> {
-  const normalized = normalizeText(options.text);
-  if (!normalized) return buildFingerspellFallback(options.text);
+export const generateGloss = (text: string, model?: GlossModel) =>
+  Effect.gen(function* (_) {
+    const { apiKey, baseUrl } = yield* _(Groq);
+    const normalized = normalizeText(text);
 
-  const model = options.model ?? DEFAULT_GLOSS_MODEL;
+    if (!normalized) return buildFingerspellFallback(text);
 
-  let response: Response;
-  try {
-    response = await fetch(GROQ_CHAT_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${options.apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: `Convert to ASL gloss: "${normalized}"` },
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.1,
-        max_tokens: 256,
+    const chatModel = model ?? DEFAULT_GLOSS_MODEL;
+    const url = baseUrl ? `${baseUrl}/chat/completions` : DEFAULT_GROQ_CHAT_URL;
+
+    const response = yield* _(
+      Effect.tryPromise({
+        try: () =>
+          fetch(url, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: chatModel,
+              messages: [
+                { role: "system", content: SYSTEM_PROMPT },
+                { role: "user", content: `Convert to ASL gloss: "${normalized}"` },
+              ],
+              response_format: { type: "json_object" },
+              temperature: 0.1,
+              max_tokens: 256,
+            }),
+          }),
+        catch: () => new Error("Fetch failed"),
       }),
-    });
-  } catch {
-    return buildFingerspellFallback(options.text);
-  }
+    );
 
-  if (!response.ok) return buildFingerspellFallback(options.text);
+    if (!response.ok)
+      return yield* _(Effect.fail(new Error(`Groq API returned ${response.status}`)));
 
-  let rawJson: unknown;
-  try {
-    rawJson = await response.json();
-  } catch {
-    return buildFingerspellFallback(options.text);
-  }
+    const rawJson = yield* _(
+      Effect.tryPromise({
+        try: () => response.json(),
+        catch: () => new Error("JSON parsing failed"),
+      }),
+    );
 
-  const chatResult = GroqChatResponseSchema.safeParse(rawJson);
-  if (!chatResult.success) return buildFingerspellFallback(options.text);
+    const chatResult = GroqChatResponseSchema.safeParse(rawJson);
+    if (!chatResult.success)
+      return yield* _(Effect.fail(new Error("Invalid Groq response format")));
 
-  const content = chatResult.data.choices[0]?.message.content ?? "";
+    const content = chatResult.data.choices[0]?.message.content ?? "";
+    const parsedContent = yield* _(
+      Effect.try({
+        try: () => JSON.parse(content),
+        catch: () => new Error("Invalid JSON in content field"),
+      }),
+    );
 
-  let parsedContent: unknown;
-  try {
-    parsedContent = JSON.parse(content);
-  } catch {
-    return buildFingerspellFallback(options.text);
-  }
+    const glossResult = GlossOutputSchema.safeParse(parsedContent);
+    if (!glossResult.success)
+      return yield* _(Effect.fail(new Error("Invalid Gloss output format")));
 
-  const glossResult = GlossOutputSchema.safeParse(parsedContent);
-  if (!glossResult.success) return buildFingerspellFallback(options.text);
+    const rawGloss = glossResult.data.gloss.trim();
+    const glossTokens = rawGloss
+      .split(/\s+/)
+      .map((t) => t.toUpperCase())
+      .filter(Boolean);
 
-  const rawGloss = glossResult.data.gloss.trim();
-  const glossTokens = rawGloss
-    .split(/\s+/)
-    .map((t) => t.toUpperCase())
-    .filter(Boolean);
-
-  return {
-    rawGloss,
-    glossTokens,
-    confidence: glossResult.data.confidence,
-    model,
-    promptTokens: chatResult.data.usage?.prompt_tokens,
-  };
-}
+    return {
+      rawGloss,
+      glossTokens,
+      confidence: glossResult.data.confidence,
+      model: chatModel,
+      promptTokens: chatResult.data.usage?.prompt_tokens,
+    } as SemanticIntent;
+  }).pipe(Effect.catchAll(() => Effect.succeed(buildFingerspellFallback(text))));

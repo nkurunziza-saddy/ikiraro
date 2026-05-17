@@ -34,69 +34,80 @@ export function SpeechComposer({
   const isCapturing = captureStatus === "capturing";
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-          STT Model
-        </span>
-        <select
-          value={sttModel}
-          onChange={(event) => setSttModel(event.target.value as SttModel)}
-          className="rounded-xl border bg-muted px-4 py-3 text-sm outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/20"
-        >
-          {STT_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
+    <div className="flex flex-col gap-10">
+      <div className="flex items-center justify-between border-b border-border/30 pb-4">
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+            Model
+          </span>
+          <select
+            value={sttModel}
+            onChange={(event) => setSttModel(event.target.value as SttModel)}
+            className="bg-transparent text-sm font-bold uppercase tracking-widest outline-none focus:text-primary"
+          >
+            {STT_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option.split("-")[1] || option}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      <div className="rounded-2xl border bg-muted p-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex gap-2">
-            {!isCapturing ? (
-              <Button onClick={onStart} disabled={isWorking} size="lg" className="min-w-40">
-                Start Recording
-              </Button>
-            ) : (
+        <div className="flex gap-2">
+          {!isCapturing ? (
+            <Button
+              onClick={onStart}
+              disabled={isWorking}
+              variant="outline"
+              size="sm"
+              className="px-6 font-bold uppercase tracking-widest"
+            >
+              Record
+            </Button>
+          ) : (
+            <>
               <Button
                 variant="destructive"
                 onClick={onStop}
                 disabled={isWorking}
-                size="lg"
-                className="min-w-40"
+                size="sm"
+                className="px-6 font-bold uppercase tracking-widest"
               >
-                Stop & Commit
+                Commit
               </Button>
-            )}
-            {isCapturing && (
-              <Button variant="ghost" onClick={onCancel} size="lg">
+              <Button
+                variant="ghost"
+                onClick={onCancel}
+                size="sm"
+                className="px-4 font-bold uppercase tracking-widest"
+              >
                 Cancel
               </Button>
-            )}
-          </div>
-          <div className="text-xs font-medium text-muted-foreground">
-            {isCapturing ? "Listening..." : "Accuracy-first intake using Whisper."}
-          </div>
+            </>
+          )}
         </div>
-
-        {isCapturing && (
-          <div className="mt-6">
-            <AudioVisualizer level={captureLevel} />
-          </div>
-        )}
       </div>
 
-      <div className="flex flex-col gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-          STT Spelling Hints
-        </span>
+      {isCapturing && (
+        <div className="flex flex-col gap-4 py-4">
+          <AudioVisualizer level={captureLevel} count={32} />
+          <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-center text-primary/60 animate-pulse">
+            Listening
+          </p>
+        </div>
+      )}
+
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+            Vocabulary Hints
+          </span>
+        </div>
         <textarea
           value={speechPrompt}
           onChange={(event) => setSpeechPrompt(event.target.value)}
-          placeholder="Add proper nouns, medication names, or unusual spellings to help the STT engine."
-          className="min-h-28 rounded-2xl border bg-muted px-4 py-4 text-sm leading-relaxed outline-none transition-all placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20"
+          placeholder="Add specific names or terms..."
+          className="min-h-24 w-full bg-transparent text-sm leading-relaxed outline-none placeholder:text-muted-foreground/30 focus:border-primary border-b border-border/30 pb-4"
         />
       </div>
     </div>

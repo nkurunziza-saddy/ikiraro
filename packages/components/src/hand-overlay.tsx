@@ -41,14 +41,17 @@ export function HandOverlay({ tracking }: { tracking: CameraTrackingState }) {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) {
-      return;
-    }
+    if (!canvas) return;
 
     const context = canvas.getContext("2d");
-    if (!context) {
-      return;
-    }
+    if (!context) return;
+
+    // Fetch theme colors
+    const style = getComputedStyle(document.documentElement);
+    const primaryColor = style.getPropertyValue("--primary").trim() || "oklch(0.205 0 0)";
+    const mutedColor = style.getPropertyValue("--muted-foreground").trim() || "oklch(0.556 0 0)";
+    const foregroundColor = style.getPropertyValue("--foreground").trim() || "oklch(0.145 0 0)";
+    const backgroundColor = style.getPropertyValue("--background").trim() || "oklch(1 0 0)";
 
     // Dynamic resolution matching
     const dpr = window.devicePixelRatio || 1;
@@ -66,36 +69,40 @@ export function HandOverlay({ tracking }: { tracking: CameraTrackingState }) {
     const guideWidth = SIGNING_GUIDE.width * width;
     const guideHeight = SIGNING_GUIDE.height * height;
 
-    context.strokeStyle = "rgba(148, 163, 184, 0.22)";
-    context.lineWidth = 1.5;
-    context.setLineDash([8, 8]);
+    // Visual Guide
+    context.strokeStyle = mutedColor;
+    context.globalAlpha = 0.2;
+    context.lineWidth = 2;
+    context.setLineDash([12, 8]);
     context.beginPath();
-    context.roundRect(guideX, guideY, guideWidth, guideHeight, 20);
+    context.roundRect(guideX, guideY, guideWidth, guideHeight, 24);
     context.stroke();
     context.setLineDash([]);
+    context.globalAlpha = 1.0;
 
-    context.fillStyle = "rgba(226, 232, 240, 0.72)";
-    context.font = "600 11px DM Sans Variable";
+    context.fillStyle = mutedColor;
+    context.font = "bold 10px DM Sans Variable";
     context.textAlign = "center";
-    context.fillText("Keep your signing hand centered and fully visible", width / 2, guideY - 10);
+    context.globalAlpha = 0.6;
+    context.fillText("CENTER SIGNING HAND", width / 2, guideY - 14);
+    context.globalAlpha = 1.0;
 
-    if (tracking.landmarks.length === 0) {
-      return;
-    }
+    if (tracking.landmarks.length === 0) return;
+
     const isDetected = detectedSign !== null;
-    const color = isDetected
-      ? `rgba(255, 164, 56, ${0.45 + confidence * 0.55})`
-      : "rgba(93, 211, 199, 0.35)";
+    const color = isDetected ? primaryColor : mutedColor;
 
     context.lineCap = "round";
     context.lineJoin = "round";
-    context.setLineDash([5, 5]);
-    context.lineWidth = 2.5;
+    context.lineWidth = 3;
     context.strokeStyle = color;
-    context.shadowBlur = isDetected ? 12 : 0;
-    context.shadowColor = color;
-    context.beginPath();
 
+    if (isDetected) {
+      context.shadowBlur = 10;
+      context.shadowColor = color;
+    }
+
+    context.beginPath();
     for (const [startIndex, endIndex] of CONNECTIONS) {
       const start = tracking.landmarks[startIndex];
       const end = tracking.landmarks[endIndex];
@@ -104,36 +111,41 @@ export function HandOverlay({ tracking }: { tracking: CameraTrackingState }) {
         context.lineTo((1 - end.x) * width, end.y * height);
       }
     }
-
     context.stroke();
-    context.setLineDash([]);
+    context.shadowBlur = 0;
 
+    // Finger Tips
     for (const index of [4, 8, 12, 16, 20]) {
       const point = tracking.landmarks[index];
       if (point) {
-        context.fillStyle = color;
+        context.fillStyle = backgroundColor;
+        context.strokeStyle = color;
+        context.lineWidth = 2;
         context.beginPath();
-        context.arc((1 - point.x) * width, point.y * height, 4.5, 0, Math.PI * 2);
+        context.arc((1 - point.x) * width, point.y * height, 5, 0, Math.PI * 2);
         context.fill();
+        context.stroke();
       }
     }
 
     if (isDetected && tracking.landmarks[9]) {
       const center = tracking.landmarks[9];
       const x = (1 - center.x) * width;
-      const y = center.y * height - 42;
-      context.shadowBlur = 0;
-      context.fillStyle = "oklch(0.2 0 0 / 90%)";
+      const y = center.y * height - 48;
+
+      context.fillStyle = foregroundColor;
       context.beginPath();
-      context.roundRect(x - 22, y - 20, 44, 44, 12);
+      context.roundRect(x - 24, y - 22, 48, 48, 12);
       context.fill();
-      context.fillStyle = "oklch(0.98 0 0)";
-      context.font = "700 24px DM Sans Variable";
+
+      context.fillStyle = backgroundColor;
+      context.font = "bold 24px DM Sans Variable";
       context.textAlign = "center";
       context.textBaseline = "middle";
-      context.fillText(detectedSign, x, y);
-      context.font = "700 10px DM Sans Variable";
-      context.fillText(`${Math.round(confidence * 100)}%`, x, y + 26);
+      context.fillText(detectedSign, x, y - 2);
+
+      context.font = "bold 10px DM Sans Variable";
+      context.fillText(`${Math.round(confidence * 100)}%`, x, y + 18);
     }
   }, [confidence, detectedSign, tracking]);
 

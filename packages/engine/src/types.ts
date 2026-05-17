@@ -18,6 +18,24 @@ export function isSttModel(value: string | null | undefined): value is SttModel 
 
 // ─── Token primitives ─────────────────────────────────────────────────────────
 
+export type TokenStability = "draft" | "stable" | "committed";
+
+/**
+ * The SensaToken is the unified domain object for all conversational input.
+ * It encapsulates value, source, and lifecycle data, enabling deep fusion.
+ */
+export interface SensaToken {
+  id: string;
+  value: string;
+  type: "sign" | "speech" | "text" | "control";
+  source: string;
+  timestamp: number;
+  confidence: number;
+  stability: TokenStability;
+  correlationId?: string; // Links related tokens (e.g., a draft and its committed version)
+  metadata?: Record<string, any>;
+}
+
 export const EMPHASIS_LEVELS = ["low", "normal", "high"] as const;
 export const FACIAL_EXPRESSIONS = [
   "neutral",
@@ -138,6 +156,7 @@ export interface Point3D {
 export type HandLandmarks = Point3D[];
 
 export interface FeatureVector {
+  isValid: boolean;
   fingerStates: [boolean, boolean, boolean, boolean, boolean];
   fingerCurls: [number, number, number, number, number];
   thumbToIndexDist: number;
@@ -162,6 +181,24 @@ export interface ClassificationResult {
   confidence: number;
   vector: FeatureVector;
   candidates: Array<{ name: string; score: number }>;
+  isTransitioning?: boolean;
+  gesture?: "double-letter-slide" | "double-letter-bounce" | "none";
+}
+
+export interface IFeatureExtractor {
+  extract(landmarks: HandLandmarks, imageLandmarks?: HandLandmarks): FeatureVector;
+}
+
+export interface ISignMatcher {
+  match(vector: FeatureVector): Array<{ name: string; score: number }>;
+}
+
+export interface ITemporalSmoother {
+  smooth(candidates: Array<{ name: string; score: number }>): {
+    sign: string | null;
+    confidence: number;
+  };
+  reset(): void;
 }
 
 export type CameraTrackingState = {
@@ -172,6 +209,21 @@ export type CameraTrackingState = {
   sentenceText: string;
   committedWord: string | null;
 };
+
+export interface HandshapeDefinition {
+  name: string;
+  fingerprint: string;
+  requiresMotion?: boolean;
+  disambiguate?: (vector: FeatureVector) => number;
+}
+
+export interface ClassifierConfig {
+  windowSize: number;
+  rawScoreThreshold: number;
+  lockThreshold: number;
+  unlockThreshold: number;
+  motionVelocityThreshold: number;
+}
 
 export interface ASLModelInterface {
   readonly name: string;

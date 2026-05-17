@@ -6,7 +6,14 @@ function avgCurl(v: FeatureVector): number {
 }
 
 export const ASL_ALPHABET: HandshapeDefinition[] = [
-  { name: "A", fingerprint: "10000", disambiguate: (v) => (avgCurl(v) > 0.5 ? 0.9 : 0.4) },
+  {
+    name: "A",
+    fingerprint: "10000",
+    disambiguate: (v) => {
+      // A has thumb to the side. thumbVsFingerDepth should be positive/neutral.
+      return v.thumbVsFingerDepth > -0.01 ? 0.9 : 0.4;
+    },
+  },
   {
     name: "B",
     fingerprint: "01111",
@@ -26,7 +33,8 @@ export const ASL_ALPHABET: HandshapeDefinition[] = [
     fingerprint: "00000",
     disambiguate: (v) => {
       const c = avgCurl(v);
-      return c > 0.35 && c <= 0.55 ? 0.85 : 0.25;
+      // E is very curled, thumb is tucked.
+      return c > 0.4 && c <= 0.6 ? 0.85 : 0.25;
     },
   },
   { name: "F", fingerprint: "00111", disambiguate: (v) => (v.thumbToIndexDist < 0.5 ? 0.95 : 0.4) },
@@ -56,12 +64,20 @@ export const ASL_ALPHABET: HandshapeDefinition[] = [
   {
     name: "M",
     fingerprint: "00000",
-    disambiguate: (v) => (v.palmOrientation > 0.5 && avgCurl(v) > 0.6 ? 0.8 : 0.2),
+    disambiguate: (v) => {
+      // M has thumb tucked under 3 fingers.
+      return v.palmOrientation > 0.5 && avgCurl(v) > 0.5 && v.thumbVsFingerDepth > 0.02 ? 0.8 : 0.2;
+    },
   },
   {
     name: "N",
     fingerprint: "00000",
-    disambiguate: (v) => (v.palmOrientation > 0.5 && avgCurl(v) > 0.4 ? 0.75 : 0.2),
+    disambiguate: (v) => {
+      // N has thumb tucked under 2 fingers.
+      return v.palmOrientation > 0.5 && avgCurl(v) > 0.4 && v.thumbVsFingerDepth > 0.01
+        ? 0.75
+        : 0.2;
+    },
   },
   {
     name: "O",
@@ -86,12 +102,20 @@ export const ASL_ALPHABET: HandshapeDefinition[] = [
   {
     name: "S",
     fingerprint: "00000",
-    disambiguate: (v) => (avgCurl(v) > 0.55 && v.thumbPosition === 1 ? 0.9 : 0.3),
+    disambiguate: (v) => {
+      // S is a fist, thumb is in FRONT.
+      return avgCurl(v) > 0.55 && v.thumbVsFingerDepth < -0.01 ? 0.95 : 0.2;
+    },
   },
   {
     name: "T",
     fingerprint: "10000",
-    disambiguate: (v) => (avgCurl(v) > 0.5 && v.thumbPosition === 0 ? 0.8 : 0.2),
+    disambiguate: (v) => {
+      // T has thumb between index and middle.
+      return avgCurl(v) > 0.5 && v.thumbVsFingerDepth > 0 && v.thumbVsFingerDepth < 0.02
+        ? 0.8
+        : 0.2;
+    },
   },
   {
     name: "U",
