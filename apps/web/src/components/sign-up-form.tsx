@@ -5,10 +5,7 @@ import * as v from "valibot";
 
 import { authClient } from "@/lib/auth-client";
 
-import Loader from "./loader";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { Loader, Button, Input, Label } from "@sensa/components";
 
 export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void }) {
   const navigate = useNavigate({

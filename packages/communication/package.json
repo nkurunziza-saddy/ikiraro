@@ -1,23 +1,17 @@
 {
   "name": "@sensa/communication",
+  "version": "0.1.0",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
   "exports": {
-    ".": {
-      "default": "./src/index.ts"
-    },
-    "./*": {
-      "default": "./src/*.ts"
-    }
+    ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsc -b",
-    "check-types": "tsc -b --pretty false"
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@sensa/shared": "workspace:*",
-    "zod": "catalog:"
+    "@sensa/components": "workspace:*",
+    "@sensa/engine": "workspace:*",
+    "@sensa/env": "workspace:*"
   },
   "devDependencies": {
     "@sensa/config": "workspace:*",

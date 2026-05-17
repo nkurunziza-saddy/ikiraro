@@ -1,10 +1,11 @@
-export * from "./types";
-export * from "./lexicon";
-export * from "./planning";
-export * from "./groq";
-export * from "./evaluation";
-export * from "./web-speech";
-export * from "./asl-intelligence/classifier";
-export * from "./asl-intelligence/handshapes";
-export * from "./asl-intelligence/word-buffer";
-export { evaluateHandGeometry, type HandBounds, type HandGeometryQuality } from "@sensa/shared";
+export { CommunicationBridge } from "./bridge";
+export type { TranslateOptions } from "./bridge";
+
+export { RendererDirector } from "./renderer/director";
+export type { SignCanvas, RendererState, PlaybackOptions } from "./renderer/types";
+
+export { SpeechCaptureAdapter } from "./capture/speech-capture";
+export type { CaptureAdapter, CaptureSession, CaptureStatus } from "./capture/types";
+
+export { WebSpeechProvider } from "./web-speech";
+export type { SpeakOptions } from "./web-speech";

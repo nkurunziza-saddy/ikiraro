@@ -35,6 +35,7 @@
     "dev:server": "turbo -F server dev",
     "db:push": "turbo -F @sensa/db db:push",
     "db:generate": "turbo -F @sensa/db db:generate",
+    "test": "turbo run test",
     "check": "oxlint && oxfmt --write",
     "prepare": "husky"
   },

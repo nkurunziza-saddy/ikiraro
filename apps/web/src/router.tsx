@@ -1,6 +1,6 @@
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 
-import Loader from "./components/loader";
+import { Loader } from "@sensa/components";
 import "./index.css";
 import { routeTree } from "./routeTree.gen";
 

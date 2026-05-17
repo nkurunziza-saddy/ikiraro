@@ -42,12 +42,31 @@ This file provides context about the project for AI assistants.
 ```
 sensa/
 ├── apps/
-│   ├── web/         # Frontend application
-│   └── server/      # Backend API
+│   ├── web/         # Frontend application (TanStack Start, Vite)
+│   └── server/      # Backend API (Hono, Cloudflare Worker)
 ├── packages/
-│   ├── auth/        # Authentication
-│   └── db/          # Database schema
+│   ├── engine/      # Core ASL engine — @sensa/engine
+│   │   ├── @sensa/engine/types    — all shared TypeScript types (server + client safe)
+│   │   ├── @sensa/engine/planning — Groq STT, LLM gloss generation, tokenizer (server safe, no DOM/WASM)
+│   │   └── @sensa/engine/vision   — hand tracking, classifier, word buffer, TTS (browser only)
+│   ├── components/  # Shared React component library
+│   ├── auth/        # Authentication (better-auth)
+│   ├── db/          # Database schema (Drizzle + D1)
+│   ├── env/         # Cloudflare Worker env bindings
+│   └── infra/       # Alchemy IaC
 ```
+
+## Engine Architecture (@sensa/engine)
+
+The engine is the core brain. Translation flows through two layers:
+
+1. **SemanticIntent** — Groq LLM converts English text to ASL gloss notation (MEDICINE NEED YOU)
+2. **SignPlan** — Tokenizer converts gloss tokens to typed sign tokens (lexeme / fingerspell / number / pause / pointing)
+
+`GLOSS_REGISTRY` maps known gloss tokens (HELLO, HELP, etc.) to sign durations for rendering.
+For unknown gloss tokens, fingerspell fallback is applied automatically.
+
+The vision subpath (`@sensa/engine/vision`) is browser-only — it contains MediaPipe-based hand tracking, the `SensaSurgicalClassifier` (fingerprint + disambiguation), and `WordBuffer`. Browser-facing sensory utilities like `WebSpeechProvider` and `CaptureAdapter` live in `@sensa/communication`. Never import either in Cloudflare Workers.
 
 ## Common Commands
 

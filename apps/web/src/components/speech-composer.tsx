@@ -1,146 +1,104 @@
-import { useRef, useState } from "react";
-import { Button } from "./ui/button";
-import { AudioVisualizer } from "./audio-visualizer";
-import { getSupportedAudioRecordingMimeType } from "@/lib/audio";
+import type { SttModel } from "@sensa/engine/types";
+import { AudioVisualizer, Button } from "@sensa/components";
+import type { CaptureStatus } from "@sensa/communication";
 
-const MIN_SPEECH_RECORDING_MS = 250;
-const MIN_SPEECH_AUDIO_BYTES = 512;
+const STT_OPTIONS: SttModel[] = ["whisper-large-v3", "whisper-large-v3-turbo"];
 
+/**
+ * SpeechComposer is a pure view component that displays speech capture status.
+ * All logic for MediaRecorder and context is handled by the hook and bridge.
+ */
 export function SpeechComposer({
   sttModel,
   setSttModel,
   speechPrompt,
   setSpeechPrompt,
-  onSpeechCaptured,
   isWorking,
+  captureStatus,
+  captureLevel,
+  onStart,
+  onStop,
+  onCancel,
 }: {
-  sttModel: string;
-  setSttModel: (model: any) => void;
+  sttModel: SttModel;
+  setSttModel: (model: SttModel) => void;
   speechPrompt: string;
   setSpeechPrompt: (prompt: string) => void;
-  onSpeechCaptured: (audio: Blob) => void;
   isWorking: boolean;
+  captureStatus: CaptureStatus;
+  captureLevel: number;
+  onStart: () => void;
+  onStop: () => void;
+  onCancel: () => void;
 }) {
-  const [isRecording, setIsRecording] = useState(false);
-  const [speechAudio, setSpeechAudio] = useState<Blob | null>(null);
-  const [speechAudioUrl, setSpeechAudioUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioStreamRef = useRef<MediaStream | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const recordingStartedAtRef = useRef<number | null>(null);
-
-  const STT_OPTIONS = ["whisper-large-v3", "whisper-large-v3-turbo"];
-
-  const stopAudioStream = () => {
-    audioStreamRef.current?.getTracks().forEach((track) => track.stop());
-    audioStreamRef.current = null;
-  };
-
-  const startRecording = async () => {
-    if (isRecording) {
-      mediaRecorderRef.current?.stop();
-      return;
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioStreamRef.current = stream;
-      audioChunksRef.current = [];
-      const mimeType = getSupportedAudioRecordingMimeType();
-      const recorder = new MediaRecorder(stream, { mimeType });
-
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunksRef.current.push(e.data);
-      };
-
-      recorder.onstop = () => {
-        const elapsedMs = recordingStartedAtRef.current
-          ? performance.now() - recordingStartedAtRef.current
-          : 0;
-        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
-
-        if (audioBlob.size < MIN_SPEECH_AUDIO_BYTES || elapsedMs < MIN_SPEECH_RECORDING_MS) {
-          setError("Recording too short or no audio detected.");
-          setSpeechAudio(null);
-        } else {
-          setSpeechAudio(audioBlob);
-          setSpeechAudioUrl(URL.createObjectURL(audioBlob));
-          onSpeechCaptured(audioBlob);
-          setError(null);
-        }
-
-        setIsRecording(false);
-        stopAudioStream();
-      };
-
-      recorder.start();
-      mediaRecorderRef.current = recorder;
-      recordingStartedAtRef.current = performance.now();
-      setIsRecording(true);
-      setError(null);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to access microphone.");
-    }
-  };
+  const isCapturing = captureStatus === "capturing";
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex flex-col gap-2">
-        <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-stone-400">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
           STT Model
         </span>
         <select
           value={sttModel}
-          onChange={(e) => setSttModel(e.target.value)}
-          className="rounded-[1rem] border border-stone-800 bg-stone-900 px-4 py-3 text-sm text-white outline-none"
+          onChange={(event) => setSttModel(event.target.value as SttModel)}
+          className="rounded-xl border bg-muted px-4 py-3 text-sm outline-none transition-all focus:border-primary focus:ring-1 focus:ring-primary/20"
         >
-          {STT_OPTIONS.map((v) => (
-            <option key={v} value={v}>
-              {v}
+          {STT_OPTIONS.map((option) => (
+            <option key={option} value={option}>
+              {option}
             </option>
           ))}
         </select>
       </div>
 
-      <div className="rounded-[1.5rem] border border-stone-800 bg-stone-900 p-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <Button
-            variant={isRecording ? "destructive" : "default"}
-            onClick={startRecording}
-            disabled={isWorking}
-          >
-            {isRecording ? "Stop Capture" : speechAudio ? "Record Again" : "Record Audio"}
-          </Button>
-          <span className="text-xs text-stone-300">Accuracy-first intake using Whisper large.</span>
+      <div className="rounded-2xl border bg-muted p-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex gap-2">
+            {!isCapturing ? (
+              <Button onClick={onStart} disabled={isWorking} size="lg" className="min-w-40">
+                Start Recording
+              </Button>
+            ) : (
+              <Button
+                variant="destructive"
+                onClick={onStop}
+                disabled={isWorking}
+                size="lg"
+                className="min-w-40"
+              >
+                Stop & Commit
+              </Button>
+            )}
+            {isCapturing && (
+              <Button variant="ghost" onClick={onCancel} size="lg">
+                Cancel
+              </Button>
+            )}
+          </div>
+          <div className="text-xs font-medium text-muted-foreground">
+            {isCapturing ? "Listening..." : "Accuracy-first intake using Whisper."}
+          </div>
         </div>
 
-        {isRecording && (
-          <div className="mt-4">
-            <AudioVisualizer stream={audioStreamRef.current} isRecording={isRecording} />
+        {isCapturing && (
+          <div className="mt-6">
+            <AudioVisualizer level={captureLevel} />
           </div>
-        )}
-
-        {speechAudioUrl && !isRecording && (
-          <audio controls src={speechAudioUrl} className="mt-4 h-10 w-full rounded-xl" />
         )}
       </div>
 
-      <div className="flex flex-col gap-3">
-        <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-stone-400">
+      <div className="flex flex-col gap-2">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
           STT Spelling Hints
         </span>
         <textarea
           value={speechPrompt}
-          onChange={(e) => setSpeechPrompt(e.target.value)}
-          placeholder="Add proper nouns, medical terms, or unusual spellings to help the STT engine."
-          className="min-h-28 rounded-[1.5rem] border border-stone-800 bg-stone-900 px-4 py-4 text-sm leading-6 text-white outline-none transition placeholder:text-stone-500 focus:border-white"
+          onChange={(event) => setSpeechPrompt(event.target.value)}
+          placeholder="Add proper nouns, medication names, or unusual spellings to help the STT engine."
+          className="min-h-28 rounded-2xl border bg-muted px-4 py-4 text-sm leading-relaxed outline-none transition-all placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20"
         />
       </div>
-
-      {error && <p className="text-xs text-rose-400">{error}</p>}
     </div>
   );
 }

@@ -1,0 +1,30 @@
+{
+  "name": "@sensa/engine",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/types.ts"
+    },
+    "./types": {
+      "default": "./src/types.ts"
+    },
+    "./planning": {
+      "default": "./src/planning/index.ts"
+    },
+    "./vision": {
+      "default": "./src/vision/index.ts"
+    }
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@sensa/config": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

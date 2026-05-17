@@ -1,4 +1,4 @@
-import type { CameraTrackingState } from "@sensa/communication";
+import type { CameraTrackingState } from "@sensa/engine/vision";
 
 export type HandWorkerReadyMessage = {
   type: "ready";
@@ -21,9 +21,7 @@ export type WorkerToMainMessage =
   | HandWorkerResultMessage
   | HandWorkerErrorMessage;
 
-export type HandWorkerInitMessage = {
-  type: "init";
-};
+export type HandWorkerInitMessage = { type: "init" };
 
 export type HandWorkerDetectMessage = {
   type: "detect";
@@ -32,16 +30,13 @@ export type HandWorkerDetectMessage = {
   imageBitmap: ImageBitmap;
 };
 
-export type HandWorkerResetMessage = {
-  type: "reset";
-};
-
-export type HandWorkerDisposeMessage = {
-  type: "dispose";
-};
+export type HandWorkerResetMessage = { type: "reset" };
+export type HandWorkerCorrectMessage = { type: "correct"; sign: string };
+export type HandWorkerDisposeMessage = { type: "dispose" };
 
 export type MainToWorkerMessage =
   | HandWorkerInitMessage
   | HandWorkerDetectMessage
   | HandWorkerResetMessage
+  | HandWorkerCorrectMessage
   | HandWorkerDisposeMessage;

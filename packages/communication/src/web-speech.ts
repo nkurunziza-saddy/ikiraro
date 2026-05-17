@@ -8,14 +8,12 @@ export interface SpeakOptions {
 
 export class WebSpeechProvider {
   private static instance: WebSpeechProvider | null = null;
-
   private synth: SpeechSynthesis | null = null;
-
   private currentUtterance: SpeechSynthesisUtterance | null = null;
 
   constructor() {
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      this.synth = window.speechSynthesis;
+    if (typeof globalThis !== "undefined" && "speechSynthesis" in globalThis) {
+      this.synth = globalThis.speechSynthesis;
     }
   }
 
@@ -27,20 +25,17 @@ export class WebSpeechProvider {
   }
 
   static isSupported(): boolean {
-    return typeof window !== "undefined" && !!window.speechSynthesis;
+    return typeof globalThis !== "undefined" && "speechSynthesis" in globalThis;
   }
 
   getVoices(): SpeechSynthesisVoice[] {
-    if (!this.synth) {
-      return [];
-    }
-    return this.synth.getVoices();
+    return this.synth?.getVoices() ?? [];
   }
 
   speak(text: string, options: SpeakOptions = {}): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       if (!this.synth) {
-        resolve();
+        reject(new Error("Speech synthesis not supported"));
         return;
       }
 
@@ -53,21 +48,17 @@ export class WebSpeechProvider {
       utterance.lang = options.lang ?? "en-US";
 
       if (options.voiceName) {
-        const voices = this.getVoices();
-        const voice = voices.find((v) => v.name === options.voiceName);
-        if (voice) {
-          utterance.voice = voice;
-        }
+        const voice = this.getVoices().find((v) => v.name === options.voiceName);
+        if (voice) utterance.voice = voice;
       }
 
       utterance.onend = () => {
         this.currentUtterance = null;
         resolve();
       };
-
-      utterance.onerror = () => {
+      utterance.onerror = (event) => {
         this.currentUtterance = null;
-        resolve();
+        reject(new Error(`Speech synthesis failed: ${event.error}`));
       };
 
       this.currentUtterance = utterance;
@@ -76,9 +67,7 @@ export class WebSpeechProvider {
   }
 
   async speakQueue(texts: string[], options: SpeakOptions = {}): Promise<void> {
-    for (const text of texts) {
-      await this.speak(text, options);
-    }
+    for (const text of texts) await this.speak(text, options);
   }
 
   cancel(): void {
@@ -89,12 +78,17 @@ export class WebSpeechProvider {
   }
 
   isSpeaking(): boolean {
-    return this.synth ? this.synth.speaking : false;
+    return this.synth?.speaking ?? false;
   }
 
   onBoundary(callback: (event: SpeechSynthesisEvent) => void): void {
     if (this.currentUtterance) {
       this.currentUtterance.onboundary = callback;
     }
+  }
+
+  dispose(): void {
+    this.cancel();
+    WebSpeechProvider.instance = null;
   }
 }

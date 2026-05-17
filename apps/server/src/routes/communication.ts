@@ -1,33 +1,18 @@
 import {
-  buildDeterministicPlanFromText,
-  buildDeterministicPlanFromUnits,
+  buildPlanFromGloss,
+  buildPlanFromUnits,
   buildRendererQueue,
-  generateSemanticSignPlanWithGroq,
-  isPlannerModel,
+  generateGloss,
   isSttModel,
-  isTranslationDomain,
-  transcribeAudioWithGroq,
-  type CommunicationMode,
-  type PlannerModel,
-  type SttModel,
-  type TranslationContext,
-  type TranslationEnvelope,
-} from "@sensa/communication";
+  transcribeAudio,
+} from "@sensa/engine/planning";
+import type { SttModel } from "@sensa/engine/types";
 import { env } from "@sensa/env/server";
 import { Hono } from "hono";
 
 type JsonTranslateBody =
-  | {
-      mode: "text";
-      text: string;
-      plannerModel?: PlannerModel;
-      context?: TranslationContext;
-    }
-  | {
-      mode: "sign-keys" | "camera-fingerspell";
-      units: string[];
-      context?: TranslationContext;
-    };
+  | { mode: "text"; text: string }
+  | { mode: "sign-keys" | "camera-fingerspell"; units: string[] };
 
 type FileLike = {
   arrayBuffer(): Promise<ArrayBuffer>;
@@ -37,60 +22,6 @@ type FileLike = {
 
 function isFileLike(value: unknown): value is FileLike {
   return Boolean(value && typeof value === "object" && "arrayBuffer" in value);
-}
-
-function parseContext(value: string | FileLike | undefined | null): TranslationContext {
-  if (!value || typeof value !== "string") {
-    return {};
-  }
-
-  try {
-    const parsed = JSON.parse(value) as TranslationContext;
-    return typeof parsed === "object" && parsed !== null ? parsed : {};
-  } catch {
-    return {};
-  }
-}
-
-function withPlanEnvelope(
-  mode: CommunicationMode,
-  rawInput: string,
-  plan: TranslationEnvelope["plan"],
-  intake: TranslationEnvelope["intake"] = null,
-): TranslationEnvelope {
-  return {
-    mode,
-    intake,
-    plan,
-    rendererQueue: buildRendererQueue(plan),
-    rawInput,
-    normalizedText: plan.normalizedText,
-  };
-}
-
-async function buildSemanticPlanOrFallback(options: {
-  text: string;
-  plannerModel?: string;
-  context: TranslationContext;
-}) {
-  if (!env.GROQ_API_KEY) {
-    return buildDeterministicPlanFromText(options.text, options.context, {
-      note: "GROQ_API_KEY is missing. Deterministic fallback plan used.",
-    });
-  }
-
-  try {
-    return await generateSemanticSignPlanWithGroq({
-      apiKey: env.GROQ_API_KEY,
-      text: options.text,
-      plannerModel: isPlannerModel(options.plannerModel) ? options.plannerModel : undefined,
-      context: options.context,
-    });
-  } catch (error) {
-    return buildDeterministicPlanFromText(options.text, options.context, {
-      note: `Groq semantic planning failed. ${error instanceof Error ? error.message : "Unknown error."}`,
-    });
-  }
 }
 
 export const communicationRoute = new Hono();
@@ -115,55 +46,64 @@ communicationRoute.post("/translate", async (c) => {
       return c.json({ error: "GROQ_API_KEY is not configured." }, 500);
     }
 
-    const context = parseContext(formData.get("context"));
-    const requestedDomain = formData.get("domain")?.toString();
-    if (isTranslationDomain(requestedDomain)) {
-      context.domain = requestedDomain;
-    }
-
-    const requestedSttModel = formData.get("sttModel")?.toString();
+    const requestedSttModel = formData.get("sttModel")?.toString() ?? "";
     const sttModel: SttModel = isSttModel(requestedSttModel)
       ? requestedSttModel
       : "whisper-large-v3";
-    const plannerModel = formData.get("plannerModel")?.toString();
     const prompt = formData.get("prompt")?.toString() ?? "";
 
-    const intake = await transcribeAudioWithGroq({
+    const intake = await transcribeAudio({
       apiKey: env.GROQ_API_KEY,
       audio: audio as unknown as File,
       model: sttModel,
-      prompt,
-      promptHints: context.spellingHints,
+      prompt: prompt || undefined,
     });
 
-    const plan = await buildSemanticPlanOrFallback({
-      text: intake.text,
-      plannerModel,
-      context,
-    });
+    const intent = await generateGloss({ text: intake.text, apiKey: env.GROQ_API_KEY });
+    const plan = buildPlanFromGloss(intent);
 
-    return c.json(withPlanEnvelope("speech", intake.text, plan, intake));
+    return c.json({
+      mode: "speech",
+      intake,
+      plan,
+      rendererQueue: buildRendererQueue(plan),
+      rawInput: intake.text,
+      normalizedText: plan.normalizedText,
+      intent,
+    });
   }
 
   const payload = (await c.req.json()) as JsonTranslateBody;
 
   if (payload.mode === "text") {
-    const plan = await buildSemanticPlanOrFallback({
-      text: payload.text,
-      plannerModel: payload.plannerModel,
-      context: payload.context ?? {},
-    });
+    if (!env.GROQ_API_KEY) {
+      return c.json({ error: "GROQ_API_KEY is not configured." }, 500);
+    }
 
-    return c.json(withPlanEnvelope("text", payload.text, plan));
+    const intent = await generateGloss({ text: payload.text, apiKey: env.GROQ_API_KEY });
+    const plan = buildPlanFromGloss(intent);
+
+    return c.json({
+      mode: "text",
+      intake: null,
+      plan,
+      rendererQueue: buildRendererQueue(plan),
+      rawInput: payload.text,
+      normalizedText: plan.normalizedText,
+      intent,
+    });
   }
 
   if (payload.mode === "sign-keys" || payload.mode === "camera-fingerspell") {
-    const plan = buildDeterministicPlanFromUnits(
-      payload.units,
-      payload.context ?? {},
-      payload.mode,
-    );
-    return c.json(withPlanEnvelope(payload.mode, payload.units.join(" "), plan));
+    const plan = buildPlanFromUnits(payload.units);
+    return c.json({
+      mode: payload.mode,
+      intake: null,
+      plan,
+      rendererQueue: buildRendererQueue(plan),
+      rawInput: payload.units.join(" "),
+      normalizedText: plan.normalizedText,
+    });
   }
 
   return c.json({ error: "Unsupported communication mode." }, 400);

@@ -8,16 +8,16 @@ export function TextComposer({
   isWorking: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-3">
-      <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-stone-400">
-        Raw text
+    <div className="flex flex-col gap-2">
+      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+        Raw text message
       </span>
       <textarea
         value={textDraft}
         onChange={(e) => setTextDraft(e.target.value)}
         disabled={isWorking}
-        placeholder="Type the hearing-side message here. The semantic planner will normalize it into a sign plan."
-        className="min-h-44 rounded-[1.5rem] border border-stone-800 bg-stone-900 px-4 py-4 text-sm leading-6 text-white outline-none transition placeholder:text-stone-500 focus:border-white disabled:opacity-50"
+        placeholder="Type the hearing-side message here. The translator will normalize it into a cleaner sign plan."
+        className="min-h-44 rounded-2xl border bg-muted px-5 py-5 text-base leading-relaxed outline-none transition-all placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 disabled:opacity-50"
       />
     </div>
   );

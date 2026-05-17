@@ -1,7 +1,7 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@sensa/components";
 
 import Header from "../components/header";
 import appCss from "../index.css?url";
@@ -19,11 +19,11 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Sensa — Accessible Communication",
+        title: "Sensa Bridge — Accessible Communication",
       },
       {
         name: "description",
-        content: "An accessible sign language translation dashboard and ASL engine.",
+        content: "A translation console for speech, text, and sign planning.",
       },
     ],
     links: [
@@ -43,7 +43,7 @@ function RootDocument() {
       <head>
         <HeadContent />
       </head>
-      <body className="bg-black text-stone-100 antialiased selection:bg-amber-300/30">
+      <body className="overflow-x-hidden bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
         <div className="flex min-h-svh flex-col">
           <Header />
           <main className="flex-1">
