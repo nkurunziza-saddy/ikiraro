@@ -1,5 +1,5 @@
-import { TtsControls } from "@sensa/components";
-import type { SignPlan, FrameItem } from "@sensa/engine/types";
+import { TtsControls } from "@ikiraro/components";
+import type { SignPlan, FrameItem } from "@ikiraro/engine/types";
 
 export type ConversationEntry = {
   id: string;

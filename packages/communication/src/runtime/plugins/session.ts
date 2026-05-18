@@ -1,10 +1,10 @@
-import type { SensaPlugin, PluginContext, SensaEvent } from "../types";
+import type { IkiraroPlugin, PluginContext, IkiraroEvent } from "../types";
 import type {
   TranslationEnvelope,
   CommunicationMode,
   SttModel,
   TranslationContext,
-} from "@sensa/engine/types";
+} from "@ikiraro/engine/types";
 
 export type SessionStatus = "idle" | "recording" | "translating" | "finished" | "error";
 
@@ -15,13 +15,14 @@ export interface SessionState {
   error?: string;
   sttModel: SttModel;
   translationContext?: TranslationContext;
+  prompt?: string;
 }
 
 /**
  * The SessionPlugin orchestrates the high-level communication lifecycle.
  * It coordinates between Speech, Translation, and Composition plugins.
  */
-export class SessionPlugin implements SensaPlugin<SessionState> {
+export class SessionPlugin implements IkiraroPlugin<SessionState> {
   name = "session";
   initialState: SessionState = {
     status: "idle",
@@ -31,8 +32,8 @@ export class SessionPlugin implements SensaPlugin<SessionState> {
   setup(ctx: PluginContext<SessionState>) {
     // 1. Listen for session commands
     ctx.subscribe("session:cmd:start", (event) => {
-      const { mode, text, units, sttModel, context } = event.payload;
-      this.handleStart(ctx, mode, { text, units, sttModel, context });
+      const { mode, text, units, sttModel, prompt, context } = event.payload;
+      this.handleStart(ctx, mode, { text, units, sttModel, prompt, context });
     });
 
     ctx.subscribe("session:cmd:stop", () => {
@@ -83,7 +84,7 @@ export class SessionPlugin implements SensaPlugin<SessionState> {
     });
   }
 
-  reducer(state: SessionState, event: SensaEvent): SessionState {
+  reducer(state: SessionState, event: IkiraroEvent): SessionState {
     switch (event.type) {
       case "session:status-change":
         return { ...state, status: event.payload };
@@ -92,6 +93,7 @@ export class SessionPlugin implements SensaPlugin<SessionState> {
           ...state,
           mode: event.payload.mode,
           sttModel: event.payload.sttModel ?? state.sttModel,
+          prompt: event.payload.prompt,
           translationContext: event.payload.context,
           error: undefined,
         };
@@ -109,7 +111,13 @@ export class SessionPlugin implements SensaPlugin<SessionState> {
   private handleStart(
     ctx: PluginContext<SessionState>,
     mode: CommunicationMode,
-    options: { text?: string; units?: string[]; sttModel?: SttModel; context?: TranslationContext },
+    options: {
+      text?: string;
+      units?: string[];
+      sttModel?: SttModel;
+      prompt?: string;
+      context?: TranslationContext;
+    },
   ) {
     if (mode === "speech") {
       ctx.emit({
@@ -140,7 +148,11 @@ export class SessionPlugin implements SensaPlugin<SessionState> {
     if (state.status === "recording" && state.mode === "speech") {
       ctx.emit({
         type: "speech:cmd:stop",
-        payload: { sttModel: state.sttModel, context: state.translationContext },
+        payload: {
+          sttModel: state.sttModel,
+          prompt: state.prompt,
+          context: state.translationContext,
+        },
         timestamp: Date.now(),
         source: this.name,
       });

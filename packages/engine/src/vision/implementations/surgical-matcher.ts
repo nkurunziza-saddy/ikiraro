@@ -5,7 +5,7 @@ import type { FeatureVector, ISignMatcher, HandshapeDefinition } from "../../typ
  * A heuristic-based sign matcher that uses fingerprints and disambiguation rules.
  * "Surgical" refers to its precision and reliance on manually tuned heuristics.
  */
-export class SensaSurgicalMatcher implements ISignMatcher {
+export class IkiraroSurgicalMatcher implements ISignMatcher {
   private definitionsByFingerprint = new Map<string, HandshapeDefinition[]>();
 
   constructor(definitions: HandshapeDefinition[] = ASL_ALPHABET) {

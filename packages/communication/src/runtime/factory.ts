@@ -4,12 +4,12 @@ import { CompositionPlugin } from "./plugins/composition";
 import { TranslationPlugin } from "./plugins/translation";
 import { SpeechPlugin } from "./plugins/speech";
 import { VisionPlugin } from "./plugins/vision";
-import type { HandProcessor } from "@sensa/engine/vision";
-import type { SensaConfig } from "../sdk";
-import type { SensaPlugin } from "./types";
+import type { HandProcessor } from "@ikiraro/engine/vision";
+import type { IkiraroConfig } from "../sdk";
+import type { IkiraroPlugin } from "./types";
 
-export interface SensaDefaultConfig {
-  sdk: SensaConfig;
+export interface IkiraroDefaultConfig {
+  sdk: IkiraroConfig;
   baseUrl?: string;
   vision?: {
     processor: HandProcessor;
@@ -17,11 +17,11 @@ export interface SensaDefaultConfig {
 }
 
 /**
- * High-level factory for the Sensa Runtime.
+ * High-level factory for the Ikiraro Runtime.
  * Provides the "tiny declarative API" similar to Better Auth.
  */
-export async function createSensa(config: SensaDefaultConfig) {
-  const plugins: SensaPlugin[] = [
+export async function createIkiraro(config: IkiraroDefaultConfig) {
+  const plugins: IkiraroPlugin[] = [
     new SessionPlugin(),
     new CompositionPlugin(),
     new TranslationPlugin(),

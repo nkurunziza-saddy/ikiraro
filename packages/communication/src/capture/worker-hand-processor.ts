@@ -1,4 +1,4 @@
-import type { CameraTrackingState, HandProcessor } from "@sensa/engine/vision";
+import type { CameraTrackingState, HandProcessor } from "@ikiraro/engine/vision";
 import type { MainToWorkerMessage, WorkerToMainMessage } from "./hand-tracking-types";
 import HandWorker from "../workers/hand-landmarker.worker?worker";
 

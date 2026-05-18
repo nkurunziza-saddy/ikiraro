@@ -1,5 +1,5 @@
 {
-  "name": "@sensa/engine",
+  "name": "@ikiraro/engine",
   "type": "module",
   "exports": {
     ".": {
@@ -27,7 +27,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@sensa/config": "workspace:*",
+    "@ikiraro/config": "workspace:*",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

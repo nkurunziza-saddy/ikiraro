@@ -1,4 +1,4 @@
-import type { HandProcessor, VisionEventMap, VisionStatus } from "@sensa/engine/vision";
+import type { HandProcessor, VisionEventMap, VisionStatus } from "@ikiraro/engine/vision";
 
 /**
  * The VisionSystem orchestrates the end-to-end hand tracking pipeline.

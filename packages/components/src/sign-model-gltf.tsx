@@ -2,8 +2,8 @@ import { useMemo, useRef } from "react";
 import { useFrame, useGraph } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import { REST_POSE, type Handshape } from "@sensa/engine/planning";
-import { springStep } from "@sensa/engine/math";
+import { REST_POSE, type Handshape } from "@ikiraro/engine/planning";
+import { springStep } from "@ikiraro/engine/math";
 
 interface SignModelGLTFProps {
   url: string;

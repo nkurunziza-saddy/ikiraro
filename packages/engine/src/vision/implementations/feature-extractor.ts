@@ -6,7 +6,7 @@ import type { HandLandmarks, FeatureVector, IFeatureExtractor } from "../../type
  * It encapsulates the logic for turning raw landmarks into a high-leverage
  * feature vector used by matchers.
  */
-export class SensaFeatureExtractor implements IFeatureExtractor {
+export class IkiraroFeatureExtractor implements IFeatureExtractor {
   extract(landmarks: HandLandmarks, imageLandmarks?: HandLandmarks): FeatureVector {
     return extractFeatureVector(landmarks, imageLandmarks);
   }

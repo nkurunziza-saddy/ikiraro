@@ -1,6 +1,6 @@
-# sensa
+# ikiraro
 
-Sensa is a type-safe, local-first ASL (American Sign Language) translation SDK. It provides a robust pipeline for handling multimodal communication (speech, text, and manual sign input) and orchestrating computer vision to map hand tracking to a semantic sign sequence.
+Ikiraro is a type-safe, local-first ASL (American Sign Language) translation SDK. It provides a robust pipeline for handling multimodal communication (speech, text, and manual sign input) and orchestrating computer vision to map hand tracking to a semantic sign sequence.
 
 ## Architecture
 
@@ -8,9 +8,9 @@ This project is structured as a standalone SDK rather than a monolithic fullstac
 
 ### Packages
 
-- `@sensa/engine` - The core mathematical, planning, and vision logic. Pure, dependency-free TypeScript. Contains the surgical gesture classifier.
-- `@sensa/communication` - The orchestrator. Exposes the `SensaSDK` powered by `effect` and `SensaRuntime` which acts as an event bus for combining streams of signs and speech.
-- `@sensa/components` - A specialized suite of React components for visualizing hand tracking, pipelines, and ASL rendering.
+- `@ikiraro/engine` - The core mathematical, planning, and vision logic. Pure, dependency-free TypeScript. Contains the surgical gesture classifier.
+- `@ikiraro/communication` - The orchestrator. Exposes the `IkiraroSDK` powered by `effect` and `IkiraroRuntime` which acts as an event bus for combining streams of signs and speech.
+- `@ikiraro/components` - A specialized suite of React components for visualizing hand tracking, pipelines, and ASL rendering.
 - `web` - A reference implementation dashboard that consumes the SDK.
 
 ## Getting Started
@@ -29,17 +29,17 @@ bun run dev:web
 
 ## SDK Usage
 
-To use Sensa in a React app, initialize the runtime with your config:
+To use Ikiraro in a React app, initialize the runtime with your config:
 
 ```tsx
-import { createSensa, useSensa } from "@sensa/communication";
+import { createIkiraro, useIkiraro } from "@ikiraro/communication";
 
-const runtime = await createSensa({
+const runtime = await createIkiraro({
   sdk: { groqApiKey: "YOUR_KEY" },
 });
 
 // React
-const { state } = useSensa(runtime);
+const { state } = useIkiraro(runtime);
 ```
 
 ## Workflows

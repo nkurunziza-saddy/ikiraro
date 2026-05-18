@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import type { TranslationEnvelope, SttModel, SensaToken } from "@sensa/engine/types";
-import { createSensa, type SensaRuntime, type CaptureStatus } from "@sensa/communication";
+import type { TranslationEnvelope, SttModel, IkiraroToken } from "@ikiraro/engine/types";
+import { createIkiraro, type IkiraroRuntime, type CaptureStatus } from "@ikiraro/communication";
 
 export type ComposerMode = "speech" | "text" | "sign";
 
@@ -12,14 +12,14 @@ export function useCommunicationSession(onCommit: (env: TranslationEnvelope) => 
   const onCommitRef = useRef(onCommit);
   onCommitRef.current = onCommit;
 
-  const [runtime, setRuntime] = useState<SensaRuntime | null>(null);
+  const [runtime, setRuntime] = useState<IkiraroRuntime | null>(null);
   const [mode, setMode] = useState<ComposerMode>("text");
 
   // Sync state from runtime plugins
   const [sessionStatus, setSessionStatus] = useState<string>("idle");
   const [sessionError, setSessionError] = useState<string | null>(null);
   const [activeEnvelope, setActiveEnvelope] = useState<TranslationEnvelope | null>(null);
-  const [compositionTokens, setCompositionTokens] = useState<SensaToken[]>([]);
+  const [compositionTokens, setCompositionTokens] = useState<IkiraroToken[]>([]);
   const [compositionText, setCompositionText] = useState("");
   const [captureStatus, setCaptureStatus] = useState<CaptureStatus>("idle");
   const [captureLevel, setCaptureLevel] = useState(0);
@@ -32,11 +32,11 @@ export function useCommunicationSession(onCommit: (env: TranslationEnvelope) => 
 
   useEffect(() => {
     let active = true;
-    let rInstance: SensaRuntime | null = null;
+    let rInstance: IkiraroRuntime | null = null;
 
     const init = async () => {
       try {
-        const r = await createSensa({
+        const r = await createIkiraro({
           sdk: {
             groqApiKey: import.meta.env.VITE_GROQ_API_KEY || "YOUR_GROQ_API_KEY",
           },
@@ -59,26 +59,40 @@ export function useCommunicationSession(onCommit: (env: TranslationEnvelope) => 
           setCaptureStatus(state.speech?.status || "idle");
         };
 
-        r.subscribeAll(() => {
+        const unsubscribeAll = r.subscribeAll(() => {
           updateSync();
         });
 
-        r.subscribe("speech:level-update", (event) => {
+        const unsubscribeLevel = r.subscribe("speech:level-update", (event) => {
           setCaptureLevel(event.payload);
         });
 
-        r.subscribe("translation:finished", (event) => {
+        const unsubscribeTranslation = r.subscribe("translation:finished", (event) => {
           onCommitRef.current(event.payload);
         });
+
+        return () => {
+          unsubscribeAll();
+          unsubscribeLevel();
+          unsubscribeTranslation();
+        };
       } catch {
         if (!active) return;
         setSessionError("Failed to initialize communication runtime.");
       }
     };
 
-    init();
+    let cleanupSubscriptions: (() => void) | undefined;
+    void init().then((cleanup) => {
+      if (!active) {
+        cleanup?.();
+        return;
+      }
+      cleanupSubscriptions = cleanup;
+    });
     return () => {
       active = false;
+      cleanupSubscriptions?.();
       rInstance?.stop();
     };
   }, []);
@@ -130,7 +144,7 @@ export function useCommunicationSession(onCommit: (env: TranslationEnvelope) => 
     startSpeechCapture: () => {
       runtime?.dispatch({
         type: "session:cmd:start",
-        payload: { mode: "speech", sttModel },
+        payload: { mode: "speech", sttModel, prompt: speechPrompt },
         timestamp: Date.now(),
         source: "ui",
       });

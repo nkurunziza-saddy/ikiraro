@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { SensaSurgicalClassifier } from "./classifier";
+import { IkiraroSurgicalClassifier } from "./classifier";
 import type { HandLandmarks } from "../types";
 
 // Mock landmarks for a generic fist (could be S, A, T, etc.)
 const MOCK_LANDMARKS: HandLandmarks = Array(21).fill({ x: 0, y: 0, z: 0 });
 
-describe("SensaSurgicalClassifier", () => {
-  let classifier: SensaSurgicalClassifier;
+describe("IkiraroSurgicalClassifier", () => {
+  let classifier: IkiraroSurgicalClassifier;
 
   beforeEach(() => {
-    classifier = new SensaSurgicalClassifier();
+    classifier = new IkiraroSurgicalClassifier();
   });
 
   it("should initialize with default components", () => {

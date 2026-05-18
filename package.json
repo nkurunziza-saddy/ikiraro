@@ -1,5 +1,5 @@
 {
-  "name": "sensa",
+  "name": "ikiraro",
   "private": true,
   "workspaces": {
     "packages": [
@@ -32,6 +32,11 @@
     "dev:web": "turbo -F web dev",
     "test": "turbo run test",
     "check": "oxlint && oxfmt --write",
+    "release:sdk:version:patch": "bun scripts/bump-sdk-version.mjs patch && bun install",
+    "release:sdk:version:minor": "bun scripts/bump-sdk-version.mjs minor && bun install",
+    "release:sdk:version:major": "bun scripts/bump-sdk-version.mjs major && bun install",
+    "release:sdk:verify": "bun run build && bun run check-types && bun run test && cd packages/sdk && bun pm pack --dry-run",
+    "release:sdk:publish": "bun run release:sdk:verify && cd packages/sdk && npm publish --access public",
     "prepare": "husky"
   },
   "dependencies": {
@@ -39,7 +44,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@sensa/config": "workspace:*",
+    "@ikiraro/config": "workspace:*",
     "@types/node": "catalog:",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",

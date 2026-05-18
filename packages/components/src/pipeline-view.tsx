@@ -1,4 +1,4 @@
-import type { TranslationEnvelope } from "@sensa/engine/types";
+import type { TranslationEnvelope } from "@ikiraro/engine/types";
 import { SignPlayer3D } from "./sign-player-3d";
 
 function DetailCard({ label, value }: { label: string; value: string }) {

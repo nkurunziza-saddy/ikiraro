@@ -1,14 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { resolveHandshape, mixHandshapes, ASL_ALPHABET, REST_POSE } from "./pose-library";
+import { resolveHandshape, mixHandshapes, ASL_HAND_POSES, REST_POSE } from "./pose-library";
 
 describe("Pose Library", () => {
   describe("resolveHandshape", () => {
     it("should resolve known ASL letters", () => {
       const poseA = resolveHandshape("A");
-      expect(poseA).toEqual(ASL_ALPHABET["A"]);
+      expect(poseA).toEqual(ASL_HAND_POSES["A"]);
 
       const poseB = resolveHandshape("b"); // Case insensitive
-      expect(poseB).toEqual(ASL_ALPHABET["B"]);
+      expect(poseB).toEqual(ASL_HAND_POSES["B"]);
     });
 
     it("should return REST_POSE for unknown keys", () => {

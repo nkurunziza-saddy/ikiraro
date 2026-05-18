@@ -2,14 +2,14 @@ import { Suspense, useMemo, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { ContactShadows, Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
-import type { TranslationEnvelope } from "@sensa/engine/types";
+import type { TranslationEnvelope } from "@ikiraro/engine/types";
 import {
   RendererDirector,
   REST_POSE,
   type RendererState,
   type SignCanvas,
   type Handshape,
-} from "@sensa/engine/planning";
+} from "@ikiraro/engine/planning";
 import { PlaybackControls } from "./playback-controls";
 import { TtsControls } from "./tts-controls";
 import { SignModelProcedural } from "./sign-model-procedural";

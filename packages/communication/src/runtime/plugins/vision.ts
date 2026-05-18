@@ -1,12 +1,12 @@
-import type { SensaPlugin, PluginContext } from "../types";
+import type { IkiraroPlugin, PluginContext } from "../types";
 import { VisionSystem } from "../vision-system";
-import type { HandProcessor } from "@sensa/engine/vision";
+import type { HandProcessor, VisionEventMap } from "@ikiraro/engine/vision";
 
 /**
- * Adapts the VisionSystem into a Sensa Plugin.
+ * Adapts the VisionSystem into a Ikiraro Plugin.
  * It emits vision events into the runtime bus.
  */
-export class VisionPlugin implements SensaPlugin {
+export class VisionPlugin implements IkiraroPlugin {
   name = "vision";
   private vision: VisionSystem;
 
@@ -15,57 +15,64 @@ export class VisionPlugin implements SensaPlugin {
   }
 
   setup(ctx: PluginContext) {
-    this.vision.on("status-change", (status) => {
+    const handleStatusChange = (status: VisionEventMap["status-change"]) => {
       ctx.emit({
         type: "vision:status-change",
         payload: status,
         timestamp: Date.now(),
         source: this.name,
       });
-    });
+    };
 
-    this.vision.on("tracking-update", (tracking) => {
+    const handleTrackingUpdate = (tracking: VisionEventMap["tracking-update"]) => {
       ctx.emit({
         type: "vision:tracking",
         payload: tracking,
         timestamp: Date.now(),
         source: this.name,
       });
-    });
+    };
 
-    this.vision.on("sign-detected", (data) => {
+    const handleSignDetected = (data: VisionEventMap["sign-detected"]) => {
+      const now = Date.now();
       ctx.emit({
         type: "input:token",
         payload: {
-          id: `vision-${Date.now()}`,
+          id: `vision-${now}`,
           value: data.sign,
           type: "sign",
           source: this.name,
-          timestamp: Date.now(),
+          timestamp: now,
           confidence: data.confidence,
           stability: "stable",
         },
-        timestamp: Date.now(),
+        timestamp: now,
         source: this.name,
       });
-    });
+    };
 
-    this.vision.on("word-committed", (word) => {
+    const handleWordCommitted = (word: VisionEventMap["word-committed"]) => {
+      const now = Date.now();
       ctx.emit({
         type: "input:token",
         payload: {
-          id: `vision-commit-${Date.now()}`,
+          id: `vision-commit-${now}`,
           value: word,
           type: "sign",
           source: this.name,
-          timestamp: Date.now(),
+          timestamp: now,
           confidence: 1.0,
           stability: "committed",
         },
-        timestamp: Date.now(),
+        timestamp: now,
         source: this.name,
       });
-    });
+    };
+
+    this.vision.on("status-change", handleStatusChange);
+    this.vision.on("tracking-update", handleTrackingUpdate);
+    this.vision.on("sign-detected", handleSignDetected);
+    this.vision.on("word-committed", handleWordCommitted);
 
     // Handle incoming commands from other plugins (e.g., reset)
     ctx.subscribe("vision:cmd:start", (event) => {
@@ -75,6 +82,13 @@ export class VisionPlugin implements SensaPlugin {
     ctx.subscribe("vision:cmd:stop", () => {
       this.vision.stop();
     });
+
+    return [
+      () => this.vision.off("status-change", handleStatusChange),
+      () => this.vision.off("tracking-update", handleTrackingUpdate),
+      () => this.vision.off("sign-detected", handleSignDetected),
+      () => this.vision.off("word-committed", handleWordCommitted),
+    ];
   }
 
   teardown() {

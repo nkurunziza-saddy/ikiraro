@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { WebSpeechProvider } from "@sensa/communication";
+import { WebSpeechProvider } from "./web-speech";
 import { Button } from "./ui/button";
 
 import {

@@ -1,7 +1,7 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import { Toaster } from "@sensa/components";
+import { Toaster } from "@ikiraro/components";
 
 import Header from "../components/header";
 import appCss from "../index.css?url";
@@ -19,7 +19,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Sensa Bridge — Accessible Communication",
+        title: "Ikiraro Bridge — Accessible Communication",
       },
       {
         name: "description",

@@ -1,7 +1,7 @@
 import { Effect, Layer, Schema } from "effect";
-import { GlossService } from "@sensa/engine/planning";
+import { GlossService } from "@ikiraro/engine/planning";
 import { Groq } from "./client";
-import { GLOSS_OUTPUT_SCHEMA } from "@sensa/engine/planning";
+import { GLOSS_OUTPUT_SCHEMA } from "@ikiraro/engine/planning";
 
 const DEFAULT_GROQ_GLOSS_URL = "https://api.groq.com/openai/v1/chat/completions";
 const DEFAULT_GLOSS_MODEL = "llama-3.1-70b-versatile";

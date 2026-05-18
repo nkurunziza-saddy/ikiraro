@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import type { CameraTrackingState } from "@sensa/engine/vision";
+import type { CameraTrackingState } from "@ikiraro/engine/vision";
 
 const CONNECTIONS: Array<[number, number]> = [
   [0, 1],

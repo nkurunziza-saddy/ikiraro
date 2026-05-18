@@ -1,4 +1,4 @@
-// ─── Sensa SDK ────────────────────────────────────────────────────────────────
+// ─── Ikiraro SDK ────────────────────────────────────────────────────────────────
 // Main entry point. Re-exports the communication SDK (runtime, hooks,
 // translate API), key rendering components, and the core planning primitives
 // consumers need to build translation pipelines without an API key.
@@ -6,11 +6,17 @@
 // For the full component library: @ikiraro/sdk/components
 // For engine internals (advanced): @ikiraro/sdk/engine
 
-// Communication SDK — SensaSDK, SensaRuntime, useSensa, useHandTracking, plugins
-export * from "@sensa/communication";
+// Communication SDK — IkiraroSDK, IkiraroRuntime, useIkiraro, useHandTracking, plugins
+export * from "@ikiraro/communication";
 
 // Core rendering components
-export { SignPlayer3D, SignModelGLTF, SignModelProcedural } from "@sensa/components";
+export {
+  SignPlayer3D,
+  SignModelGLTF,
+  SignModelProcedural,
+  WebSpeechProvider,
+} from "@ikiraro/components";
+export type { SpeakOptions } from "@ikiraro/components";
 
 // Planning primitives — deterministic pipeline, pose library, renderer
 export {
@@ -22,7 +28,7 @@ export {
   resolveHandshape,
   mixHandshapes,
   RendererDirector,
-} from "@sensa/engine/planning";
+} from "@ikiraro/engine/planning";
 export type {
   Handshape,
   FingerAngles,
@@ -30,5 +36,5 @@ export type {
   SignCanvas,
   RendererState,
   HandPose,
-} from "@sensa/engine/planning";
-export type { TranslationEnvelope, SignPlan, SignToken } from "@sensa/engine/types";
+} from "@ikiraro/engine/planning";
+export type { TranslationEnvelope, SignPlan, SignToken } from "@ikiraro/engine/types";

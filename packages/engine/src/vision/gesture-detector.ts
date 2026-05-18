@@ -8,7 +8,7 @@ export interface GestureDetection {
 /**
  * Detects subtle gestures during fingerspelling, such as those used for double letters.
  */
-export class SensaGestureDetector implements IGestureDetector {
+export class IkiraroGestureDetector implements IGestureDetector {
   private history: Point3D[] = [];
   private readonly WINDOW_SIZE = 15;
 

@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
-import type { CameraTrackingState } from "@sensa/engine/vision";
-import { WebSpeechProvider } from "@sensa/communication";
-import { Button, HandOverlay } from "@sensa/components";
+import type { CameraTrackingState } from "@ikiraro/engine/vision";
+import { Button, HandOverlay, WebSpeechProvider } from "@ikiraro/components";
 
 type CameraCandidate = NonNullable<CameraTrackingState["classification"]>["candidates"][number];
 

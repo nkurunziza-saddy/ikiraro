@@ -1,15 +1,21 @@
 {
-  "extends": "@sensa/config/tsconfig.base.json",
+  "extends": "../config/tsconfig.base.json",
   "compilerOptions": {
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "declaration": true,
     "emitDeclarationOnly": true,
-    "rootDir": "src",
+    "rootDir": "..",
     "outDir": "dist",
     "ignoreDeprecations": "6.0",
     "paths": {
-      "@/*": ["../components/src/*"]
+      "@/*": ["../components/src/*"],
+      "@ikiraro/communication": ["../communication/src/index.ts"],
+      "@ikiraro/communication/*": ["../communication/src/*"],
+      "@ikiraro/components": ["../components/src/index.ts"],
+      "@ikiraro/components/*": ["../components/src/*"],
+      "@ikiraro/engine": ["../engine/src/types.ts"],
+      "@ikiraro/engine/*": ["../engine/src/*"]
     }
   },
   "include": ["src"]

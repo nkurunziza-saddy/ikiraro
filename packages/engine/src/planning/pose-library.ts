@@ -40,7 +40,7 @@ const t = (splay: number, flex: number, curl: number): ThumbAngles => ({
 const CURL = f(1.5, 1.3, 0.7);
 const OPEN = f(0.06, 0.04, 0.03); // fingers never lock perfectly straight
 
-export const ASL_ALPHABET: Record<string, Handshape> = {
+export const ASL_HAND_POSES: Record<string, Handshape> = {
   A: { index: CURL, middle: CURL, ring: CURL, pinky: CURL, thumb: t(-0.25, 0.15, 0.1) },
   B: {
     index: f(0.04, 0.03, 0.03, -0.05),
@@ -221,7 +221,7 @@ export const REST_POSE: Handshape = {
  * Resolves a key (letter, number, or special char) to a Handshape.
  */
 export function resolveHandshape(key: string): Handshape {
-  return ASL_ALPHABET[key.toUpperCase()] ?? ASL_ALPHABET[key] ?? REST_POSE;
+  return ASL_HAND_POSES[key.toUpperCase()] ?? ASL_HAND_POSES[key] ?? REST_POSE;
 }
 
 /**

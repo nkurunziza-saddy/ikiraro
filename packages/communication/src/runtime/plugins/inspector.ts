@@ -1,13 +1,13 @@
-import type { SensaPlugin, PluginContext, SensaEvent } from "../types";
+import type { IkiraroPlugin, PluginContext, IkiraroEvent } from "../types";
 
 export interface InspectorState {
-  events: SensaEvent[];
+  events: IkiraroEvent[];
 }
 
 /**
  * The InspectorPlugin captures all runtime events for development visualization.
  */
-export class InspectorPlugin implements SensaPlugin<InspectorState> {
+export class InspectorPlugin implements IkiraroPlugin<InspectorState> {
   name = "inspector";
   initialState: InspectorState = { events: [] };
   private readonly MAX_EVENTS = 100;
@@ -16,7 +16,7 @@ export class InspectorPlugin implements SensaPlugin<InspectorState> {
     // No manual subscription needed for state updates, we use the reducer.
   }
 
-  reducer(state: InspectorState, event: SensaEvent): InspectorState {
+  reducer(state: InspectorState, event: IkiraroEvent): InspectorState {
     // Keep a running history of all events
     const newEvents = [event, ...state.events].slice(0, this.MAX_EVENTS);
     return { ...state, events: newEvents };

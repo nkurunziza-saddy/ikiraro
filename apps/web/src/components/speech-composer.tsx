@@ -1,6 +1,6 @@
-import type { SttModel } from "@sensa/engine/types";
-import { AudioVisualizer, Button } from "@sensa/components";
-import type { CaptureStatus } from "@sensa/communication";
+import type { SttModel } from "@ikiraro/engine/types";
+import { AudioVisualizer, Button } from "@ikiraro/components";
+import type { CaptureStatus } from "@ikiraro/communication";
 
 const STT_OPTIONS: SttModel[] = ["whisper-large-v3", "whisper-large-v3-turbo"];
 

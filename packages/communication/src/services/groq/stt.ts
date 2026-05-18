@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect";
-import { SttService } from "@sensa/engine/planning";
+import { SttService } from "@ikiraro/engine/planning";
 import { Groq } from "./client";
-import type { SttModel } from "@sensa/engine/types";
+import type { SttModel } from "@ikiraro/engine/types";
 
 const DEFAULT_GROQ_STT_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
 

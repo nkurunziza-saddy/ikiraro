@@ -11,7 +11,7 @@ export interface SttService {
   ) => Effect.Effect<SpeechIntake, Error>;
 }
 
-export const SttService = Context.GenericTag<SttService>("@sensa/engine/SttService");
+export const SttService = Context.GenericTag<SttService>("@ikiraro/engine/SttService");
 
 // ─── Gloss Service ────────────────────────────────────────────────────────────
 
@@ -19,4 +19,4 @@ export interface GlossService {
   readonly generate: (text: string, model?: string) => Effect.Effect<SemanticIntent, Error>;
 }
 
-export const GlossService = Context.GenericTag<GlossService>("@sensa/engine/GlossService");
+export const GlossService = Context.GenericTag<GlossService>("@ikiraro/engine/GlossService");

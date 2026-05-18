@@ -1,9 +1,9 @@
 import { LandmarkSmoother } from "./smoothing";
-import { SensaFeatureExtractor } from "./implementations/feature-extractor";
-import { SensaSurgicalMatcher } from "./implementations/surgical-matcher";
-import { SensaTemporalSmoother } from "./implementations/temporal-smoother";
-import { SensaGestureDetector } from "./gesture-detector";
-import { SensaTransitionDetector } from "./transition-detector";
+import { IkiraroFeatureExtractor } from "./implementations/feature-extractor";
+import { IkiraroSurgicalMatcher } from "./implementations/surgical-matcher";
+import { IkiraroTemporalSmoother } from "./implementations/temporal-smoother";
+import { IkiraroGestureDetector } from "./gesture-detector";
+import { IkiraroTransitionDetector } from "./transition-detector";
 import type {
   ClassificationResult,
   ClassifierConfig,
@@ -20,11 +20,11 @@ export const DEFAULT_CLASSIFIER_CONFIG: ClassifierConfig = {
 };
 
 /**
- * The SensaSurgicalClassifier orchestrates the sign detection pipeline.
+ * The IkiraroSurgicalClassifier orchestrates the sign detection pipeline.
  * It follows the 'Deep Transformer' architecture, where a logic-heavy
  * orchestrator drives a sequence of pure adapters.
  */
-export class SensaSurgicalClassifier {
+export class IkiraroSurgicalClassifier {
   private config: VisionPipelineConfig;
 
   constructor(config?: Partial<VisionPipelineConfig>) {
@@ -33,11 +33,11 @@ export class SensaSurgicalClassifier {
 
     this.config = {
       smoother: config?.smoother ?? new LandmarkSmoother(),
-      extractor: config?.extractor ?? new SensaFeatureExtractor(),
-      matcher: config?.matcher ?? new SensaSurgicalMatcher(),
-      temporal: config?.temporal ?? new SensaTemporalSmoother(classifierConfig),
-      gesture: config?.gesture ?? new SensaGestureDetector(),
-      transition: config?.transition ?? new SensaTransitionDetector(),
+      extractor: config?.extractor ?? new IkiraroFeatureExtractor(),
+      matcher: config?.matcher ?? new IkiraroSurgicalMatcher(),
+      temporal: config?.temporal ?? new IkiraroTemporalSmoother(classifierConfig),
+      gesture: config?.gesture ?? new IkiraroGestureDetector(),
+      transition: config?.transition ?? new IkiraroTransitionDetector(),
       motionVelocityThreshold:
         config?.motionVelocityThreshold ?? classifierConfig.motionVelocityThreshold,
     };

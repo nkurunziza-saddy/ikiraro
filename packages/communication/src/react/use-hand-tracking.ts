@@ -1,6 +1,6 @@
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { VisionSystem } from "../runtime/vision-system";
-import type { CameraTrackingState, VisionStatus } from "@sensa/engine/vision";
+import type { CameraTrackingState, VisionStatus } from "@ikiraro/engine/vision";
 import { WorkerHandProcessor } from "../capture/worker-hand-processor";
 
 const EMPTY_TRACKING: CameraTrackingState = {

@@ -62,13 +62,19 @@ export class SpeechCaptureAdapter implements CaptureAdapter {
     this.setStatus("idle");
   }
 
-  onStatus(cb: (status: CaptureStatus) => void): void {
+  onStatus(cb: (status: CaptureStatus) => void): () => void {
     this.statusHandlers.add(cb);
     cb(this.status);
+    return () => {
+      this.statusHandlers.delete(cb);
+    };
   }
 
-  onLevel(cb: (level: number) => void): void {
+  onLevel(cb: (level: number) => void): () => void {
     this.levelHandlers.add(cb);
+    return () => {
+      this.levelHandlers.delete(cb);
+    };
   }
 
   private setStatus(status: CaptureStatus) {

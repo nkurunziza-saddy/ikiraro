@@ -1,8 +1,9 @@
-import type { SensaToken } from "@sensa/engine/types";
-import type { SensaPlugin, PluginContext, SensaEvent } from "../types";
+import type { IkiraroToken } from "@ikiraro/engine/types";
+import type { IkiraroPlugin, PluginContext, IkiraroEvent } from "../types";
+import { TimeWindowTokenFusionPolicy, type TokenFusionPolicy } from "../token-fusion-policy";
 
 export interface CompositionState {
-  tokens: SensaToken[];
+  tokens: IkiraroToken[];
   text: string;
   isDrafting: boolean;
 }
@@ -11,14 +12,15 @@ export interface CompositionState {
  * The CompositionPlugin implements the "Time-Indexed Merging village".
  * It fuses multiple independent input streams into a single synchronized timeline.
  */
-export class CompositionPlugin implements SensaPlugin<CompositionState> {
+export class CompositionPlugin implements IkiraroPlugin<CompositionState> {
   name = "composition";
   initialState: CompositionState = { tokens: [], text: "", isDrafting: false };
 
-  private eventBuffer: SensaEvent<"input:token">[] = [];
-  private readonly FUSION_WINDOW_MS = 150; // Window for deduplicating identical intents
+  private eventBuffer: IkiraroEvent<"input:token">[] = [];
   private readonly FLUSH_DEBOUNCE_MS = 400; // Delay before committing to the composition
   private timer: any = null;
+
+  constructor(private fusionPolicy: TokenFusionPolicy = new TimeWindowTokenFusionPolicy()) {}
 
   setup(ctx: PluginContext<CompositionState>) {
     ctx.subscribe("input:token", (event) => this.queueInput(event, ctx));
@@ -34,10 +36,10 @@ export class CompositionPlugin implements SensaPlugin<CompositionState> {
     });
   }
 
-  reducer(state: CompositionState, event: SensaEvent): CompositionState {
+  reducer(state: CompositionState, event: IkiraroEvent): CompositionState {
     switch (event.type) {
       case "composition:update":
-        const newTokens = [...state.tokens, ...event.payload.newTokens];
+        const newTokens = [...state.tokens, ...(event.payload.newTokens ?? [])];
         return {
           ...state,
           tokens: newTokens,
@@ -51,7 +53,7 @@ export class CompositionPlugin implements SensaPlugin<CompositionState> {
     }
   }
 
-  private queueInput(event: SensaEvent<"input:token">, ctx: PluginContext<CompositionState>) {
+  private queueInput(event: IkiraroEvent<"input:token">, ctx: PluginContext<CompositionState>) {
     this.eventBuffer.push(event);
 
     if (this.timer) clearTimeout(this.timer);
@@ -64,41 +66,25 @@ export class CompositionPlugin implements SensaPlugin<CompositionState> {
   private fuseAndFlush(ctx: PluginContext<CompositionState>) {
     if (this.eventBuffer.length === 0) return;
 
-    // 1. Sort chronologically
-    this.eventBuffer.sort((a, b) => a.timestamp - b.timestamp);
-
-    const fusedTokens: SensaToken[] = [];
-    const processedEvents: SensaEvent<"input:token">[] = [];
-
-    // 2. Fusion Logic: Deduplicate identical units within the window
-    for (let i = 0; i < this.eventBuffer.length; i++) {
-      const currentEvent = this.eventBuffer[i]!;
-      const currentToken = currentEvent.payload;
-
-      // Check if we already have this unit within the fusion window
-      const isDuplicate =
-        fusedTokens.length > 0 &&
-        fusedTokens[fusedTokens.length - 1]!.value === currentToken.value &&
-        currentToken.timestamp - fusedTokens[fusedTokens.length - 1]!.timestamp <
-          this.FUSION_WINDOW_MS;
-
-      if (!isDuplicate) {
-        fusedTokens.push(currentToken);
-      }
-      processedEvents.push(currentEvent);
-    }
+    const result = this.fusionPolicy.fuse(this.eventBuffer);
 
     // 3. Emit the high-leverage composition update
     ctx.emit({
       type: "composition:update",
       payload: {
-        newTokens: fusedTokens,
-        allEvents: processedEvents,
+        newTokens: result.newTokens,
+        allEvents: result.allEvents,
       },
       timestamp: Date.now(),
       source: this.name,
     });
 
+    this.eventBuffer = [];
+    this.timer = null;
+  }
+
+  teardown() {
+    if (this.timer) clearTimeout(this.timer);
     this.eventBuffer = [];
     this.timer = null;
   }

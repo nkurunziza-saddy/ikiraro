@@ -4,7 +4,7 @@ import type { ITemporalSmoother, ClassifierConfig } from "../../types";
  * Smoothes raw detection candidates over time using consensus and hysteresis.
  * This prevents flickering and ensures stable detections in the UI.
  */
-export class SensaTemporalSmoother implements ITemporalSmoother {
+export class IkiraroTemporalSmoother implements ITemporalSmoother {
   private history: Array<string | null> = [];
   private lockedSign: string | null = null;
   private lockFrames = 0;

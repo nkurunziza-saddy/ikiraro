@@ -1,14 +1,7 @@
-import { ManagedRuntime } from "effect";
-import type { SensaPlugin, PluginContext, SensaEvent } from "../types";
-import { SensaSDK } from "../../sdk";
-import { buildPlanFromUnits, createEnvelope } from "@sensa/engine/planning";
-import { getAudioFileExtension } from "../../capture/audio-utils";
-import type {
-  TranslationEnvelope,
-  SttModel,
-  TranslationContext,
-  CommunicationMode,
-} from "@sensa/engine/types";
+import type { IkiraroPlugin, PluginContext, IkiraroEvent } from "../types";
+import type { TranslationEnvelope } from "@ikiraro/engine/types";
+import { createTranslationPlanners, type TranslationPlanner } from "../translation-planner";
+import type { TranslationRequest } from "../types";
 
 export interface TranslationState {
   lastEnvelope?: TranslationEnvelope;
@@ -20,25 +13,20 @@ export interface TranslationState {
  * The TranslationPlugin deepens the runtime by owning the local-first
  * translation lifecycle using Effect.
  */
-export class TranslationPlugin implements SensaPlugin<TranslationState> {
+export class TranslationPlugin implements IkiraroPlugin<TranslationState> {
   name = "translation";
   initialState: TranslationState = { isTranslating: false };
-  private effectRuntime?: ManagedRuntime.ManagedRuntime<any, never>;
+  private planners: TranslationPlanner[] = [];
 
   setup(ctx: PluginContext<TranslationState>) {
-    // We assume the user provides the Groq layer in the global context or via factory
-    // For now, we'll initialize it if config is available
-    if (ctx.config.sdk) {
-      this.effectRuntime = ManagedRuntime.make(SensaSDK.makeLayer(ctx.config.sdk));
-    }
+    this.planners = createTranslationPlanners(ctx.config.sdk);
 
-    // Listen for translation commands
     ctx.subscribe("translation:cmd:request", async (event) => {
       await this.handleTranslationRequest(event.payload, ctx);
     });
   }
 
-  reducer(state: TranslationState, event: SensaEvent): TranslationState {
+  reducer(state: TranslationState, event: IkiraroEvent): TranslationState {
     switch (event.type) {
       case "translation:started":
         return { ...state, isTranslating: true, error: undefined };
@@ -52,26 +40,9 @@ export class TranslationPlugin implements SensaPlugin<TranslationState> {
   }
 
   private async handleTranslationRequest(
-    options: {
-      mode: CommunicationMode;
-      text?: string;
-      audio?: Blob;
-      units?: string[];
-      sttModel?: SttModel;
-      context?: TranslationContext;
-    },
+    options: TranslationRequest,
     ctx: PluginContext<TranslationState>,
   ) {
-    if (!this.effectRuntime) {
-      ctx.emit({
-        type: "translation:error",
-        payload: "SDK not configured",
-        timestamp: Date.now(),
-        source: this.name,
-      });
-      return;
-    }
-
     ctx.emit({
       type: "translation:started",
       payload: options,
@@ -80,27 +51,12 @@ export class TranslationPlugin implements SensaPlugin<TranslationState> {
     });
 
     try {
-      let envelope: TranslationEnvelope;
-
-      if (options.mode === "speech" && options.audio) {
-        const ext = getAudioFileExtension(options.audio.type);
-        const file = new File([options.audio], `speech.${ext}`, { type: options.audio.type });
-        envelope = await this.effectRuntime.runPromise(
-          SensaSDK.translateSpeech(file, options.sttModel),
-        );
-      } else if (options.mode === "text" && options.text) {
-        envelope = await this.effectRuntime.runPromise(SensaSDK.translateText(options.text));
-      } else if (options.mode === "sign-keys" && options.units) {
-        // Deterministic local plan
-        const plan = buildPlanFromUnits(options.units);
-        envelope = createEnvelope(plan, {
-          mode: "sign-keys",
-          rawInput: options.units.join(" "),
-        });
-      } else {
-        throw new Error(`Unsupported or invalid translation request: ${options.mode}`);
+      const planner = this.planners.find((candidate) => candidate.canPlan(options));
+      if (!planner) {
+        throw new Error(`No translation planner is configured for mode: ${options.mode}`);
       }
 
+      const envelope: TranslationEnvelope = await planner.plan(options);
       ctx.emit({
         type: "translation:finished",
         payload: envelope,

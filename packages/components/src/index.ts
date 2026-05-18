@@ -40,3 +40,6 @@ export * from "./ui/tooltip";
 
 // Utils
 export * from "./lib/utils";
+
+export { WebSpeechProvider } from "./web-speech";
+export type { SpeakOptions } from "./web-speech";

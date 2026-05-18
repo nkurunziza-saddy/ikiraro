@@ -1,4 +1,4 @@
-import type { CameraTrackingState } from "@sensa/engine/vision";
+import type { CameraTrackingState } from "@ikiraro/engine/vision";
 
 export type HandWorkerReadyMessage = {
   type: "ready";

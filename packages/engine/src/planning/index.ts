@@ -1,10 +1,5 @@
 export type { GlossRegistryEntry } from "./gloss-registry";
-export {
-  GLOSS_REGISTRY,
-  GLOSS_REGISTRY_KEYS,
-  isKnownGloss,
-  getGlossDurationMs,
-} from "./gloss-registry";
+export { isKnownGloss, getGlossDurationMs } from "./gloss-registry";
 
 export { normalizeText } from "./normalizer";
 

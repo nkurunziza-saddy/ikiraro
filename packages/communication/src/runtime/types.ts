@@ -1,10 +1,10 @@
 import type {
   TranslationEnvelope,
-  SensaToken,
+  IkiraroToken,
   CommunicationMode,
   SttModel,
   TranslationContext,
-} from "@sensa/engine/types";
+} from "@ikiraro/engine/types";
 import type { CaptureStatus } from "../capture/types";
 import type { CompositionState } from "./plugins/composition";
 import type { TranslationState } from "./plugins/translation";
@@ -19,6 +19,7 @@ export type TranslationRequest = {
   audio?: Blob;
   units?: string[];
   sttModel?: SttModel;
+  prompt?: string;
   context?: TranslationContext;
 };
 
@@ -32,21 +33,21 @@ export interface EventRegistry {
   "runtime:status-change": "idle" | "active" | "processing" | "error";
 
   // Input Layer
-  "input:token": SensaToken;
+  "input:token": IkiraroToken;
   "input:unit": { unit: string; confidence: number; type: string };
   "input:committed": { text: string; type: string };
 
   // Vision Plugin
   "vision:status-change": "idle" | "starting" | "active" | "error";
-  "vision:tracking": import("@sensa/engine/types").CameraTrackingState;
+  "vision:tracking": import("@ikiraro/engine/types").CameraTrackingState;
   "vision:cmd:start": { videoElement: HTMLVideoElement };
   "vision:cmd:stop": undefined;
 
   // Composition Plugin
   "composition:update": {
     newUnits?: string[];
-    newTokens?: SensaToken[];
-    allEvents: SensaEvent<any>[];
+    newTokens?: IkiraroToken[];
+    allEvents: IkiraroEvent<any>[];
   };
   "composition:cleared": undefined;
   "composition:cmd:clear": undefined;
@@ -64,7 +65,7 @@ export interface EventRegistry {
   "speech:status-change": CaptureStatus;
   "speech:level-update": number;
   "speech:cmd:start": undefined;
-  "speech:cmd:stop": { sttModel?: SttModel; context?: TranslationContext };
+  "speech:cmd:stop": { sttModel?: SttModel; prompt?: string; context?: TranslationContext };
   "speech:cmd:cancel": undefined;
 
   // Session Plugin
@@ -74,6 +75,7 @@ export interface EventRegistry {
     text?: string;
     units?: string[];
     sttModel?: SttModel;
+    prompt?: string;
     context?: TranslationContext;
   };
   "session:cmd:stop": undefined;
@@ -83,7 +85,7 @@ export interface EventRegistry {
 /**
  * The unified event envelope for all runtime interactions.
  */
-export interface SensaEvent<K extends keyof EventRegistry = any> {
+export interface IkiraroEvent<K extends keyof EventRegistry = any> {
   type: K;
   payload: EventRegistry[K];
   timestamp: number;
@@ -94,25 +96,30 @@ export interface SensaEvent<K extends keyof EventRegistry = any> {
  * Context provided to plugins to interact with the runtime.
  */
 export interface PluginContext<S = any> {
-  emit: <K extends keyof EventRegistry>(event: SensaEvent<K>) => void;
+  emit: <K extends keyof EventRegistry>(event: IkiraroEvent<K>) => void;
   subscribe: <K extends keyof EventRegistry>(
     type: K,
-    handler: (event: SensaEvent<K>) => void,
+    handler: (event: IkiraroEvent<K>) => void,
   ) => () => void;
-  getState: () => SensaState;
+  getState: () => IkiraroState;
   getPluginState: () => S;
   config: RuntimeConfig;
 }
 
+export type PluginTeardown =
+  | void
+  | (() => void | Promise<void>)
+  | Array<() => void | Promise<void>>;
+
 /**
- * Interface for all Sensa plugins.
+ * Interface for all Ikiraro plugins.
  * Plugins can be Input Adapters, Fusion Layers, or Output Directors.
  */
-export interface SensaPlugin<S = any> {
+export interface IkiraroPlugin<S = any> {
   name: string;
   initialState?: S;
-  setup: (ctx: PluginContext<S>) => void | Promise<void>;
-  reducer?: (state: S, event: SensaEvent) => S;
+  setup: (ctx: PluginContext<S>) => PluginTeardown | Promise<PluginTeardown>;
+  reducer?: (state: S, event: IkiraroEvent) => S;
   teardown?: () => void | Promise<void>;
 }
 
@@ -131,17 +138,17 @@ export interface PluginRegistry {
 /**
  * The central state of the runtime.
  */
-export interface SensaState {
+export interface IkiraroState {
   status: "idle" | "active" | "processing" | "error";
   activeTracks: string[];
   plugins: PluginRegistry;
 }
 
 /**
- * Configuration for the Sensa Runtime.
+ * Configuration for the Ikiraro Runtime.
  */
 export interface RuntimeConfig {
   baseUrl?: string;
-  sdk?: import("../sdk").SensaConfig;
-  plugins?: SensaPlugin[];
+  sdk?: import("../sdk").IkiraroConfig;
+  plugins?: IkiraroPlugin[];
 }

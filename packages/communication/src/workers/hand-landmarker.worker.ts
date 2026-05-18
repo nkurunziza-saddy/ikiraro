@@ -1,8 +1,12 @@
 /// <reference lib="webworker" />
 
 import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
-import { SensaSurgicalClassifier, WordBuffer, evaluateHandGeometry } from "@sensa/engine/vision";
-import type { CameraTrackingState } from "@sensa/engine/vision";
+import {
+  IkiraroSurgicalClassifier,
+  WordBuffer,
+  evaluateHandGeometry,
+} from "@ikiraro/engine/vision";
+import type { CameraTrackingState } from "@ikiraro/engine/vision";
 
 import type { MainToWorkerMessage, WorkerToMainMessage } from "../capture/hand-tracking-types";
 
@@ -18,7 +22,7 @@ const MIN_CLASSIFICATION_HAND_AREA = 0.005;
 const SIGNING_ZONE = { minX: 0.08, maxX: 0.92, minY: 0.06, maxY: 0.94 } as const;
 
 let handLandmarker: HandLandmarker | null = null;
-let classifier = new SensaSurgicalClassifier();
+let classifier = new IkiraroSurgicalClassifier();
 let wordBuffer = new WordBuffer({ pauseThresholdMs: 700, minSignDurationMs: 120 });
 let initPromise: Promise<void> | null = null;
 
@@ -70,7 +74,7 @@ async function initializeWorker(): Promise<void> {
 }
 
 function getTrackingState(
-  result: ReturnType<SensaSurgicalClassifier["process"]> | null,
+  result: ReturnType<IkiraroSurgicalClassifier["process"]> | null,
   landmarks: CameraTrackingState["landmarks"],
   committedWord: string | null,
 ): CameraTrackingState {
@@ -161,7 +165,7 @@ self.onmessage = async (event: MessageEvent<MainToWorkerMessage>) => {
           ) {
             lastDebugSign = classification.sign;
             console.log(
-              `[sensa:calibrate] sign=${classification.sign} confidence=${classification.confidence.toFixed(2)}`,
+              `[ikiraro:calibrate] sign=${classification.sign} confidence=${classification.confidence.toFixed(2)}`,
               classification.vector,
             );
           }

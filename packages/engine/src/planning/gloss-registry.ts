@@ -46,5 +46,3 @@ export function isKnownGloss(token: string): boolean {
 export function getGlossDurationMs(token: string): number {
   return GLOSS_REGISTRY[token.toUpperCase()]?.durationMs ?? 500;
 }
-
-export const SYSTEM_PROMPT_HINT = GLOSS_REGISTRY_KEYS.join(", ");

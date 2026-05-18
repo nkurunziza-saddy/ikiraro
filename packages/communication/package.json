@@ -1,5 +1,5 @@
 {
-  "name": "@sensa/communication",
+  "name": "@ikiraro/communication",
   "version": "0.1.0",
   "type": "module",
   "exports": {
@@ -11,16 +11,19 @@
   "dependencies": {
     "@effect/platform": "catalog:",
     "@effect/platform-browser": "catalog:",
+    "@ikiraro/engine": "workspace:*",
     "@mediapipe/tasks-vision": "0.10.35",
-    "@sensa/components": "workspace:*",
-    "@sensa/engine": "workspace:*",
     "effect": "catalog:"
   },
   "devDependencies": {
-    "@sensa/config": "workspace:*",
+    "@ikiraro/config": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "react": "^19.2.6",
     "typescript": "catalog:",
     "vite": "^8.0.12"
+  },
+  "peerDependencies": {
+    "react": ">=18"
   }
 }

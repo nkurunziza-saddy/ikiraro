@@ -1,8 +1,8 @@
 import { useRef, useCallback, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { REST_POSE, type Handshape } from "@sensa/engine/planning";
-import { springStep } from "@sensa/engine/math";
+import { REST_POSE, type Handshape } from "@ikiraro/engine/planning";
+import { springStep } from "@ikiraro/engine/math";
 
 // ─── Anthropometric anatomy (meters) ──────────────────────────────────────────
 // All dimensions are based on average adult-male hand measurements. The palm

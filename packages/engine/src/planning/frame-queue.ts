@@ -1,4 +1,4 @@
-import type { SignPlan, FrameItem } from "@sensa/engine/types";
+import type { SignPlan, FrameItem } from "@ikiraro/engine/types";
 
 export function buildFrameQueue(plan: SignPlan | null): FrameItem[] {
   if (!plan) return [];

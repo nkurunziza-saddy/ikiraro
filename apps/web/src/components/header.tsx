@@ -18,7 +18,7 @@ export default function Header() {
               <HugeiconsIcon icon={SparklesIcon} size={16} />
             </div>
             <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-foreground/80">
-              Sensa Bridge
+              Ikiraro Bridge
             </p>
           </Link>
 

@@ -1,6 +1,3 @@
-export type { EngineErrorCode, TranslationError, TranslationStage } from "./errors";
-export type { AuditEntry, AuditTrail } from "./audit";
-
 // ─── Communication ────────────────────────────────────────────────────────────
 
 export type CommunicationMode = "speech" | "text" | "sign-keys" | "camera-fingerspell";
@@ -21,10 +18,10 @@ export function isSttModel(value: string | null | undefined): value is SttModel 
 export type TokenStability = "draft" | "stable" | "committed";
 
 /**
- * The SensaToken is the unified domain object for all conversational input.
+ * The IkiraroToken is the unified domain object for all conversational input.
  * It encapsulates value, source, and lifecycle data, enabling deep fusion.
  */
-export interface SensaToken {
+export interface IkiraroToken {
   id: string;
   value: string;
   type: "sign" | "speech" | "text" | "control";
@@ -140,14 +137,6 @@ export type SemanticIntent = {
   confidence: number;
   model: string;
   promptTokens?: number;
-};
-
-export type TranslationResult = {
-  mode: CommunicationMode;
-  sourceText: string;
-  intent: SemanticIntent;
-  plan: SignPlan;
-  rendererQueue: FrameItem[];
 };
 
 export type TranslationEnvelope = {

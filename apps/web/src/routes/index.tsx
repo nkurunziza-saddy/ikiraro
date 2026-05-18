@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { Button } from "@sensa/components";
+import { Button } from "@ikiraro/components";
 
 export const Route = createFileRoute("/")({
   component: HomeComponent,
@@ -20,7 +20,7 @@ function HomeComponent() {
               Precision tools for spoken & sign systems.
             </h1>
             <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground/70">
-              Sensa combines speech capture, vision-based tracking, and translation history in a
+              Ikiraro combines speech capture, vision-based tracking, and translation history in a
               unified working surface built for operational clarity.
             </p>
           </div>

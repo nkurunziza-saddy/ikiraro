@@ -1,4 +1,4 @@
-import type { CommunicationMode, TranslationEnvelope } from "@sensa/engine/types";
+import type { CommunicationMode, TranslationEnvelope } from "@ikiraro/engine/types";
 
 export type CaptureStatus = "idle" | "capturing" | "processing" | "error";
 
@@ -7,8 +7,8 @@ export interface CaptureAdapter {
   start(): Promise<void>;
   stop(): Promise<any>; // Returns the raw data (Blob, string, etc.)
   reset(): void;
-  onStatus(cb: (status: CaptureStatus) => void): void;
-  onLevel?(cb: (level: number) => void): void;
+  onStatus(cb: (status: CaptureStatus) => void): () => void;
+  onLevel?(cb: (level: number) => void): () => void;
 }
 
 export interface CaptureSession {

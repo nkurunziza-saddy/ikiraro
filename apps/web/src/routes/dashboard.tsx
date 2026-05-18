@@ -1,11 +1,11 @@
-import type { TranslationEnvelope } from "@sensa/engine/types";
+import type { TranslationEnvelope } from "@ikiraro/engine/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useDeferredValue, useEffect, useState } from "react";
 
-import { PipelineView } from "@sensa/components";
-import { Button } from "@sensa/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@sensa/components/ui/alert";
-import { useHandTracking } from "@sensa/communication";
+import { PipelineView } from "@ikiraro/components";
+import { Button } from "@ikiraro/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@ikiraro/components/ui/alert";
+import { useHandTracking } from "@ikiraro/communication";
 import { useCommunicationSession, type ComposerMode } from "@/hooks/use-communication-session";
 
 import { CameraPanel } from "@/components/camera-panel";
@@ -99,7 +99,7 @@ function RouteComponent() {
         <section className="space-y-10">
           <div className="flex flex-col gap-4">
             <div className="inline-flex w-fit items-center rounded-full bg-muted px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              Sensa Console
+              Ikiraro Console
             </div>
             <h1 className="max-w-4xl text-5xl font-bold tracking-tight text-balance sm:text-6xl">
               Clean intelligence for sign translation.

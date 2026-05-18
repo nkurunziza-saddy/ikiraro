@@ -1,4 +1,4 @@
-import type { SensaPlugin, PluginContext, SensaEvent } from "../types";
+import type { IkiraroPlugin, PluginContext, IkiraroEvent } from "../types";
 import { SpeechCaptureAdapter } from "../../capture/speech-capture";
 import type { CaptureStatus } from "../../capture/types";
 
@@ -10,13 +10,13 @@ export interface SpeechState {
 /**
  * Orchestrates speech capture and emits translation requests upon completion.
  */
-export class SpeechPlugin implements SensaPlugin<SpeechState> {
+export class SpeechPlugin implements IkiraroPlugin<SpeechState> {
   name = "speech";
   initialState: SpeechState = { status: "idle", level: 0 };
   private adapter = new SpeechCaptureAdapter();
 
   setup(ctx: PluginContext<SpeechState>) {
-    this.adapter.onStatus((status) => {
+    const unsubscribeStatus = this.adapter.onStatus((status) => {
       ctx.emit({
         type: "speech:status-change",
         payload: status,
@@ -25,7 +25,7 @@ export class SpeechPlugin implements SensaPlugin<SpeechState> {
       });
     });
 
-    this.adapter.onLevel((level) => {
+    const unsubscribeLevel = this.adapter.onLevel((level) => {
       ctx.emit({
         type: "speech:level-update",
         payload: level,
@@ -56,6 +56,7 @@ export class SpeechPlugin implements SensaPlugin<SpeechState> {
             mode: "speech",
             audio,
             sttModel: event.payload?.sttModel,
+            prompt: event.payload?.prompt,
             context: event.payload?.context,
           },
           timestamp: Date.now(),
@@ -74,9 +75,11 @@ export class SpeechPlugin implements SensaPlugin<SpeechState> {
     ctx.subscribe("speech:cmd:cancel", () => {
       this.adapter.reset();
     });
+
+    return [unsubscribeStatus, unsubscribeLevel];
   }
 
-  reducer(state: SpeechState, event: SensaEvent): SpeechState {
+  reducer(state: SpeechState, event: IkiraroEvent): SpeechState {
     switch (event.type) {
       case "speech:status-change":
         return { ...state, status: event.payload };

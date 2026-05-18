@@ -8,9 +8,9 @@ import {
   REST_POSE,
 } from "@ikiraro/sdk";
 import type { TranslationEnvelope } from "@ikiraro/sdk";
-import { Badge } from "@sensa/components/ui/badge";
-import { Input } from "@sensa/components/ui/input";
-import { Button } from "@sensa/components/ui/button";
+import { Badge } from "@ikiraro/components/ui/badge";
+import { Input } from "@ikiraro/components/ui/input";
+import { Button } from "@ikiraro/components/ui/button";
 
 export const Route = createFileRoute("/sdk-test")({
   component: SdkTestPage,

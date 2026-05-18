@@ -4,18 +4,18 @@ import {
   createEnvelope,
   SttService,
   GlossService,
-} from "@sensa/engine/planning";
-import type { SttModel } from "@sensa/engine/types";
+} from "@ikiraro/engine/planning";
+import type { SttModel } from "@ikiraro/engine/types";
 import { makeGroqLayer } from "./services/groq/client";
 import { SttGroqLive } from "./services/groq/stt";
 import { GlossGroqLive } from "./services/groq/gloss";
 
-export interface SensaConfig {
+export interface IkiraroConfig {
   readonly groqApiKey: string;
   readonly groqBaseUrl?: string;
 }
 
-export class SensaSDK {
+export class IkiraroSDK {
   static translateText = (text: string) =>
     Effect.gen(function* (_) {
       const gloss = yield* _(GlossService);
@@ -46,7 +46,7 @@ export class SensaSDK {
       });
     });
 
-  static makeLayer = (config: SensaConfig) => {
+  static makeLayer = (config: IkiraroConfig) => {
     const groq = makeGroqLayer({
       apiKey: config.groqApiKey,
       baseUrl: config.groqBaseUrl,

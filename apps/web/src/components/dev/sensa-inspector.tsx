@@ -1,24 +1,24 @@
-import { useSensa, type SensaRuntime, type SensaEvent } from "@sensa/communication";
+import { useIkiraro, type IkiraroRuntime, type IkiraroEvent } from "@ikiraro/communication";
 import { motion, AnimatePresence } from "framer-motion";
 import { Terminal } from "lucide-react";
 
-interface SensaInspectorProps {
-  runtime: SensaRuntime;
+interface IkiraroInspectorProps {
+  runtime: IkiraroRuntime;
 }
 
 /**
- * Dev Tooling village: A visual debugger for the Sensa Event Bus.
+ * Dev Tooling village: A visual debugger for the Ikiraro Event Bus.
  */
-export function SensaInspector({ runtime }: SensaInspectorProps) {
-  const { state } = useSensa(runtime);
-  const events: SensaEvent[] = state.plugins.inspector?.events || [];
+export function IkiraroInspector({ runtime }: IkiraroInspectorProps) {
+  const { state } = useIkiraro(runtime);
+  const events: IkiraroEvent[] = state.plugins.inspector?.events || [];
 
   return (
     <div className="fixed bottom-4 right-4 w-96 bg-black/90 border border-white/10 rounded-xl overflow-hidden shadow-2xl font-mono text-xs text-white z-50">
       <div className="p-3 border-b border-white/10 flex items-center justify-between bg-white/5">
         <div className="flex items-center gap-2">
           <Terminal size={14} className="text-blue-400" />
-          <span className="font-bold uppercase tracking-wider">Sensa Inspector</span>
+          <span className="font-bold uppercase tracking-wider">Ikiraro Inspector</span>
         </div>
         <div className="flex items-center gap-2">
           <div

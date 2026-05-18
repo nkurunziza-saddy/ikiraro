@@ -1,4 +1,4 @@
-# sensa
+# ikiraro
 
 This file provides context about the project for AI assistants.
 
@@ -30,9 +30,9 @@ This file provides context about the project for AI assistants.
 
 ## Core SDK Packages
 
-- `@sensa/engine` - The pure math, vision, and planning logic.
-- `@sensa/communication` - The high-level `SensaSDK` Effect layer and `SensaRuntime` orchestrator.
-- `@sensa/components` - The React UI component library for the SDK.
+- `@ikiraro/engine` - The pure math, vision, and planning logic.
+- `@ikiraro/communication` - The high-level `IkiraroSDK` Effect layer and `IkiraroRuntime` orchestrator.
+- `@ikiraro/components` - The React UI component library for the SDK.
 
 ## Maintenance Notes
 

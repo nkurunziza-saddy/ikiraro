@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AslHandSvg } from "@sensa/components";
+import { AslHandSvg } from "@ikiraro/components";
 
 const LETTER_KEYS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
