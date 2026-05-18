@@ -7,10 +7,8 @@ import {
   subtract,
 } from "../math";
 import type { FeatureVector, HandLandmarks } from "./types";
+import { ASL_DEFAULTS } from "./asl-defaults";
 
-// Angle-based extension: measures actual joint straightness rather than tip-vs-pip distance.
-// PIP angle > 155° AND DIP angle > 150° = finger is extended.
-// This is robust to perspective distortion and works correctly with worldLandmarks.
 function isFingerExtended(
   landmarks: HandLandmarks,
   tipIndex: number,
@@ -20,13 +18,12 @@ function isFingerExtended(
 ): boolean {
   const pipAngle = getAngle(landmarks[mcpIndex]!, landmarks[pipIndex]!, landmarks[dipIndex]!);
   const dipAngle = getAngle(landmarks[pipIndex]!, landmarks[dipIndex]!, landmarks[tipIndex]!);
-  return pipAngle > 155 && dipAngle > 150;
+  return pipAngle > ASL_DEFAULTS.pipExtensionAngle && dipAngle > ASL_DEFAULTS.dipExtensionAngle;
 }
 
-// Thumb extension: IP joint straightness. > 140° = extended to the side.
 function isThumbExtended(landmarks: HandLandmarks): boolean {
   const ipAngle = getAngle(landmarks[2]!, landmarks[3]!, landmarks[4]!);
-  return ipAngle > 140;
+  return ipAngle > ASL_DEFAULTS.thumbExtensionAngle;
 }
 
 function getFingerCurl(

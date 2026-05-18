@@ -10,12 +10,16 @@ export type {
   IFeatureExtractor,
   ISignMatcher,
   ITemporalSmoother,
+  ILinguisticStrategy,
+  LinguisticBufferConfig,
   WordBufferOptions,
   BufferState,
   VisionStatus,
   VisionEventMap,
   HandProcessor,
 } from "./types";
+
+export { ASL_DEFAULTS } from "./asl-defaults";
 
 export type { HandBounds, HandGeometryQuality } from "./quality";
 
@@ -27,5 +31,7 @@ export { SensaFeatureExtractor } from "./implementations/feature-extractor";
 export { SensaSurgicalMatcher } from "./implementations/surgical-matcher";
 export { SensaTemporalSmoother } from "./implementations/temporal-smoother";
 export { SensaSurgicalClassifier, DEFAULT_CLASSIFIER_CONFIG } from "./classifier";
-export { WordBuffer, DOUBLE_LETTER_HOLD_MS } from "./word-buffer";
-export { VisionSystem } from "./vision-system";
+export { LinguisticBuffer } from "./linguistic-buffer";
+export { WordBuffer } from "./word-buffer";
+export { FingerspellStrategy } from "./linguistic/fingerspell-strategy";
+export { LexemeStrategy } from "./linguistic/lexeme-strategy";

@@ -1,5 +1,7 @@
-import type { FrameItem } from "./frame-queue";
+import type { FrameItem } from "../types";
 import type { SignCanvas, RendererState, PlaybackOptions } from "./renderer-types";
+import { resolveHandshape, mixHandshapes } from "./pose-library";
+import { coarticulationBlend } from "./coarticulation";
 
 /**
  * The RendererDirector coordinates the playback of a SignPlan.
@@ -142,25 +144,25 @@ export class RendererDirector {
       return;
     }
 
-    this.canvas.setHand(frame.value, frame.motion);
+    const currentHandshape = resolveHandshape(frame.value);
     this.canvas.setOverlay(frame.label, frame.sublabel);
 
     if (this.canvas.setExpression && frame.facialExpression) {
       this.canvas.setExpression(frame.facialExpression);
     }
 
-    // Centralized Transition logic:
-    // If we are in the last 20% of a frame, start blending to the next
-    if (
-      this.canvas.setBlend &&
-      this.state.progress > 0.8 &&
-      this.state.frameIndex < this.queue.length - 1
-    ) {
-      const nextFrame = this.queue[this.state.frameIndex + 1]!;
-      const blendFactor = (this.state.progress - 0.8) / 0.2;
-      this.canvas.setBlend(blendFactor, frame.value, nextFrame.value);
-    } else if (this.canvas.setBlend) {
-      this.canvas.setBlend(0, frame.value, frame.value);
+    const hasNext = this.state.frameIndex < this.queue.length - 1;
+    const blend = coarticulationBlend(
+      frame.coarticulation ?? "blend",
+      this.state.progress,
+      hasNext,
+    );
+
+    if (blend !== null) {
+      const nextHandshape = resolveHandshape(this.queue[this.state.frameIndex + 1]!.value);
+      this.canvas.setPose(mixHandshapes(currentHandshape, nextHandshape, blend));
+    } else {
+      this.canvas.setPose(currentHandshape);
     }
   }
 

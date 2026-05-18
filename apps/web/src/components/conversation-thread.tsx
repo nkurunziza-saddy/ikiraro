@@ -1,5 +1,5 @@
 import { TtsControls } from "@sensa/components";
-import type { SignPlan } from "@sensa/engine/types";
+import type { SignPlan, FrameItem } from "@sensa/engine/types";
 
 export type ConversationEntry = {
   id: string;
@@ -9,7 +9,7 @@ export type ConversationEntry = {
   raw: string;
   normalized: string;
   signPlan: SignPlan;
-  rendererQueue: string[];
+  rendererQueue: FrameItem[];
   note: string;
   intakeModel: string | null;
   wordCount: number | null;
@@ -85,7 +85,7 @@ export function ConversationThread({ entries }: { entries: ConversationEntry[] }
               />
               <ThreadMetric
                 label="Execution"
-                value={entry.rendererQueue.join(" · ") || "—"}
+                value={entry.rendererQueue.map((f) => f.label).join(" · ") || "—"}
                 helper={`${entry.signPlan.clauses.length} clauses`}
               />
             </div>

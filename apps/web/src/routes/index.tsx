@@ -33,6 +33,15 @@ function HomeComponent() {
                 Launch Console
               </Button>
             </Link>
+            <Link to="/sdk-test">
+              <Button
+                size="lg"
+                variant="outline"
+                className="min-w-48 font-bold uppercase tracking-widest rounded-md"
+              >
+                SDK Test
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

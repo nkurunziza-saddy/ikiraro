@@ -1,4 +1,5 @@
 import { articulate } from "./core";
+import { SessionPlugin } from "./plugins/session";
 import { CompositionPlugin } from "./plugins/composition";
 import { TranslationPlugin } from "./plugins/translation";
 import { SpeechPlugin } from "./plugins/speech";
@@ -21,6 +22,7 @@ export interface SensaDefaultConfig {
  */
 export async function createSensa(config: SensaDefaultConfig) {
   const plugins: SensaPlugin[] = [
+    new SessionPlugin(),
     new CompositionPlugin(),
     new TranslationPlugin(),
     new SpeechPlugin(),

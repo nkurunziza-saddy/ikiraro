@@ -9,10 +9,7 @@ describe("SensaSurgicalClassifier", () => {
   let classifier: SensaSurgicalClassifier;
 
   beforeEach(() => {
-    classifier = new SensaSurgicalClassifier({
-      windowSize: 3,
-      lockThreshold: 2,
-    });
+    classifier = new SensaSurgicalClassifier();
   });
 
   it("should initialize with default components", () => {

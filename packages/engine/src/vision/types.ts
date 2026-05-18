@@ -8,6 +8,10 @@ export type {
   IFeatureExtractor,
   ISignMatcher,
   ITemporalSmoother,
+  ILandmarkSmoother,
+  IGestureDetector,
+  ITransitionDetector,
+  VisionPipelineConfig,
   HandshapeDefinition,
   ClassifierConfig,
 } from "../types";
@@ -27,6 +31,28 @@ export interface WordBufferContext {
   isTransitioning?: boolean;
   gesture?: "double-letter-slide" | "double-letter-bounce" | "none";
   confidence?: number;
+}
+
+import type { SignToken } from "../types";
+
+/**
+ * Extension seam for the LinguisticBuffer.
+ *
+ * Each strategy receives every sign detection and decides when to commit a token.
+ * Built-in adapters: FingerspellStrategy (single letters), LexemeStrategy (whole words).
+ * Add a new strategy to handle a new sign type (numbers, compounds, classifiers, etc.)
+ * and pass it via LinguisticBufferConfig.strategies.
+ */
+export interface ILinguisticStrategy {
+  readonly name: string;
+  update(sign: string, context: WordBufferContext): SignToken | null;
+  commit?(): SignToken | null;
+  reset(): void;
+}
+
+export interface LinguisticBufferConfig {
+  strategies: ILinguisticStrategy[];
+  pauseThresholdMs: number;
 }
 
 // ─── Vision System ────────────────────────────────────────────────────────────

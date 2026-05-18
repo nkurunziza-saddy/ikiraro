@@ -1,4 +1,4 @@
-import type { Point3D } from "./types";
+import type { Point3D, IGestureDetector } from "./types";
 
 export interface GestureDetection {
   type: "double-letter-slide" | "double-letter-bounce" | "none";
@@ -8,7 +8,7 @@ export interface GestureDetection {
 /**
  * Detects subtle gestures during fingerspelling, such as those used for double letters.
  */
-export class SensaGestureDetector {
+export class SensaGestureDetector implements IGestureDetector {
   private history: Point3D[] = [];
   private readonly WINDOW_SIZE = 15;
 

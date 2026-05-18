@@ -1,15 +1,4 @@
-import type { SignPlan } from "@sensa/engine/types";
-
-export type FrameItem = {
-  type: "lexeme" | "fingerspell" | "number" | "pause" | "pointing";
-  value: string;
-  label: string;
-  sublabel?: string;
-  duration: number;
-  motion?: "none" | "shake" | "arc" | "tap" | "circle";
-  facialExpression?: string;
-  coarticulation?: "blend" | "snap" | "none";
-};
+import type { SignPlan, FrameItem } from "@sensa/engine/types";
 
 export function buildFrameQueue(plan: SignPlan | null): FrameItem[] {
   if (!plan) return [];

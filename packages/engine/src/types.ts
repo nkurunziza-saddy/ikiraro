@@ -48,11 +48,13 @@ export const FACIAL_EXPRESSIONS = [
 export type EmphasisLevel = (typeof EMPHASIS_LEVELS)[number];
 export type FacialExpression = (typeof FACIAL_EXPRESSIONS)[number];
 
+export type CoarticulationMode = "blend" | "snap" | "none";
+
 export type BaseToken = {
   durationMs: number;
   emphasis: EmphasisLevel;
   facialExpression?: FacialExpression;
-  coarticulationHint?: "blend" | "snap" | "none";
+  coarticulationHint?: CoarticulationMode;
 };
 
 export type LexemeToken = BaseToken & { type: "lexeme"; lexemeId: string };
@@ -81,6 +83,19 @@ export type SignPlan = {
     reviewNeeded: boolean;
     notes: string[];
   };
+};
+
+// ─── Renderer Queue ──────────────────────────────────────────────────────────
+
+export type FrameItem = {
+  type: "lexeme" | "fingerspell" | "number" | "pause" | "pointing";
+  value: string;
+  label: string;
+  sublabel?: string;
+  duration: number;
+  motion?: "none" | "shake" | "arc" | "tap" | "circle";
+  facialExpression?: string;
+  coarticulation?: CoarticulationMode;
 };
 
 // ─── Speech intake ────────────────────────────────────────────────────────────
@@ -132,14 +147,14 @@ export type TranslationResult = {
   sourceText: string;
   intent: SemanticIntent;
   plan: SignPlan;
-  rendererQueue: string[];
+  rendererQueue: FrameItem[];
 };
 
 export type TranslationEnvelope = {
   mode: CommunicationMode;
   intake: SpeechIntake | null;
   plan: SignPlan;
-  rendererQueue: string[];
+  rendererQueue: FrameItem[];
   rawInput: string;
   normalizedText: string;
   intent?: SemanticIntent;
@@ -199,6 +214,35 @@ export interface ITemporalSmoother {
     confidence: number;
   };
   reset(): void;
+}
+
+export interface ILandmarkSmoother {
+  smooth(landmarks: HandLandmarks): HandLandmarks;
+  getVelocity(): Point3D;
+  reset(): void;
+}
+
+export interface IGestureDetector {
+  update(velocity: Point3D): {
+    type: "double-letter-slide" | "double-letter-bounce" | "none";
+    confidence: number;
+  };
+  reset(): void;
+}
+
+export interface ITransitionDetector {
+  isTransitioning(velocity: Point3D, confidence: number): boolean;
+  reset(): void;
+}
+
+export interface VisionPipelineConfig {
+  smoother: ILandmarkSmoother;
+  extractor: IFeatureExtractor;
+  matcher: ISignMatcher;
+  temporal: ITemporalSmoother;
+  gesture: IGestureDetector;
+  transition: ITransitionDetector;
+  motionVelocityThreshold: number;
 }
 
 export type CameraTrackingState = {

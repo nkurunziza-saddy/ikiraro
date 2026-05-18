@@ -5,7 +5,6 @@ import type {
   SensaState,
   PluginContext,
   EventRegistry,
-  PluginRegistry,
 } from "./types";
 
 /**
@@ -16,7 +15,7 @@ export class SensaRuntime {
   private state: SensaState = {
     status: "idle",
     activeTracks: [],
-    plugins: {} as PluginRegistry,
+    plugins: {} as SensaState["plugins"],
   };
 
   private handlers: Map<string, Set<(event: SensaEvent<any>) => void>> = new Map();
@@ -30,10 +29,12 @@ export class SensaRuntime {
   async start() {
     this.plugins = this.config.plugins || [];
 
-    // Pre-populate plugin states
+    // Pre-populate plugin states. The cast is load-bearing: plugins register by name at
+    // runtime, so TypeScript can't verify the key matches PluginRegistry at compile time.
+    const pluginStates = this.state.plugins as unknown as Record<string, unknown>;
     for (const plugin of this.plugins) {
       if (plugin.initialState !== undefined) {
-        (this.state.plugins as any)[plugin.name] = plugin.initialState;
+        pluginStates[plugin.name] = plugin.initialState;
       }
     }
 
@@ -42,7 +43,7 @@ export class SensaRuntime {
         emit: (event) => this.dispatch(event),
         subscribe: (type, handler) => this.subscribe(type, handler),
         getState: () => ({ ...this.state }),
-        getPluginState: () => this.state.plugins[plugin.name as keyof PluginRegistry],
+        getPluginState: () => pluginStates[plugin.name] as any,
         config: this.config,
       };
       await plugin.setup(ctx);
@@ -70,10 +71,10 @@ export class SensaRuntime {
     this.updateInternalState(event);
 
     // 2. Run plugin reducers for local state updates
+    const pluginStates = this.state.plugins as unknown as Record<string, unknown>;
     for (const plugin of this.plugins) {
-      const name = plugin.name as keyof PluginRegistry;
-      if (plugin.reducer && this.state.plugins[name] !== undefined) {
-        this.state.plugins[name] = plugin.reducer(this.state.plugins[name], event);
+      if (plugin.reducer && pluginStates[plugin.name] !== undefined) {
+        pluginStates[plugin.name] = plugin.reducer(pluginStates[plugin.name], event);
       }
     }
 
@@ -96,11 +97,19 @@ export class SensaRuntime {
     return () => this.handlers.get(typeStr)?.delete(handler as any);
   }
 
+  /** Subscribe to every event on the bus. Use sparingly — prefer typed subscriptions. */
+  public subscribeAll(handler: (event: SensaEvent<any>) => void) {
+    const set = this.handlers.get("*") ?? new Set();
+    set.add(handler);
+    this.handlers.set("*", set);
+    return () => this.handlers.get("*")?.delete(handler);
+  }
+
   private updateInternalState(event: SensaEvent<any>) {
     if (event.type === "runtime:status-change") {
       this.state.status = event.payload;
     }
-    // Logic for other core state updates (activeTracks, etc.) would go here.
+    // TODO: Logic for other core state updates (activeTracks, etc.) would go here.
   }
 
   getState() {

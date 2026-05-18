@@ -1,10 +1,10 @@
-import type { Point3D } from "./types";
+import type { Point3D, ITransitionDetector } from "./types";
 
 /**
  * Detects if the hand is currently in a transition state between signs.
  * Transitions are characterized by high velocity and unstable handshapes.
  */
-export class SensaTransitionDetector {
+export class SensaTransitionDetector implements ITransitionDetector {
   private readonly velocityThreshold = 0.25;
   private transitionFrames = 0;
   private readonly debounceFrames = 3;

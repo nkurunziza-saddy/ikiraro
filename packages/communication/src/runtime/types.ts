@@ -9,11 +9,22 @@ import type { CaptureStatus } from "../capture/types";
 import type { CompositionState } from "./plugins/composition";
 import type { TranslationState } from "./plugins/translation";
 import type { InspectorState } from "./plugins/inspector";
+import type { SessionState } from "./plugins/session";
+import type { SpeechState } from "./plugins/speech";
+
+/** Shared payload for translation:cmd:request and translation:started. */
+export type TranslationRequest = {
+  mode: CommunicationMode;
+  text?: string;
+  audio?: Blob;
+  units?: string[];
+  sttModel?: SttModel;
+  context?: TranslationContext;
+};
 
 /**
- * The EventRegistry is the central "Truth" for all runtime interactions.
- * It maps event names to their payload shapes, providing deep leverage
- * for all plugins and the core runtime.
+ * Central map of every event name to its payload type.
+ * Add a new entry here when introducing a new event — nowhere else.
  */
 export interface EventRegistry {
   // Runtime Core
@@ -41,15 +52,8 @@ export interface EventRegistry {
   "composition:cmd:clear": undefined;
 
   // Translation Plugin
-  "translation:cmd:request": {
-    mode: CommunicationMode;
-    text?: string;
-    audio?: Blob;
-    units?: string[];
-    sttModel?: SttModel;
-    context?: TranslationContext;
-  };
-  "translation:started": any; // Options passed in
+  "translation:cmd:request": TranslationRequest;
+  "translation:started": TranslationRequest;
   "translation:finished": TranslationEnvelope;
   "translation:error": string;
 
@@ -63,8 +67,17 @@ export interface EventRegistry {
   "speech:cmd:stop": { sttModel?: SttModel; context?: TranslationContext };
   "speech:cmd:cancel": undefined;
 
-  // Catch-all for extensibility
-  [key: string]: any;
+  // Session Plugin
+  "session:status-change": SessionState["status"];
+  "session:cmd:start": {
+    mode: CommunicationMode;
+    text?: string;
+    units?: string[];
+    sttModel?: SttModel;
+    context?: TranslationContext;
+  };
+  "session:cmd:stop": undefined;
+  "session:cmd:cancel": undefined;
 }
 
 /**
@@ -104,17 +117,15 @@ export interface SensaPlugin<S = any> {
 }
 
 /**
- * The PluginRegistry defines the state shape for each plugin.
- * This provides deep leverage for state access across the runtime.
+ * Typed map of plugin name → plugin state for all stateful plugins.
+ * Vision and keyboard plugins are event-only (no state) and are not listed here.
  */
 export interface PluginRegistry {
+  session: SessionState;
   composition: CompositionState;
   translation: TranslationState;
   inspector: InspectorState;
-  speech: import("./plugins/speech").SpeechState;
-  vision: any; // Placeholder until VisionState is defined
-  keyboard: any;
-  [key: string]: any;
+  speech: SpeechState;
 }
 
 /**

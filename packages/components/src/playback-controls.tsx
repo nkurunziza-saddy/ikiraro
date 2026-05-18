@@ -57,7 +57,7 @@ export function PlaybackControls({
           <button
             key={s}
             onClick={() => setSpeed(s)}
-            className={`h-7 px-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all ${
+            className={`h-7 px-2 rounded-md text-[10px] font-bold uppercase tracking-widest transition-all active:scale-95 ${
               speed === s
                 ? "bg-primary text-primary-foreground shadow-sm scale-105"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"

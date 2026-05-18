@@ -3,13 +3,12 @@ export * from "./audio-visualizer";
 export * from "./hand-overlay";
 export * from "./loader";
 export * from "./pipeline-view";
-export * from "./sign-player";
+export * from "./playback-controls";
+export * from "./sign-model-procedural";
+export * from "./sign-model-gltf";
+export * from "./sign-player-3d";
 export * from "./tts-controls";
-export * from "./siri-orb";
 
-// UI primitives — both `@sensa/components` and `@sensa/components/ui/*` imports resolve correctly.
-// Components with cross-@/ui/ internal imports (alert-dialog, button-group, combobox, command,
-// dialog, input-group, item, toggle-group) are excluded here; use their /ui/* subpath directly.
 export * from "./ui/accordion";
 export * from "./ui/alert";
 export * from "./ui/avatar";

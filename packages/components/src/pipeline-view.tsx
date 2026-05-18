@@ -1,5 +1,5 @@
 import type { TranslationEnvelope } from "@sensa/engine/types";
-import { SignPlayer } from "./sign-player";
+import { SignPlayer3D } from "./sign-player-3d";
 
 function DetailCard({ label, value }: { label: string; value: string }) {
   return (
@@ -25,7 +25,13 @@ function SummaryStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function PipelineView({ envelope }: { envelope: TranslationEnvelope | null }) {
+export function PipelineView({
+  envelope,
+  modelUrl,
+}: {
+  envelope: TranslationEnvelope | null;
+  modelUrl?: string;
+}) {
   if (!envelope) {
     return (
       <div className="rounded-xl border border-dashed bg-muted/5 px-6 py-16 text-center">
@@ -59,7 +65,7 @@ export function PipelineView({ envelope }: { envelope: TranslationEnvelope | nul
         <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">
           Visual Execution
         </p>
-        <SignPlayer plan={envelope.plan} />
+        <SignPlayer3D envelope={envelope} modelUrl={modelUrl} />
       </div>
 
       <div className="space-y-4 pt-8 border-t border-border/30">
@@ -68,12 +74,12 @@ export function PipelineView({ envelope }: { envelope: TranslationEnvelope | nul
         </p>
         <div className="flex flex-wrap gap-2">
           {envelope.rendererQueue.length > 0 ? (
-            envelope.rendererQueue.map((step, index) => (
+            envelope.rendererQueue.map((frame, index) => (
               <span
-                key={`${step}-${index}`}
+                key={`${frame.label}-${index}`}
                 className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/80 bg-muted px-2 py-1 rounded"
               >
-                {step}
+                {frame.label}
               </span>
             ))
           ) : (

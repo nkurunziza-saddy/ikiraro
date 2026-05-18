@@ -2,6 +2,7 @@ import { ManagedRuntime } from "effect";
 import type { SensaPlugin, PluginContext, SensaEvent } from "../types";
 import { SensaSDK } from "../../sdk";
 import { buildPlanFromUnits, createEnvelope } from "@sensa/engine/planning";
+import { getAudioFileExtension } from "../../capture/audio-utils";
 import type {
   TranslationEnvelope,
   SttModel,
@@ -82,7 +83,8 @@ export class TranslationPlugin implements SensaPlugin<TranslationState> {
       let envelope: TranslationEnvelope;
 
       if (options.mode === "speech" && options.audio) {
-        const file = new File([options.audio], "speech.webm", { type: options.audio.type });
+        const ext = getAudioFileExtension(options.audio.type);
+        const file = new File([options.audio], `speech.${ext}`, { type: options.audio.type });
         envelope = await this.effectRuntime.runPromise(
           SensaSDK.translateSpeech(file, options.sttModel),
         );

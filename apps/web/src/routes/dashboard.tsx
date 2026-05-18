@@ -219,7 +219,7 @@ function RouteComponent() {
                 Translation
               </h2>
               <div className="rounded-2xl border bg-card/30 p-8 shadow-sm border-border/40">
-                <PipelineView envelope={session.previewEnvelope} />
+                <PipelineView envelope={session.previewEnvelope} modelUrl="/models/avatar.glb" />
               </div>
             </div>
 

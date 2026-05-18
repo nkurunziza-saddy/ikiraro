@@ -3,11 +3,12 @@ export interface HandPose {
   motion: string;
 }
 
+import type { Handshape } from "./pose-library";
+
 export interface SignCanvas {
-  setHand(letter: string, motion?: string): void;
+  setPose(pose: Handshape): void;
   setOverlay(label: string, sublabel?: string): void;
   setExpression?(expression: string): void;
-  setBlend?(factor: number, fromLetter: string, toLetter: string): void;
   clear(): void;
 }
 

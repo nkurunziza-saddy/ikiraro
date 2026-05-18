@@ -62,3 +62,5 @@ export function normalizeHand(landmarks: HandLandmarks): HandLandmarks {
   const scaleFactor = palmWidth > 0 ? 1 / palmWidth : 1;
   return rotated.map((point) => scale(point, scaleFactor));
 }
+
+export * from "./smoothing";

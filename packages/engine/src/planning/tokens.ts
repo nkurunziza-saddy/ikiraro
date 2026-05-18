@@ -5,8 +5,6 @@ import type {
   NumberToken,
   PauseToken,
   PointingToken,
-  SignPlan,
-  SignToken,
 } from "../types";
 import { getGlossDurationMs } from "./gloss-registry";
 
@@ -70,28 +68,4 @@ export function pointingToken(
 
 export function pauseToken(durationMs: number = DEFAULT_PAUSE_MS): PauseToken {
   return { type: "pause", durationMs };
-}
-
-export function extractTokenValue(token: SignToken): string[] {
-  switch (token.type) {
-    case "lexeme":
-      return [token.lexemeId];
-    case "fingerspell":
-      return token.text
-        .toUpperCase()
-        .split("")
-        .map((char) => `FS:${char}`);
-    case "number":
-      return token.value.split("").map((digit) => `FS:${digit}`);
-    case "pause":
-      return ["/"];
-    case "pointing":
-      return [token.target.toUpperCase()];
-  }
-}
-
-export function buildRendererQueue(plan: SignPlan): string[] {
-  return plan.clauses.flatMap((clause) =>
-    clause.tokens.flatMap((token) => extractTokenValue(token)),
-  );
 }

@@ -1,0 +1,62 @@
+{
+  "name": "@ikiraro/sdk",
+  "version": "0.1.0",
+  "description": "Sensa SDK — sign language translation and rendering",
+  "keywords": [
+    "accessibility",
+    "asl",
+    "sdk",
+    "sign-language"
+  ],
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components": "./src/components.ts",
+    "./engine": "./src/engine.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "./components": {
+        "import": "./dist/components.js",
+        "types": "./dist/components.d.ts"
+      },
+      "./engine": {
+        "import": "./dist/engine.js",
+        "types": "./dist/engine.d.ts"
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "check-types": "tsc --noEmit",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "@sensa/communication": "workspace:*",
+    "@sensa/components": "workspace:*",
+    "@sensa/engine": "workspace:*"
+  },
+  "devDependencies": {
+    "@sensa/config": "workspace:*",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "tsup": "^8.5.0",
+    "typescript": "catalog:",
+    "vite": "^8.0.12"
+  },
+  "peerDependencies": {
+    "effect": ">=3.0.0",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "three": ">=0.170.0"
+  }
+}

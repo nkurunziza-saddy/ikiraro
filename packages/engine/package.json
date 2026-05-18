@@ -11,6 +11,9 @@
     "./planning": {
       "default": "./src/planning/index.ts"
     },
+    "./math": {
+      "default": "./src/math/index.ts"
+    },
     "./vision": {
       "default": "./src/vision/index.ts"
     }

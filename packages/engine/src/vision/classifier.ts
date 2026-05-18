@@ -8,9 +8,7 @@ import type {
   ClassificationResult,
   ClassifierConfig,
   HandLandmarks,
-  IFeatureExtractor,
-  ISignMatcher,
-  ITemporalSmoother,
+  VisionPipelineConfig,
 } from "./types";
 
 export const DEFAULT_CLASSIFIER_CONFIG: ClassifierConfig = {
@@ -23,56 +21,52 @@ export const DEFAULT_CLASSIFIER_CONFIG: ClassifierConfig = {
 
 /**
  * The SensaSurgicalClassifier orchestrates the sign detection pipeline.
- * It is 'surgical' because it prioritizes precision through decoupled,
- * testable components and heuristic-based rules.
+ * It follows the 'Deep Transformer' architecture, where a logic-heavy
+ * orchestrator drives a sequence of pure adapters.
  */
 export class SensaSurgicalClassifier {
-  private smoother = new LandmarkSmoother();
-  private extractor: IFeatureExtractor;
-  private matcher: ISignMatcher;
-  private temporalSmoother: ITemporalSmoother;
-  private gestureDetector = new SensaGestureDetector();
-  private transitionDetector = new SensaTransitionDetector();
-  private config: ClassifierConfig;
+  private config: VisionPipelineConfig;
 
-  constructor(config: Partial<ClassifierConfig> = {}) {
-    this.config = { ...DEFAULT_CLASSIFIER_CONFIG, ...config };
-    this.extractor = new SensaFeatureExtractor();
-    this.matcher = new SensaSurgicalMatcher();
-    this.temporalSmoother = new SensaTemporalSmoother(this.config);
+  constructor(config?: Partial<VisionPipelineConfig>) {
+    // Default surgical configuration
+    const classifierConfig = DEFAULT_CLASSIFIER_CONFIG;
+
+    this.config = {
+      smoother: config?.smoother ?? new LandmarkSmoother(),
+      extractor: config?.extractor ?? new SensaFeatureExtractor(),
+      matcher: config?.matcher ?? new SensaSurgicalMatcher(),
+      temporal: config?.temporal ?? new SensaTemporalSmoother(classifierConfig),
+      gesture: config?.gesture ?? new SensaGestureDetector(),
+      transition: config?.transition ?? new SensaTransitionDetector(),
+      motionVelocityThreshold:
+        config?.motionVelocityThreshold ?? classifierConfig.motionVelocityThreshold,
+    };
   }
 
   /**
    * Processes a single frame of landmarks through the vision pipeline.
-   *
-   * Pipeline:
-   * 1. Smooth Landmarks (reduce jitter)
-   * 2. Extract Features (curls, angles, distances)
-   * 3. Match Sign (heuristic scoring)
-   * 4. Detect Transitions & Gestures
-   * 5. Temporal Smoothing (consensus & hysteresis)
    */
   process(landmarks: HandLandmarks, imageLandmarks?: HandLandmarks): ClassificationResult {
-    // 1. Smooth
-    const smoothed = this.smoother.smooth(landmarks);
+    // 1. Smooth Landmarks
+    const smoothed = this.config.smoother.smooth(landmarks);
 
     // 2. Extract Features
-    const vector = this.extractor.extract(smoothed, imageLandmarks);
+    const vector = this.config.extractor.extract(smoothed, imageLandmarks);
 
-    // Add motion context
-    vector.velocity = this.smoother.getVelocity();
+    // 3. Add motion context
+    vector.velocity = this.config.smoother.getVelocity();
     const speed = Math.sqrt(
       vector.velocity.x ** 2 + vector.velocity.y ** 2 + vector.velocity.z ** 2,
     );
     vector.isMoving = speed > this.config.motionVelocityThreshold;
 
-    // 3. Match
-    const candidates = this.matcher.match(vector);
+    // 4. Match
+    const candidates = this.config.matcher.match(vector);
 
-    // 4. Detect Transitions & Gestures
-    const { sign, confidence } = this.temporalSmoother.smooth(candidates);
-    const isTransitioning = this.transitionDetector.isTransitioning(vector.velocity, confidence);
-    const gesture = this.gestureDetector.update(vector.velocity);
+    // 5. Detect Transitions & Gestures
+    const { sign, confidence } = this.config.temporal.smooth(candidates);
+    const isTransitioning = this.config.transition.isTransitioning(vector.velocity, confidence);
+    const gesture = this.config.gesture.update(vector.velocity);
 
     return {
       sign,
@@ -85,9 +79,9 @@ export class SensaSurgicalClassifier {
   }
 
   reset(): void {
-    this.smoother.reset();
-    this.temporalSmoother.reset();
-    this.gestureDetector.reset();
-    this.transitionDetector.reset();
+    this.config.smoother.reset();
+    this.config.temporal.reset();
+    this.config.gesture.reset();
+    this.config.transition.reset();
   }
 }

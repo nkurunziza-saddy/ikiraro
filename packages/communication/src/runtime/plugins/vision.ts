@@ -1,5 +1,5 @@
 import type { SensaPlugin, PluginContext } from "../types";
-import { VisionSystem } from "@sensa/engine/vision";
+import { VisionSystem } from "../vision-system";
 import type { HandProcessor } from "@sensa/engine/vision";
 
 /**

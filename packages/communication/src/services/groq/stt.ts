@@ -1,0 +1,86 @@
+import { Effect, Layer } from "effect";
+import { SttService } from "@sensa/engine/planning";
+import { Groq } from "./client";
+import type { SttModel } from "@sensa/engine/types";
+
+const DEFAULT_GROQ_STT_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
+
+export const SttGroqLive = Layer.effect(
+  SttService,
+  Effect.gen(function* (_) {
+    const groq = yield* _(Groq);
+
+    return {
+      transcribe: (audio: File, model: SttModel, prompt?: string) =>
+        Effect.gen(function* (_) {
+          const url = groq.baseUrl ? `${groq.baseUrl}/audio/transcriptions` : DEFAULT_GROQ_STT_URL;
+
+          const formData = new FormData();
+          formData.append("file", audio);
+          formData.append("model", model);
+          formData.append("language", "en");
+          formData.append("temperature", "0");
+          formData.append("response_format", "verbose_json");
+          formData.append("timestamp_granularities[]", "word");
+          formData.append("timestamp_granularities[]", "segment");
+
+          if (prompt) {
+            formData.append("prompt", prompt);
+          }
+
+          const response = yield* _(
+            Effect.tryPromise({
+              try: () =>
+                fetch(url, {
+                  method: "POST",
+                  headers: { Authorization: `Bearer ${groq.apiKey}` },
+                  body: formData,
+                }),
+              catch: (e) => (e instanceof Error ? e : new Error(String(e))),
+            }),
+          );
+
+          if (!response.ok) {
+            const errorText = yield* _(
+              Effect.tryPromise({
+                try: () => response.text(),
+                catch: () => "Unknown error",
+              }),
+            );
+            return yield* _(
+              Effect.fail(new Error(errorText || `Groq STT returned ${response.status}`)),
+            );
+          }
+
+          const payload = yield* _(
+            Effect.tryPromise({
+              try: () => response.json(),
+              catch: (e) => (e instanceof Error ? e : new Error(String(e))),
+            }),
+          );
+
+          return {
+            model,
+            text: payload.text?.trim() ?? "",
+            language: payload.language ?? null,
+            durationSeconds: payload.duration ?? null,
+            prompt: prompt ?? "",
+            words:
+              payload.words?.map((w: any) => ({
+                word: w.word,
+                start: w.start,
+                end: w.end,
+                confidence: w.confidence,
+              })) ?? [],
+            segments:
+              payload.segments?.map((s: any, i: number) => ({
+                id: s.id ?? i,
+                start: s.start ?? 0,
+                end: s.end ?? 0,
+                text: s.text?.trim() ?? "",
+              })) ?? [],
+          } as any;
+        }).pipe(Effect.mapError((e) => (e instanceof Error ? e : new Error(String(e))))),
+    };
+  }),
+);

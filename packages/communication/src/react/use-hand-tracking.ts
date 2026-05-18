@@ -1,5 +1,6 @@
-import { VisionSystem, type CameraTrackingState } from "@sensa/engine/vision";
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { VisionSystem } from "../runtime/vision-system";
+import type { CameraTrackingState, VisionStatus } from "@sensa/engine/vision";
 import { WorkerHandProcessor } from "../capture/worker-hand-processor";
 
 const EMPTY_TRACKING: CameraTrackingState = {
@@ -35,21 +36,21 @@ export function useHandTracking() {
 
   useEffect(() => {
     // Sync status and metadata
-    processor.onReady((d) => {
+    processor.onReady((d: "GPU" | "CPU") => {
       setDelegate(d);
       setIsReady(true);
       setError(null);
     });
 
-    vision.on("status-change", (s) => {
+    vision.on("status-change", (s: VisionStatus) => {
       setIsActive(s === "active");
     });
 
-    vision.on("fps-update", (f) => setFps(f));
-    vision.on("error", (e) => setError(e));
+    vision.on("fps-update", (f: number) => setFps(f));
+    vision.on("error", (e: string) => setError(e));
 
     // Sync high-frequency tracking data
-    vision.on("tracking-update", (t) => {
+    vision.on("tracking-update", (t: CameraTrackingState) => {
       startTransition(() => {
         setTracking(t);
       });
