@@ -6,8 +6,10 @@ import type {
   PluginContext,
   EventRegistry,
   PluginTeardown,
+  RuntimeSnapshot,
 } from "./types";
 import { EventBus } from "./event-bus";
+import type { TranslationEnvelope, SttModel, TranslationContext } from "@ikiraro/engine/types";
 
 /**
  * The IkiraroRuntime is the "Nucleus" of the system.
@@ -27,9 +29,6 @@ export class IkiraroRuntime {
 
   constructor(private config: RuntimeConfig) {}
 
-  /**
-   * Initializes the runtime and its plugins.
-   */
   async start() {
     if (this.started) return;
     this.started = true;
@@ -118,11 +117,92 @@ export class IkiraroRuntime {
     return this.bus.onAll(handler);
   }
 
+  // ─── Convenience API ────────────────────────────────────────────────────────
+
+  /** Translate a text string to signing. */
+  translate(text: string, options: { context?: TranslationContext } = {}): void {
+    this.dispatch({
+      type: "session:cmd:start",
+      payload: { mode: "text", text, context: options.context },
+      timestamp: Date.now(),
+      source: "sdk",
+    });
+  }
+
+  /** Play back a sequence of manual sign units (e.g. from the sign keyboard). */
+  translateUnits(units: string[]): void {
+    this.dispatch({
+      type: "session:cmd:start",
+      payload: { mode: "sign-keys", units },
+      timestamp: Date.now(),
+      source: "sdk",
+    });
+  }
+
+  /** Begin microphone capture. Call `stopSpeech()` to transcribe and translate. */
+  startSpeech(
+    options: { sttModel?: SttModel; prompt?: string; context?: TranslationContext } = {},
+  ): void {
+    this.dispatch({
+      type: "session:cmd:start",
+      payload: { mode: "speech", ...options },
+      timestamp: Date.now(),
+      source: "sdk",
+    });
+  }
+
+  /** Stop capture and submit the recording for transcription → translation. */
+  stopSpeech(): void {
+    this.dispatch({
+      type: "session:cmd:stop",
+      payload: undefined,
+      timestamp: Date.now(),
+      source: "sdk",
+    });
+  }
+
+  /** Cancel an in-progress capture or translation without committing. */
+  cancel(): void {
+    this.dispatch({
+      type: "session:cmd:cancel",
+      payload: undefined,
+      timestamp: Date.now(),
+      source: "sdk",
+    });
+  }
+
+  /**
+   * Subscribe to completed translations. Returns an unsubscribe function.
+   * Tip: in React, prefer reading `snapshot().lastEnvelope` in a `useEffect`.
+   */
+  onTranslated(handler: (envelope: TranslationEnvelope) => void): () => void {
+    return this.subscribe("translation:finished", (event) => handler(event.payload));
+  }
+
+  /**
+   * Returns a flat snapshot of the runtime state — no nested plugin paths needed.
+   * Safe to call on every render; returns a new object each time.
+   */
+  snapshot(): RuntimeSnapshot {
+    const plugins = this.state.plugins;
+    return {
+      status: plugins.session?.status ?? "idle",
+      isTranslating: plugins.translation?.isTranslating ?? false,
+      lastEnvelope: plugins.session?.lastEnvelope ?? null,
+      compositionTokens: plugins.composition?.tokens ?? [],
+      compositionText: plugins.composition?.text ?? "",
+      speechStatus: plugins.speech?.status ?? "idle",
+      speechLevel: plugins.speech?.level ?? 0,
+      error: plugins.session?.error ?? null,
+    };
+  }
+
+  // ─── Internal ────────────────────────────────────────────────────────────────
+
   private updateInternalState(event: IkiraroEvent<any>) {
     if (event.type === "runtime:status-change") {
       this.state.status = event.payload;
     }
-    // TODO: Logic for other core state updates (activeTracks, etc.) would go here.
   }
 
   getState() {
@@ -130,9 +210,6 @@ export class IkiraroRuntime {
   }
 }
 
-/**
- * The entry point.
- */
 export async function articulate(config: RuntimeConfig) {
   const runtime = new IkiraroRuntime(config);
   await runtime.start();

@@ -1,15 +1,23 @@
-import { useMemo, useRef } from "react";
+import { type RefObject, useMemo, useRef } from "react";
 import { useFrame, useGraph } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
-import { REST_POSE, type Handshape } from "@ikiraro/engine/planning";
+import { REST_POSE, type Handshape, computeMotionDelta } from "@ikiraro/engine/planning";
+import type { ArmTarget, MotionType } from "@ikiraro/engine/types";
 import { springStep } from "@ikiraro/engine/math";
+
+type SignFrameState = {
+  motion: MotionType;
+  progress: number;
+  armTarget: ArmTarget | null;
+};
 
 interface SignModelGLTFProps {
   url: string;
   pose?: Handshape;
   active?: boolean;
+  signFrameRef?: RefObject<SignFrameState | null>;
   scale?: number;
   position?: [number, number, number];
   rotation?: [number, number, number];
@@ -84,6 +92,7 @@ export function SignModelGLTF({
   url,
   pose = REST_POSE,
   active = false,
+  signFrameRef,
   scale = 1,
   position = [0, 0, 0],
   rotation = [0, 0, 0],
@@ -131,14 +140,18 @@ export function SignModelGLTF({
   const activeRef = useRef(active);
   activeRef.current = active;
 
-  // Resolve bones once. The Object3D references are stable for the life of the
-  // scene; re-walking the node graph every frame is wasted work.
+  // Resolve bones once per scene. The Object3D references are stable for the
+  // life of the scene; re-walking the node graph every frame is wasted work.
   const bonesRef = useRef<Record<string, THREE.Object3D | null> | null>(null);
-  // Bind-pose quaternions for additive rotation. The Mixamo shoulder bone has
-  // a ~−180° Z component that holds the arm in T-pose; writing rotation.z
-  // directly nukes that and folds the whole chain. We compose deltas on top
-  // of the captured bind so IDLE/SIGN values mean "Euler offset from bind."
   const bindQuatsRef = useRef<Record<string, THREE.Quaternion>>({});
+  const lastSceneRef = useRef<THREE.Group | null>(null);
+
+  if (lastSceneRef.current !== scene) {
+    lastSceneRef.current = scene;
+    bonesRef.current = null;
+    bindQuatsRef.current = {};
+  }
+
   if (!bonesRef.current) {
     const findBone = (baseName: string): THREE.Object3D | null => {
       const variants = [
@@ -218,11 +231,16 @@ export function SignModelGLTF({
     // ─── 1. Sign ⇄ Idle transition ─────────────────────────────────────────
     // Spring on progress, then smoothstep so the arms ease in and out instead
     // of arriving on a linear ramp.
-    const [nextP, nextV] = springStep(s[38]!, s[39]!, activeRef.current ? 1 : 0, dt, 55, 14);
+    const [nextP, nextV] = springStep(s[38]!, s[39]!, activeRef.current ? 1 : 0, dt, 80, 18);
     s[38] = nextP;
     s[39] = nextV;
     const k = Math.max(0, Math.min(1, s[38]!));
     const ek = k * k * (3 - 2 * k);
+    // Motion amplitude ramps up 2× faster than the base-pose spring, through a
+    // smooth S-curve so the rate of change stays continuous (no derivative kink
+    // at the cap boundary that would create a perceptible jerk).
+    const rawRamp = Math.min(ek * 2, 1);
+    const motionScale = rawRamp * rawRamp * (3 - 2 * rawRamp);
 
     // Idle motion dampens (but doesn't disappear) while signing. A fully
     // statue-still avatar mid-sign reads as broken; a fully-swaying one
@@ -268,21 +286,35 @@ export function SignModelGLTF({
     // level even when the torso tips a few degrees.
     setDelta("Head", 0.035, 0, -swayML * 0.006 * idleGain);
 
-    // ─── 5. Arms: blend IDLE ⇄ SIGN with subtle ambient sway ───────────────
-    // The sway is gated by idleGain so it doesn't fight the signing motion.
+    // ─── 5. Arms: blend IDLE ⇄ SIGN with per-sign arm targets and motion ───
     const armSway = 0.03 * idleGain;
     const swayR = Math.sin(t * 0.55) * armSway;
     const swayL = Math.sin(t * 0.55 + 0.3) * armSway;
 
-    // Small shoulder lift when signing so the upper-arm hinge looks natural.
+    // Read per-lexeme arm override and current motion delta from the director.
+    const frame = signFrameRef?.current;
+    const armT = frame?.armTarget ?? null;
+    const motion = frame?.motion ?? "none";
+    const motionProgress = frame?.progress ?? 0;
+    const md = computeMotionDelta(motion, motionProgress);
+
+    // Per-sign arm targets fall back to the generic SIGN constants.
+    const rArmXBase = armT?.rArmX ?? SIGN.rArmX;
+    const rArmZBase = armT?.rArmZ ?? SIGN.rArmZ;
+    const rArmYBase = armT?.rArmY ?? SIGN.rArmY;
+    const rForeXBase = armT?.rForeX ?? SIGN.rForeX;
+    const rForeZBase = armT?.rForeZ ?? SIGN.rForeZ;
+    const rForeYBase = armT?.rForeY ?? SIGN.rForeY;
+    const rHandXBase = armT?.rHandX ?? SIGN.rHandX;
+
     setDelta("RightShoulder", 0, 0, ek * -0.12);
     setDelta("LeftShoulder", 0, 0, ek * 0.12);
 
     setDelta(
       "RightArm",
-      lerp(IDLE.rArmX, SIGN.rArmX, ek) + swayR * 0.6,
-      lerp(IDLE.rArmY, SIGN.rArmY, ek),
-      lerp(IDLE.rArmZ, SIGN.rArmZ, ek) + swayR,
+      lerp(IDLE.rArmX, rArmXBase, ek) + md.rArmXDelta * motionScale + swayR * 0.6,
+      lerp(IDLE.rArmY, rArmYBase, ek),
+      lerp(IDLE.rArmZ, rArmZBase, ek) + md.rArmZDelta * motionScale + swayR,
     );
     setDelta(
       "LeftArm",
@@ -292,9 +324,9 @@ export function SignModelGLTF({
     );
     setDelta(
       "RightForeArm",
-      lerp(IDLE.rForeX, SIGN.rForeX, ek),
-      lerp(IDLE.rForeY, SIGN.rForeY, ek),
-      lerp(IDLE.rForeZ, SIGN.rForeZ, ek),
+      lerp(IDLE.rForeX, rForeXBase, ek),
+      lerp(IDLE.rForeY, rForeYBase, ek) + md.rForeYDelta * motionScale,
+      lerp(IDLE.rForeZ, rForeZBase, ek) + md.rForeZDelta * motionScale,
     );
     setDelta(
       "LeftForeArm",
@@ -302,7 +334,7 @@ export function SignModelGLTF({
       lerp(IDLE.lForeY, SIGN.lForeY, ek),
       lerp(IDLE.lForeZ, SIGN.lForeZ, ek),
     );
-    setDelta("RightHand", lerp(IDLE.rHandX, SIGN.rHandX, ek), 0, 0);
+    setDelta("RightHand", lerp(IDLE.rHandX, rHandXBase, ek), 0, 0);
     setDelta("LeftHand", lerp(IDLE.lHandX, SIGN.lHandX, ek), 0, 0);
 
     // ─── 6. Fingers (spring physics from Handshape) ────────────────────────
@@ -321,7 +353,7 @@ export function SignModelGLTF({
 
       for (let i = 0; i < 4; i++) {
         const idx = base + i;
-        const [nextVal, nextVel] = springStep(s[idx]!, s[19 + idx]!, targets[i]!, dt, 240, 22);
+        const [nextVal, nextVel] = springStep(s[idx]!, s[19 + idx]!, targets[i]!, dt, 240, 32);
         s[idx] = nextVal;
         s[19 + idx] = nextVel;
       }
@@ -347,7 +379,7 @@ export function SignModelGLTF({
     ];
     for (let i = 0; i < 3; i++) {
       const idx = 16 + i;
-      const [nextVal, nextVel] = springStep(s[idx]!, s[19 + idx]!, thumbTargets[i]!, dt, 200, 20);
+      const [nextVal, nextVel] = springStep(s[idx]!, s[19 + idx]!, thumbTargets[i]!, dt, 200, 28);
       s[idx] = nextVal;
       s[19 + idx] = nextVel;
     }

@@ -1,10 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 
 /**
  * High-leverage visualizer for sensory input levels.
  * Instead of raw streams, it takes a normalized level (0-1) from a CaptureAdapter.
  */
-export function AudioVisualizer({
+export const AudioVisualizer = memo(function AudioVisualizer({
   level,
   count = 24,
   className = "",
@@ -35,4 +35,4 @@ export function AudioVisualizer({
       })}
     </div>
   );
-}
+});

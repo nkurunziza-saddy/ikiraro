@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { CameraTrackingState } from "@ikiraro/engine/vision";
-import { HandOverlay, WebSpeechProvider } from "@ikiraro/components";
+import { HandOverlay, WebSpeechProvider, Button, Badge } from "@ikiraro/components";
 
 type CameraCandidate = NonNullable<CameraTrackingState["classification"]>["candidates"][number];
 
@@ -60,61 +60,41 @@ export function CameraPanel({
     <div className="flex flex-col gap-5">
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-2">
-        <button
+        <Button
           onClick={() => void camera.start()}
           disabled={camera.isActive || !camera.isReady}
-          className="px-3.5 py-2 text-[12px] font-medium transition-all disabled:opacity-40"
-          style={{
-            background: "var(--ink)",
-            color: "var(--on-dark)",
-            borderRadius: "2px",
-            border: "1px solid var(--ink)",
-          }}
+          className="bg-ink text-on-dark border-ink rounded-[2px] h-auto px-3.5 py-2 text-[12px]"
         >
           {camera.isReady ? "Start Camera" : "Booting…"}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={camera.stop}
           disabled={!camera.isActive}
-          className="px-3.5 py-2 text-[12px] transition-all disabled:opacity-40"
-          style={{
-            background: "transparent",
-            color: "var(--ink)",
-            borderRadius: "2px",
-            border: "1px solid var(--rule)",
-          }}
+          variant="outline"
+          className="border-rule text-ink rounded-[2px] h-auto bg-transparent px-3.5 py-2 text-[12px]"
         >
           Stop
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={camera.clear}
           disabled={isWorking}
-          className="px-3 py-2 text-[12px] transition-colors disabled:opacity-40"
-          style={{ color: "var(--steel)" }}
+          variant="ghost"
+          className="text-steel h-auto px-3 py-2 text-[12px] hover:bg-transparent hover:text-ink"
         >
           Reset
-        </button>
+        </Button>
 
-        <div
-          className="ml-auto flex items-center gap-2 text-[11px]"
-          style={{ fontFamily: "var(--font-mono)", color: "var(--stone)" }}
-        >
+        <div className="font-mono text-stone ml-auto flex items-center gap-2 text-[11px]">
           {camera.error ? (
-            <span style={{ color: "var(--primary)", fontWeight: 500 }}>Error</span>
+            <span className="text-primary font-medium">Error</span>
           ) : camera.isReady ? (
             <>
-              <span
-                className="px-2 py-0.5"
-                style={{
-                  background: "var(--paper-soft)",
-                  color: "var(--primary)",
-                  borderRadius: "2px",
-                  border: "1px solid var(--rule-soft)",
-                  fontWeight: 500,
-                }}
+              <Badge
+                variant="outline"
+                className="bg-paper-soft text-primary border-rule-soft rounded-[2px] h-auto px-2 py-0.5 font-medium"
               >
                 {camera.delegate ?? "Ready"}
-              </span>
+              </Badge>
               <span>{camera.fps} fps</span>
             </>
           ) : (
@@ -124,21 +104,13 @@ export function CameraPanel({
       </div>
 
       {/* Video feed */}
-      <div
-        className="relative overflow-hidden"
-        style={{
-          aspectRatio: "16/9",
-          borderRadius: "3px",
-          border: "1px solid var(--rule-soft)",
-          background: "var(--paper-soft)",
-        }}
-      >
+      <div className="bg-paper-soft border-rule-soft relative aspect-video overflow-hidden rounded-[3px] border">
         <video
           ref={camera.videoRef}
           autoPlay
           muted
           playsInline
-          className="absolute inset-0 h-full w-full object-cover scale-x-[-1]"
+          className="absolute inset-0 h-full w-full scale-x-[-1] object-cover"
         />
 
         <HandOverlay tracking={camera.tracking} />
@@ -147,26 +119,16 @@ export function CameraPanel({
         {camera.isActive && (
           <div className="absolute right-3 top-3 flex flex-col items-center gap-1.5">
             <div
-              className="flex h-10 w-10 items-center justify-center text-[18px] font-semibold transition-all"
-              style={{
-                borderRadius: "2px",
-                background: currentLetter ? "rgba(252,252,248,0.95)" : "rgba(252,252,248,0.15)",
-                color: currentLetter ? "var(--ink)" : "transparent",
-                border: `1px solid ${currentLetter ? "var(--rule)" : "transparent"}`,
-                boxShadow: currentLetter ? "0 2px 8px rgba(24,22,18,.12)" : "none",
-              }}
+              className={`flex size-10 items-center justify-center text-[18px] font-semibold transition-all rounded-[2px] ${
+                currentLetter
+                  ? "bg-paper/95 text-ink border-rule shadow-[0_2px_8px_rgba(24,22,18,.12)] border"
+                  : "bg-paper/15 text-transparent border-transparent border"
+              }`}
             >
               {currentLetter ?? ""}
             </div>
             {currentLetter && (
-              <span
-                className="text-[10px] font-medium"
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  color: "var(--on-dark)",
-                  textShadow: "0 1px 3px rgba(0,0,0,.4)",
-                }}
-              >
+              <span className="text-on-dark font-mono text-[10px] font-medium [text-shadow:0_1px_3px_rgba(0,0,0,.4)]">
                 {Math.round(confidence * 100)}%
               </span>
             )}
@@ -174,28 +136,13 @@ export function CameraPanel({
         )}
 
         {!camera.isReady && !camera.error && (
-          <div
-            className="absolute inset-x-0 bottom-0 px-4 py-3 text-[11px] backdrop-blur-sm"
-            style={{
-              background: "rgba(252,252,248,.85)",
-              color: "var(--steel)",
-              borderTop: "1px solid var(--rule-soft)",
-              fontFamily: "var(--font-mono)",
-            }}
-          >
+          <div className="bg-paper/85 border-rule-soft text-steel font-mono absolute inset-x-0 bottom-0 px-4 py-3 text-[11px] backdrop-blur-sm border-t">
             Booting engine…
           </div>
         )}
 
         {camera.error && (
-          <div
-            className="absolute inset-0 flex items-center justify-center text-center px-6 text-[12px] backdrop-blur-md"
-            style={{
-              background: "rgba(252,252,248,.95)",
-              color: "var(--primary)",
-              fontFamily: "var(--font-mono)",
-            }}
-          >
+          <div className="bg-paper/95 text-primary font-mono absolute inset-0 flex items-center justify-center px-6 text-center text-[12px] backdrop-blur-md">
             {camera.error}
           </div>
         )}
@@ -204,38 +151,15 @@ export function CameraPanel({
       {/* Buffer display */}
       <div className="flex flex-col gap-4 pt-1">
         <div>
-          <p
-            className="text-[10px] mb-1.5"
-            style={{
-              fontFamily: "var(--font-mono)",
-              color: "var(--stone)",
-              letterSpacing: "0.3px",
-            }}
-          >
-            Spelling Now
-          </p>
-          <div
-            className="min-h-6 text-[14px] font-medium"
-            style={{ fontFamily: "var(--font-mono)", color: "var(--primary)" }}
-          >
+          <p className="font-mono text-stone mb-1.5 text-[10px] tracking-[0.3px]">Spelling Now</p>
+          <div className="text-primary font-mono min-h-6 text-[14px] font-medium">
             {currentWord || (camera.isActive ? "Waiting…" : "—")}
           </div>
         </div>
 
         <div>
-          <p
-            className="text-[10px] mb-1.5"
-            style={{
-              fontFamily: "var(--font-mono)",
-              color: "var(--stone)",
-              letterSpacing: "0.3px",
-            }}
-          >
-            History
-          </p>
-          <div className="min-h-6 text-[14px]" style={{ color: "var(--slate-text)" }}>
-            {sentence.join(" ") || "—"}
-          </div>
+          <p className="font-mono text-stone mb-1.5 text-[10px] tracking-[0.3px]">History</p>
+          <div className="text-slate-text min-h-6 text-[14px]">{sentence.join(" ") || "—"}</div>
         </div>
       </div>
 
@@ -243,63 +167,30 @@ export function CameraPanel({
       {camera.tracking.classification &&
         camera.tracking.classification.confidence < 0.6 &&
         camera.tracking.classification.candidates.length > 1 && (
-          <div className="pt-4" style={{ borderTop: "1px solid var(--rule-soft)" }}>
-            <p
-              className="text-[10px] mb-3"
-              style={{
-                fontFamily: "var(--font-mono)",
-                color: "var(--stone)",
-                letterSpacing: "0.3px",
-              }}
-            >
-              Corrections
-            </p>
+          <div className="border-rule-soft pt-4 border-t">
+            <p className="font-mono text-stone mb-3 text-[10px] tracking-[0.3px]">Corrections</p>
             <div className="flex flex-wrap gap-1.5">
               {camera.tracking.classification.candidates.map((candidate: CameraCandidate) => (
-                <button
+                <Button
                   key={candidate.name}
                   onClick={() => camera.manualCorrect(candidate.name)}
-                  className="px-3 py-1.5 text-[12px] transition-colors"
-                  style={{
-                    borderRadius: "2px",
-                    border: "1px solid var(--rule)",
-                    color: "var(--ink)",
-                    fontFamily: "var(--font-mono)",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.background = "var(--paper-soft)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                  }}
+                  variant="outline"
+                  className="border-rule text-ink font-mono hover:bg-paper-soft rounded-[2px] h-auto px-3 py-1.5 text-[12px]"
                 >
                   {candidate.name}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
         )}
 
-      <button
+      <Button
         onClick={commitCameraSentence}
         disabled={!committedSentence || isWorking}
-        className="w-full py-3 text-[13px] font-medium transition-all disabled:opacity-40"
-        style={{
-          background: "var(--paper-soft)",
-          color: "var(--ink)",
-          borderRadius: "3px",
-          border: "1px solid var(--rule)",
-        }}
-        onMouseEnter={(e) => {
-          if (!(!committedSentence || isWorking))
-            (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--ink)";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--rule)";
-        }}
+        className="bg-paper-soft text-ink border-rule hover:border-ink rounded-[3px] w-full py-3 text-[13px] font-medium transition-all"
       >
         Commit fingerspelled message
-      </button>
+      </Button>
     </div>
   );
 }

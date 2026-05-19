@@ -17,10 +17,18 @@ export interface IkiraroDefaultConfig {
 }
 
 /**
- * High-level factory for the Ikiraro Runtime.
- * Provides the "tiny declarative API" similar to Better Auth.
+ * Factory for the Ikiraro Runtime.
  */
 export async function createIkiraro(config: IkiraroDefaultConfig) {
+  const key = config.sdk.groqApiKey;
+  if (!key || key.trim() === "" || key === "YOUR_GROQ_API_KEY") {
+    throw new Error(
+      "Ikiraro: a valid Groq API key is required. " +
+        "Pass it via createIkiraro({ sdk: { groqApiKey: '...' } }) " +
+        "or set VITE_GROQ_API_KEY in your environment.",
+    );
+  }
+
   const plugins: IkiraroPlugin[] = [
     new SessionPlugin(),
     new CompositionPlugin(),

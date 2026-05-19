@@ -1,69 +1,62 @@
 import { Link } from "@tanstack/react-router";
 
-export function OverviewFooter() {
-  const sections = [
-    {
-      head: "Product",
-      links: [
-        { label: "Interactive Demo", href: "/demo" },
-        { label: "Documentation", href: "/" },
-      ],
-    },
-    {
-      head: "SDK",
-      links: [
-        { label: "@ikiraro/sdk", href: "/" },
-        { label: "@ikiraro/communication", href: "/" },
-        { label: "@ikiraro/engine", href: "/" },
-      ],
-    },
-    {
-      head: "Resources",
-      links: [
-        { label: "Architecture", href: "/" },
-        { label: "Data flows", href: "/" },
-        { label: "Event system", href: "/" },
-      ],
-    },
-  ];
+const nav = [
+  {
+    head: "Product",
+    links: [
+      { label: "Communicate", href: "/communication" as const },
+      { label: "Interactive Demo", href: "/demo" as const },
+      { label: "Documentation", href: "/sdk" as const },
+    ],
+  },
+  {
+    head: "SDK",
+    links: [
+      { label: "@ikiraro/communication", href: "/sdk/runtime" as const },
+      { label: "@ikiraro/engine", href: "/sdk/types" as const },
+      { label: "@ikiraro/components", href: "/sdk/components" as const },
+    ],
+  },
+  {
+    head: "Resources",
+    links: [
+      { label: "Architecture", href: "/sdk/types" as const },
+      { label: "Event reference", href: "/sdk/events" as const },
+      { label: "Hook API", href: "/sdk/hooks" as const },
+    ],
+  },
+];
 
+export function OverviewFooter() {
   return (
-    <footer className="bg-[var(--paper-deep)] pt-20 pb-9 border-t border-[#CFC2A0]">
-      <div className="mx-auto max-w-7xl px-6">
-        {/* Footer top */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-14 pb-9 border-b border-[var(--rule)]">
-          <div className="text-[48px] font-sans font-semibold leading-[.9] flex items-center gap-4 tracking-[-2.8px]">
-            <div className="flex h-10 w-10 items-center justify-center shrink-0 rounded-[2px] bg-[var(--ink)]">
-              <span className="font-mono text-[12px] text-[var(--on-dark)] tracking-[0.5px] font-semibold">
-                IK
-              </span>
+    <footer className="border-t border-border pt-16 pb-10">
+      <div className="mx-auto max-w-7xl px-6 md:px-10">
+        {/* Brand + tagline */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12">
+          <Link to="/" className="flex items-center gap-2.5">
+            <div className="bg-foreground flex h-6 w-6 items-center justify-center rounded-sm shrink-0">
+              <span className="text-background text-[10px] font-bold tracking-tighter">S</span>
             </div>
-            Ikiraro
-          </div>
-          <p className="text-left md:text-right text-[16px] max-w-xs leading-relaxed text-[var(--charcoal)]">
+            <span className="text-foreground text-[15px] font-semibold tracking-tight">Sensa</span>
+          </Link>
+          <p className="text-muted-foreground text-[13px]">
             A local-first SDK for real-time hearing-to-signer communication.
           </p>
         </div>
 
-        {/* Footer grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-          <div>
-            <p className="text-[15px] leading-relaxed italic text-[var(--slate-text)] max-w-[320px]">
-              Built to bridge speech and sign — fully in the browser, with no server required for
-              vision.
-            </p>
-          </div>
-          {sections.map(({ head, links }) => (
+        {/* Nav columns */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-10 pb-12 border-b border-border">
+          {nav.map(({ head, links }) => (
             <div key={head}>
-              <h6 className="text-[11px] font-semibold uppercase mb-5 tracking-[2px] text-[var(--steel)]">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-4">
                 {head}
-              </h6>
-              <ul className="flex flex-col gap-3">
+              </p>
+              <ul className="flex flex-col gap-2.5">
                 {links.map(({ label, href }) => (
                   <li key={label}>
                     <Link
-                      to={href as "/"}
-                      className="text-[15px] text-[var(--ink-soft)] transition-colors hover:text-[var(--primary)]"
+                      to={href}
+                      className="text-[14px] text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {label}
                     </Link>
@@ -74,10 +67,10 @@ export function OverviewFooter() {
           ))}
         </div>
 
-        {/* Footer bottom */}
-        <div className="flex items-center justify-between flex-wrap gap-4 mt-16 pt-7 border-t border-[var(--rule)]">
-          <p className="text-[13px] text-[var(--steel)]">© 2026 Ikiraro. Open source under MIT.</p>
-          <span className="text-[12px] font-mono text-[var(--stone)]">v0.3.0</span>
+        {/* Bottom bar */}
+        <div className="flex items-center justify-between gap-4 pt-8">
+          <p className="text-[12px] text-muted-foreground">© 2026 Sensa. Open source under MIT.</p>
+          <span className="text-[11px] text-muted-foreground">v0.3.0</span>
         </div>
       </div>
     </footer>

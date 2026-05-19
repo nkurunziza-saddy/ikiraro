@@ -1,20 +1,56 @@
-import { Effect, Layer, Schema } from "effect";
-import { GlossService } from "@ikiraro/engine/planning";
+import { Effect, Layer } from "effect";
+import {
+  GlossService,
+  GLOSS_REGISTRY_KEYS,
+  GlossOutputSchema,
+  GroqChatResponseSchema,
+} from "@ikiraro/engine/planning";
+import type { SemanticIntent } from "@ikiraro/engine/types";
 import { Groq } from "./client";
-import { GLOSS_OUTPUT_SCHEMA } from "@ikiraro/engine/planning";
 
 const DEFAULT_GROQ_GLOSS_URL = "https://api.groq.com/openai/v1/chat/completions";
 const DEFAULT_GLOSS_MODEL = "llama-3.3-70b-versatile";
 
-const SYSTEM_PROMPT = `
-You are a professional ASL Gloss translator.
-Convert English text into a pure ASL Gloss sequence.
-Rules:
-1. Use UPPERCASE for glosses.
-2. Use "PTR:SELF", "PTR:YOU", "PTR:THAT" for pointing.
-3. Use "/" for significant pauses.
-4. If a word is unknown, use fingerspelling (e.g., "FS:WORD").
-5. Output ONLY valid JSON in the specified format.
+// Exclude pronouns handled by PTR: tokens — listing them as known signs
+// contradicts section 2 of the prompt and confuses the model.
+const PRONOUN_OVERRIDES = new Set(["MY"]);
+const KNOWN_SIGNS = GLOSS_REGISTRY_KEYS.filter((k) => !PRONOUN_OVERRIDES.has(k)).join(" ");
+
+const SYSTEM_PROMPT = `You are an expert ASL (American Sign Language) interpreter.
+Convert English to ASL Gloss — the written notation used by ASL educators.
+
+OUTPUT (valid JSON only): {"gloss": "TOKEN TOKEN ...", "confidence": 0.0–1.0}
+
+═══ TOKEN TYPES (three kinds, never mix them) ═══
+
+1. KNOWN SIGNS — output the word in CAPS exactly as shown. Do NOT prefix with FS:.
+   ${KNOWN_SIGNS}
+
+2. POINTING TOKENS — replace English pronouns with these exactly:
+   I / ME / MY / MINE  →  PTR:SELF
+   YOU / YOUR          →  PTR:YOU
+   HE / SHE / HIM / HER / IT / THEY / THEM  →  PTR:THAT
+   ⚠ Never write FS:PTR:SELF. PTR: tokens are NOT fingerspelled.
+
+3. FINGERSPELL — for proper nouns (names, places) and any word NOT in the known signs list:
+   FS:JACK   FS:CALIFORNIA   FS:PIZZA
+   ⚠ Never write FS:FS:WORD. One FS: prefix only.
+
+4. PAUSE — use / between distinct clauses.
+
+═══ ASL GRAMMAR RULES ═══
+• Drop: a, an, the, am, is, are, was, were, to (infinitive), of
+• Topic-comment order when natural (BATHROOM WHERE, not WHERE IS BATHROOM)
+• Signs exist for: name → NAME, my name → NAME PTR:SELF, thank you → THANK-YOU
+
+═══ EXAMPLES ═══
+"Hello, my name is Jack"           → HELLO NAME PTR:SELF FS:JACK
+"I like to sing"                   → PTR:SELF LIKE MUSIC
+"Do you want water?"               → PTR:YOU WANT WATER
+"Where is the bathroom?"           → BATHROOM WHERE
+"I need help, please"              → PTR:SELF NEED HELP PLEASE
+"Thank you, I understand"          → THANK-YOU PTR:SELF UNDERSTAND
+"Hi my name is Jack and I like to sing" → HELLO NAME PTR:SELF FS:JACK / PTR:SELF LIKE MUSIC
 `;
 
 export const GlossGroqLive = Layer.effect(
@@ -62,28 +98,37 @@ export const GlossGroqLive = Layer.effect(
             );
           }
 
-          const raw = yield* _(
+          const rawJson = yield* _(
             Effect.tryPromise({
-              try: () => response.json(),
+              try: () => response.json() as Promise<unknown>,
               catch: (e) => (e instanceof Error ? e : new Error(String(e))),
             }),
           );
 
-          const content = raw.choices?.[0]?.message?.content;
+          const groqResponse = yield* _(
+            Effect.try({
+              try: () => GroqChatResponseSchema.parse(rawJson),
+              catch: () => new Error("Invalid Groq response format"),
+            }),
+          );
+
+          const content = groqResponse.choices[0]?.message.content;
           if (!content) return yield* _(Effect.fail(new Error("No gloss content returned")));
 
-          const parsed = JSON.parse(content);
-          const validated = yield* _(
-            Schema.decodeUnknown(GLOSS_OUTPUT_SCHEMA)(parsed) as Effect.Effect<any, any>,
+          const glossResult = yield* _(
+            Effect.try({
+              try: () => GlossOutputSchema.parse(JSON.parse(content)),
+              catch: () => new Error("Invalid gloss format returned by model"),
+            }),
           );
 
           return {
-            rawGloss: (validated as any).gloss,
-            glossTokens: (validated as any).gloss.split(" "),
-            confidence: (validated as any).confidence,
+            rawGloss: glossResult.gloss,
+            glossTokens: glossResult.gloss.split(" "),
+            confidence: glossResult.confidence,
             model: model ?? DEFAULT_GLOSS_MODEL,
-            promptTokens: raw.usage?.prompt_tokens,
-          } as any;
+            promptTokens: groqResponse.usage?.prompt_tokens,
+          } satisfies SemanticIntent;
         }).pipe(Effect.mapError((e) => (e instanceof Error ? e : new Error(String(e))))),
     };
   }),

@@ -1,4 +1,5 @@
-import { useIkiraro, type IkiraroRuntime, type IkiraroEvent } from "@ikiraro/communication";
+import { useEffect, useState } from "react";
+import type { IkiraroRuntime, IkiraroEvent, IkiraroState } from "@ikiraro/communication";
 import { motion, AnimatePresence } from "framer-motion";
 import { Terminal } from "lucide-react";
 
@@ -10,15 +11,14 @@ interface IkiraroInspectorProps {
  * Dev Tooling village: A visual debugger for the Ikiraro Event Bus.
  */
 export function IkiraroInspector({ runtime }: IkiraroInspectorProps) {
-  const { state } = useIkiraro(runtime);
+  const [state, setState] = useState<IkiraroState>(() => runtime.getState());
 
-  if (!state) {
-    return (
-      <div className="fixed bottom-4 right-4 w-96 bg-black/90 border border-white/10 rounded-xl p-4 shadow-2xl font-mono text-xs text-white/50 z-50">
-        Initializing runtime...
-      </div>
-    );
-  }
+  useEffect(() => {
+    setState(runtime.getState());
+    return runtime.subscribeAll(() => {
+      setState(runtime.getState());
+    });
+  }, [runtime]);
 
   const events: IkiraroEvent[] = state.plugins.inspector?.events || [];
 

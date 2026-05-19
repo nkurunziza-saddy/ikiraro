@@ -14,16 +14,17 @@ The components package is the React UI layer of the Ikiraro SDK. It provides the
 
 ## Sign Rendering
 
-### `SignPlayer3D` (`src/sign-player-3d.tsx`)
+### `AvatarViewer` (`src/avatar-viewer.tsx`)
 
 The primary sign output component. Renders a 3D hand model animated by `RendererDirector`.
 
 ```typescript
-function SignPlayer3D(props: {
+function AvatarViewer(props: {
   envelope: TranslationEnvelope | null;
   modelUrl?: string; // GLTF model URL for realistic hand
+  className?: string;
   autoPlay?: boolean;
-  loop?: boolean;
+  onFrame?: (frame: FrameItem) => void;
 }): JSX.Element;
 ```
 
@@ -32,30 +33,13 @@ When `envelope` changes:
 1. Calls `director.setQueue(envelope.rendererQueue)`.
 2. If `autoPlay` (default true) → `director.play()`.
 
-Internally creates a React Three Fiber `<Canvas>` with a three-point lighting rig and renders either:
+Internally creates a React Three Fiber `<Canvas>` with a three-point lighting rig and renders:
 
-- `<SignModelGLTF>` — if `modelUrl` is provided (realistic GLTF hand model).
-- `<SignModelProcedural>` — procedurally generated 3D hand using cylinder geometry (no external asset required).
-
-Both models implement `SignCanvas` by reading the handshape prop and updating joint rotations. `RendererDirector` drives them by calling `setPose(handshape)` on each tick.
-
-**Playback controls**: exposes `PlaybackControls` child component with play/pause, progress bar, and speed selector.
+- `<SignModelGLTF>` — realistic GLTF hand model loaded from `modelUrl`.
 
 ### `SignModelGLTF` (`src/sign-model-gltf.tsx`)
 
 Loads a GLTF hand model and applies `Handshape` joint angles using the model's bone hierarchy. Requires a skinned mesh with named bones matching the Ikiraro convention (wrist, index_proximal, etc.).
-
-### `SignModelProcedural` (`src/sign-model-procedural.tsx`)
-
-Builds a hand from `CylinderGeometry` primitives — no external model required. Joints are positioned based on the `Handshape` angles directly. Less realistic but always available.
-
-### `PlaybackControls` (`src/playback-controls.tsx`)
-
-```typescript
-function PlaybackControls(props: { director: RendererDirector }): JSX.Element;
-```
-
-Renders play/pause button, progress slider, and speed selector (0.5×, 1×, 1.5×, 2×). Subscribes to `RendererState` via `director.subscribe(cb)`.
 
 ---
 
@@ -100,7 +84,7 @@ Sections:
 
 - Source text and gloss text side by side.
 - Track, strategy, confidence stats.
-- `SignPlayer3D` for visual execution.
+- `AvatarViewer` for visual execution.
 - Renderer steps — a chip for each `FrameItem` label.
 - Planner notes (from `plan.metadata.notes`).
 
@@ -203,10 +187,8 @@ Components available at `@ikiraro/components` (flat import):
 
 ```typescript
 // Sign rendering
-export { SignPlayer3D } from "./sign-player-3d";
+export { AvatarViewer } from "./avatar-viewer";
 export { SignModelGLTF } from "./sign-model-gltf";
-export { SignModelProcedural } from "./sign-model-procedural";
-export { PlaybackControls } from "./playback-controls";
 
 // Vision
 export { HandOverlay } from "./hand-overlay";

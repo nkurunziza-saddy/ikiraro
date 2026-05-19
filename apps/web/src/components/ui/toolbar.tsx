@@ -22,17 +22,11 @@ export function Toolbar({ items, "aria-label": ariaLabel }: ToolbarProps) {
     <div
       role="toolbar"
       aria-label={ariaLabel}
-      className="inline-flex items-center gap-1 bg-ink rounded-full p-1.5 shadow-[var(--sh-3)]"
+      className="bg-background inline-flex items-center gap-1 p-1 border border-border rounded-lg shadow-sh-1"
     >
       {items.map((item, i) => {
         if (item.type === "divider") {
-          return (
-            <span
-              key={i}
-              className="w-px mx-0.5 self-stretch my-1.5"
-              style={{ background: "rgba(241,236,227,0.14)" }}
-            />
-          );
+          return <span key={i} className="bg-border mx-1 w-px h-4 self-center" />;
         }
         return (
           <button
@@ -40,15 +34,16 @@ export function Toolbar({ items, "aria-label": ariaLabel }: ToolbarProps) {
             onClick={item.onClick}
             aria-label={item.label}
             aria-pressed={item.active}
-            className={`w-8 h-8 rounded-full grid place-items-center transition-colors border-0 cursor-pointer ${
+            className={`flex items-center gap-1.5 h-7 px-3 cursor-pointer border-0 rounded-md transition-all ${
               item.active
-                ? "bg-primary text-on-primary"
-                : "bg-transparent text-on-dark/60 hover:bg-white/[0.08] hover:text-on-dark"
+                ? "bg-foreground text-background"
+                : "bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground"
             }`}
           >
-            <span className="w-[15px] h-[15px] [&>svg]:w-full [&>svg]:h-full [&>svg]:stroke-[1.8]">
+            <span className="w-[12px] h-[12px] [&>svg]:w-full [&>svg]:h-full [&>svg]:stroke-[2.5]">
               {item.icon}
             </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider">{item.label}</span>
           </button>
         );
       })}

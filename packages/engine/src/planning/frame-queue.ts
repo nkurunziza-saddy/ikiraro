@@ -1,4 +1,16 @@
-import type { SignPlan, FrameItem } from "@ikiraro/engine/types";
+import type { SignPlan, FrameItem, MotionType } from "@ikiraro/engine/types";
+import { resolveLexemePose } from "./lexeme-poses";
+
+// ASL fingerspell letters that require a distinct motion path to be legible.
+const LETTER_MOTIONS: Partial<Record<string, MotionType>> = {
+  J: "j-trace",
+  Z: "z-trace",
+  G: "g-push",
+  H: "h-slide",
+  D: "d-arc",
+  N: "n-dip",
+  K: "k-push",
+};
 
 export function buildFrameQueue(plan: SignPlan | null): FrameItem[] {
   if (!plan) return [];
@@ -15,13 +27,15 @@ export function buildFrameQueue(plan: SignPlan | null): FrameItem[] {
           duration: token.durationMs,
         });
       } else if (token.type === "lexeme") {
+        const pose = resolveLexemePose(token.lexemeId);
         queue.push({
           type: "lexeme",
           value: token.lexemeId.charAt(0),
           label: token.lexemeId,
           sublabel: "Dynamic Sign",
           duration: token.durationMs,
-          motion: "none",
+          motion: pose?.motion ?? "none",
+          armTarget: pose?.armTarget,
           facialExpression: token.facialExpression,
           coarticulation: token.coarticulationHint,
         });
@@ -32,13 +46,17 @@ export function buildFrameQueue(plan: SignPlan | null): FrameItem[] {
           .split("");
         const perLetter = Math.max(180, Math.round(token.durationMs / Math.max(letters.length, 1)));
         for (let i = 0; i < letters.length; i++) {
+          const letter = letters[i]!;
+          const motion = LETTER_MOTIONS[letter] ?? "none";
+          // Give motion letters a bit more time so the stroke reads clearly.
+          const duration = motion !== "none" ? Math.max(400, perLetter) : perLetter;
           queue.push({
             type: "fingerspell",
-            value: letters[i]!,
-            label: letters[i]!,
+            value: letter,
+            label: letter,
             sublabel: `${i + 1}/${letters.length} · ${token.text}`,
-            duration: perLetter,
-            motion: "none",
+            duration,
+            motion,
             facialExpression: token.facialExpression,
             coarticulation: token.coarticulationHint,
           });
@@ -61,7 +79,7 @@ export function buildFrameQueue(plan: SignPlan | null): FrameItem[] {
       } else if (token.type === "pointing") {
         queue.push({
           type: "pointing",
-          value: "D", // Pointing index
+          value: "D",
           label: `Point: ${token.target}`,
           duration: token.durationMs,
           facialExpression: token.facialExpression,

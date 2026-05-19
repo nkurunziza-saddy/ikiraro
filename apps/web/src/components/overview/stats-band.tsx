@@ -1,29 +1,24 @@
 export function StatsBand() {
   const stats = [
-    { val: "<50", unit: "ms", lbl: "End-to-end latency" },
-    { val: "26", unit: "/ letters", lbl: "ASL fingerspelling" },
-    { val: "3", unit: "/ paths", lbl: "Input modes" },
-    { val: "0", unit: "/ servers", lbl: "Fully on-device" },
+    { val: "<50", unit: "ms", lbl: "Latency" },
+    { val: "26", unit: "chars", lbl: "Fingerspelling" },
+    { val: "3", unit: "modes", lbl: "Input Paths" },
+    { val: "0", unit: "srv", lbl: "On-device" },
   ];
 
   return (
-    <div className="bg-[var(--paper-card)] border-b border-[var(--rule-soft)]">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 border-t border-[var(--rule-soft)]">
-          {stats.map(({ val, unit, lbl }, i) => (
-            <div
-              key={lbl}
-              className={`px-8 py-8 flex flex-col justify-between min-h-[130px] border-r border-[var(--rule-soft)] last:border-r-0 ${
-                i === 1 ? "md:border-r" : ""
-              }`}
-            >
-              <div className="text-[32px] leading-none font-heading font-medium text-[var(--ink)] tracking-[-1.5px]">
+    <div className="bg-background py-24 md:py-32">
+      <div className="mx-auto max-w-7xl px-6 md:px-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-16">
+          {stats.map(({ val, unit, lbl }) => (
+            <div key={lbl} className="flex flex-col gap-1.5">
+              <div className="text-[32px] font-bold text-foreground tracking-tight">
                 {val}
-                <span className="text-[13px] ml-1.5 font-mono font-medium align-top text-[var(--primary)] tracking-0">
+                <span className="text-[12px] ml-1 font-bold text-muted-foreground uppercase tracking-widest">
                   {unit}
                 </span>
               </div>
-              <div className="text-[11px] uppercase font-mono text-[var(--stone)] tracking-[0.4px]">
+              <div className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider">
                 {lbl}
               </div>
             </div>

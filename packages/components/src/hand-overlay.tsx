@@ -36,34 +36,78 @@ const SIGNING_GUIDE = {
 
 export function HandOverlay({ tracking }: { tracking: CameraTrackingState }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const colorsRef = useRef<{
+    primary: string;
+    muted: string;
+    foreground: string;
+    background: string;
+  } | null>(null);
   const confidence = tracking.classification?.confidence ?? 0;
   const detectedSign = tracking.classification?.sign ?? null;
 
+  const dimensionsRef = useRef<{ width: number; height: number }>({ width: 0, height: 0 });
+
+  // Cache theme colors to avoid getComputedStyle on every frame
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    const updateColors = () => {
+      const style = getComputedStyle(document.documentElement);
+      colorsRef.current = {
+        primary: style.getPropertyValue("--primary").trim() || "oklch(0.205 0 0)",
+        muted: style.getPropertyValue("--muted-foreground").trim() || "oklch(0.556 0 0)",
+        foreground: style.getPropertyValue("--foreground").trim() || "oklch(0.145 0 0)",
+        background: style.getPropertyValue("--background").trim() || "oklch(1 0 0)",
+      };
+    };
+
+    const updateDimensions = (entries?: ResizeObserverEntry[]) => {
+      const rect = entries?.[0]?.contentRect ?? canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const width = Math.floor(rect.width * dpr);
+      const height = Math.floor(rect.height * dpr);
+      dimensionsRef.current = { width, height };
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+    };
+
+    updateColors();
+    updateDimensions(); // Sync initial measure
+
+    const colorObserver = new MutationObserver(updateColors);
+    colorObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    resizeObserver.observe(canvas);
+
+    return () => {
+      colorObserver.disconnect();
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !colorsRef.current || dimensionsRef.current.width === 0) return;
+
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    // Fetch theme colors
-    const style = getComputedStyle(document.documentElement);
-    const primaryColor = style.getPropertyValue("--primary").trim() || "oklch(0.205 0 0)";
-    const mutedColor = style.getPropertyValue("--muted-foreground").trim() || "oklch(0.556 0 0)";
-    const foregroundColor = style.getPropertyValue("--foreground").trim() || "oklch(0.145 0 0)";
-    const backgroundColor = style.getPropertyValue("--background").trim() || "oklch(1 0 0)";
+    const {
+      primary: primaryColor,
+      muted: mutedColor,
+      foreground: foregroundColor,
+      background: backgroundColor,
+    } = colorsRef.current;
+    const { width, height } = dimensionsRef.current;
 
-    // Dynamic resolution matching
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    if (canvas.width !== rect.width * dpr || canvas.height !== rect.height * dpr) {
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-    }
-
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    const width = canvas.width;
-    const height = canvas.height;
+    context.clearRect(0, 0, width, height);
     const guideX = SIGNING_GUIDE.x * width;
     const guideY = SIGNING_GUIDE.y * height;
     const guideWidth = SIGNING_GUIDE.width * width;

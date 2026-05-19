@@ -15,13 +15,11 @@ export function VoiceBar({ state, text }: VoiceBarProps) {
   const label = text || defaults[state];
 
   return (
-    <div className="inline-flex items-center gap-3 bg-paper-card border border-rule-soft rounded-full px-[18px] py-2.5 font-sans text-[13px] text-steel italic shadow-[var(--sh-2)]">
+    <div className="bg-paper-card border-rule-soft inline-flex items-center gap-3 rounded-full border px-[18px] py-2.5 font-sans text-[13px] italic text-steel shadow-[var(--sh-2)]">
       <span
-        className="w-2 h-2 rounded-full shrink-0"
-        style={{
-          background: state === "idle" ? "var(--stone)" : "var(--primary)",
-          animation: state === "idle" ? "none" : "voice-pulse 1s ease-in-out infinite",
-        }}
+        className={`h-2 w-2 shrink-0 rounded-full ${
+          state === "idle" ? "bg-stone" : "bg-primary animate-voice-pulse"
+        }`}
       />
       <span>{label}</span>
     </div>

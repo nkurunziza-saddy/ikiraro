@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
-@import "@fontsource-variable/jetbrains-mono";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -46,88 +45,60 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", monospace;
   --font-heading: "Inter Variable", "Inter", system-ui, sans-serif;
 
-  /* Sensa editorial palette — mapped so Tailwind utilities work (text-ink, bg-paper-soft, etc.) */
-  --color-ink: var(--ink);
-  --color-ink-soft: var(--ink-soft);
-  --color-charcoal: var(--charcoal);
-  --color-slate-text: var(--slate-text);
-  --color-steel: var(--steel);
-  --color-stone: var(--stone);
-  --color-on-dark: var(--on-dark);
-  --color-on-primary: var(--on-primary);
-  --color-paper: var(--paper);
-  --color-paper-soft: var(--paper-soft);
-  --color-paper-card: var(--paper-card);
-  --color-paper-deep: var(--paper-deep);
-  --color-primary-deep: var(--primary-deep);
-  --color-primary-soft: var(--primary-soft);
-  --color-sunshine-300: var(--sunshine-300);
-  --color-sunshine-500: var(--sunshine-500);
-  --color-sunshine-700: var(--sunshine-700);
-  --color-rule: var(--rule);
-  --color-rule-soft: var(--rule-soft);
+  /* Sensa animations */
+  --animate-voice-pulse: voice-pulse 1s ease-in-out infinite;
+
+  /* Sensa shadow tokens */
+  --shadow-sh-1: var(--sh-1);
+  --shadow-sh-2: var(--sh-2);
+  --shadow-sh-3: var(--sh-3);
+  --shadow-sh-4: var(--sh-4);
 }
 
 :root {
-  /* Nearly-square corners — Sensa editorial discipline */
-  --radius: 0.1875rem; /* 3px */
+  /* Refined geometry — Professional Product feel */
+  --radius: 0.25rem; /* 4px base */
 
-  /* Ember & Linen — semantic Shadcn tokens */
-  --background: #fcfcf8;
-  --foreground: #1f1b14;
+  /* Shadows — extremely subtle */
+  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --sh-2: 0 2px 4px rgba(0, 0, 0, 0.02);
+  --sh-3: 0 4px 12px rgba(0, 0, 0, 0.03);
+  --sh-4: 0 8px 24px rgba(0, 0, 0, 0.04);
+
+  /* Professional Minimal — semantic tokens */
+  --background: #ffffff;
+  --foreground: #111111;
   --card: #ffffff;
-  --card-foreground: #1f1b14;
+  --card-foreground: #111111;
   --popover: #ffffff;
-  --popover-foreground: #1f1b14;
-  --primary: #c8442a;
-  --primary-foreground: #fbf8f0;
-  --secondary: #f4efe3;
-  --secondary-foreground: #1f1b14;
-  --muted: #ede9dc;
-  --muted-foreground: #6e664e;
-  --accent: #f4efe3;
-  --accent-foreground: #1f1b14;
-  --destructive: #c8442a;
-  --border: #e5e0d0;
-  --input: #e5e0d0;
-  --ring: #c8442a;
-  --chart-1: #c8442a;
-  --chart-2: #e5a35c;
-  --chart-3: #847761;
-  --chart-4: #f0d192;
-  --chart-5: #a33619;
-  --sidebar: #f4efe3;
-  --sidebar-foreground: #1f1b14;
-  --sidebar-primary: #c8442a;
-  --sidebar-primary-foreground: #fbf8f0;
-  --sidebar-accent: #ede9dc;
-  --sidebar-accent-foreground: #1f1b14;
-  --sidebar-border: #e5e0d0;
-  --sidebar-ring: #c8442a;
-
-  /* Sensa editorial colour palette — use directly in component classes */
-  --ink: #1f1b14;
-  --ink-soft: #2f2a1f;
-  --charcoal: #3f382a;
-  --slate-text: #4f4838;
-  --steel: #6e664e;
-  --stone: #847761;
-  --muted-text: #b0a689;
-  --on-dark: #f1ece3;
-  --on-primary: #fbf8f0;
-  --paper: #fcfcf8;
-  --paper-soft: #f4efe3;
-  --paper-card: #ffffff;
-  --paper-deep: #efe9d8;
-  --primary-deep: #a33619;
-  --primary-soft: #d86445;
-  --sunshine-300: #f0d192;
-  --sunshine-500: #e5a35c;
-  --rule: #e5e0d0;
-  --rule-soft: #ede9dc;
+  --popover-foreground: #111111;
+  --primary: #111111;
+  --primary-foreground: #ffffff;
+  --secondary: #f9f9f9;
+  --secondary-foreground: #111111;
+  --muted: #f9f9f9;
+  --muted-foreground: #888888;
+  --accent: #f9f9f9;
+  --accent-foreground: #111111;
+  --destructive: #111111;
+  --border: #eeeeee;
+  --input: #eeeeee;
+  --ring: #111111;
+  --chart-1: #111111;
+  --chart-2: #666666;
+  --chart-3: #999999;
+  --chart-4: #cccccc;
+  --chart-5: #eeeeee;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #111111;
+  --sidebar-primary: #111111;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f9f9f9;
+  --sidebar-accent-foreground: #111111;
+  --sidebar-border: #eeeeee;
+  --sidebar-ring: #111111;
 }
 
 /* =================== Voice bar pulse =================== */
@@ -141,53 +112,6 @@
     opacity: 0.4;
     transform: scale(0.7);
   }
-}
-
-/* =================== Ticker marquee =================== */
-@keyframes ticker-marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.ik-ticker {
-  background: var(--ink);
-  color: var(--on-dark);
-  padding: 13px 0;
-  overflow: hidden;
-  position: relative;
-  border-top: 1px solid var(--ink-soft);
-  border-bottom: 1px solid var(--ink-soft);
-}
-.ik-ticker::before,
-.ik-ticker::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100px;
-  z-index: 2;
-  pointer-events: none;
-}
-.ik-ticker::before {
-  left: 0;
-  background: linear-gradient(90deg, var(--ink), transparent);
-}
-.ik-ticker::after {
-  right: 0;
-  background: linear-gradient(-90deg, var(--ink), transparent);
-}
-
-.ik-ticker-track {
-  display: flex;
-  gap: 48px;
-  align-items: center;
-  white-space: nowrap;
-  width: max-content;
-  animation: ticker-marquee 60s linear infinite;
 }
 
 /* =================== Waveform bar animation =================== */
@@ -214,40 +138,19 @@
   }
 }
 
-/* =================== Pipeline card connector =================== */
-.ik-pipe-card:not(:last-child)::after {
-  content: "›";
-  position: absolute;
-  top: 50%;
-  right: -18px;
-  transform: translateY(-50%);
-  font-size: 22px;
-  font-weight: 300;
-  color: var(--rule);
-  background: var(--paper);
-  width: 14px;
-  height: 22px;
-  display: grid;
-  place-items: center;
-  z-index: 2;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
 
   html {
-    background: var(--paper);
-    @apply font-sans;
+    @apply bg-background font-sans;
   }
 
   body {
-    @apply min-h-svh font-sans antialiased;
-    background: var(--paper);
-    color: var(--ink);
-    font-size: 15.5px;
-    line-height: 1.55;
+    @apply min-h-svh bg-background text-foreground font-sans antialiased;
+    font-size: 14px;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -260,14 +163,14 @@
   h4,
   h5,
   h6 {
-    font-family: var(--font-heading);
-    letter-spacing: -0.03em;
-    font-weight: 500;
+    @apply font-heading text-foreground;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    line-height: 1.2;
   }
 
   ::selection {
-    background: var(--primary);
-    color: var(--on-primary);
+    @apply bg-foreground text-background;
   }
 
   button:not(:disabled),

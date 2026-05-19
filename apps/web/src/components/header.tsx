@@ -1,54 +1,33 @@
 import { Link } from "@tanstack/react-router";
+import { Button } from "@ikiraro/components/ui/button";
 
 export default function Header() {
   const links = [
-    { to: "/", label: "Overview" },
-    { to: "/demo", label: "Demo" },
+    { to: "/", label: "Product" },
+    { to: "/communication", label: "Communicate" },
+    { to: "/demo", label: "Interactive" },
+    { to: "/sdk", label: "Documentation" },
   ] as const;
 
   return (
-    <header
-      className="sticky top-0 z-50 w-full"
-      style={{
-        background: "var(--paper)",
-        borderBottom: "1px solid var(--rule)",
-      }}
-    >
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
+    <header className="bg-background/80 border-b border-border sticky top-0 z-50 w-full backdrop-blur-md">
+      <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-6 py-3.5 md:px-10">
         <div className="flex items-center gap-10">
-          <Link to="/" className="flex items-center gap-3">
-            <div
-              className="flex h-6 w-6 items-center justify-center"
-              style={{ borderRadius: "2px", background: "var(--ink)" }}
-            >
-              <span
-                className="text-[9px] font-bold"
-                style={{
-                  color: "var(--on-dark)",
-                  fontFamily: "var(--font-mono)",
-                  letterSpacing: "0.5px",
-                }}
-              >
-                IK
-              </span>
+          <Link to="/" className="flex items-center gap-2">
+            <div className="bg-foreground flex h-5 w-5 items-center justify-center rounded-sm">
+              <span className="text-background text-[10px] font-bold tracking-tighter">S</span>
             </div>
-            <span
-              className="text-[13px] font-semibold"
-              style={{ color: "var(--ink)", letterSpacing: "-0.3px" }}
-            >
-              Ikiraro
-            </span>
+            <span className="text-foreground text-[14px] font-semibold tracking-tight">Sensa</span>
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-6 md:flex">
             {links.map(({ to, label }) => (
               <Link
                 key={to}
                 to={to}
-                className="text-[13px] transition-colors"
-                style={{ color: "var(--steel)" }}
+                className="text-muted-foreground text-[13px] font-medium transition-colors hover:text-foreground"
                 activeProps={{
-                  style: { color: "var(--ink)", fontWeight: 500 },
+                  className: "text-foreground font-semibold",
                 }}
               >
                 {label}
@@ -58,27 +37,12 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <span
-            className="text-[11px]"
-            style={{
-              fontFamily: "var(--font-mono)",
-              color: "var(--stone)",
-              letterSpacing: "0.3px",
-            }}
+          <Button
+            render={<Link to="/demo" />}
+            className="bg-foreground text-background rounded-md h-8 px-4 text-[12px] font-bold transition-all hover:opacity-90"
           >
-            v0.3
-          </span>
-          <Link
-            to="/demo"
-            className="hidden md:inline-flex px-4 py-1.5 text-[12px] font-medium transition-colors"
-            style={{
-              background: "var(--primary)",
-              color: "var(--on-primary)",
-              borderRadius: "3px",
-            }}
-          >
-            Launch Demo
-          </Link>
+            Launch
+          </Button>
         </div>
       </div>
     </header>

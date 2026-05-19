@@ -67,7 +67,7 @@ export function useHandTracking() {
     };
   }, [vision, processor]);
 
-  const start = async () => {
+  const start = useCallback(async () => {
     if (!videoElRef.current) {
       setError("Camera element is not mounted.");
       return;
@@ -77,32 +77,50 @@ export function useHandTracking() {
     } catch {
       // Error already handled by vision event listener
     }
-  };
+  }, [vision]);
 
-  const stop = () => {
+  const stop = useCallback(() => {
     vision.stop();
-  };
+  }, [vision]);
 
-  const clear = () => {
+  const clear = useCallback(() => {
     vision.reset();
     setTracking(EMPTY_TRACKING);
-  };
+  }, [vision]);
 
-  const manualCorrect = (sign: string) => {
-    vision.manualCorrect(sign);
-  };
+  const manualCorrect = useCallback(
+    (sign: string) => {
+      vision.manualCorrect(sign);
+    },
+    [vision],
+  );
 
-  return {
-    videoRef,
-    tracking,
-    isReady,
-    delegate,
-    fps,
-    isActive,
-    error,
-    clear,
-    manualCorrect,
-    start,
-    stop,
-  };
+  return useMemo(
+    () => ({
+      videoRef,
+      tracking,
+      isReady,
+      delegate,
+      fps,
+      isActive,
+      error,
+      clear,
+      manualCorrect,
+      start,
+      stop,
+    }),
+    [
+      videoRef,
+      tracking,
+      isReady,
+      delegate,
+      fps,
+      isActive,
+      error,
+      clear,
+      manualCorrect,
+      start,
+      stop,
+    ],
+  );
 }

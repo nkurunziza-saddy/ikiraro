@@ -34,7 +34,7 @@
         "@ikiraro/components": "workspace:*",
         "@ikiraro/engine": "workspace:*",
         "@ikiraro/sdk": "workspace:*",
-        "@ikiraro/sdk-published": "npm:@ikiraro/sdk@0.2.2",
+        "@ikiraro/sdk-published": "npm:@ikiraro/sdk@0.3.1",
         "@mediapipe/tasks-vision": "0.10.35",
         "@tailwindcss/vite": "^4.3.0",
         "@tanstack/react-form": "^1.32.0",
@@ -157,7 +157,7 @@
     },
     "packages/sdk": {
       "name": "@ikiraro/sdk",
-      "version": "0.2.2",
+      "version": "0.3.1",
       "dependencies": {
         "@base-ui/react": "^1.4.1",
         "@effect/platform": "^0.69.0",

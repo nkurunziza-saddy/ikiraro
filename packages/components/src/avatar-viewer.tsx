@@ -1,10 +1,11 @@
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { ContactShadows, Environment, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
 import { RendererDirector } from "@ikiraro/engine/planning";
 import type { SignCanvas } from "@ikiraro/engine/planning";
 import type { TranslationEnvelope } from "@ikiraro/engine/types";
+import type { ArmTarget, MotionType } from "@ikiraro/engine/types";
 import { REST_POSE } from "@ikiraro/engine/planning";
 import type { Handshape } from "@ikiraro/engine/planning";
 import { SignModelGLTF } from "./sign-model-gltf";
@@ -15,17 +16,30 @@ interface AvatarViewerProps {
   className?: string;
 }
 
+export type SignFrameState = {
+  motion: MotionType;
+  progress: number;
+  armTarget: ArmTarget | null;
+};
+
 export function AvatarViewer({ envelope, modelUrl, className }: AvatarViewerProps) {
   const [pose, setPose] = useState<Handshape>(REST_POSE);
   const [active, setActive] = useState(false);
+
+  // Updated on every RAF tick via setMotion — avoid state to prevent re-renders.
+  const signFrameRef = useRef<SignFrameState>({ motion: "none", progress: 0, armTarget: null });
 
   const adapter = useMemo<SignCanvas>(
     () => ({
       setPose,
       setOverlay: () => {},
+      setMotion: (motion, progress, armTarget) => {
+        signFrameRef.current = { motion, progress, armTarget: armTarget ?? null };
+      },
       clear: () => {
         setPose(REST_POSE);
         setActive(false);
+        signFrameRef.current = { motion: "none", progress: 0, armTarget: null };
       },
     }),
     [],
@@ -64,8 +78,8 @@ export function AvatarViewer({ envelope, modelUrl, className }: AvatarViewerProp
         gl.toneMappingExposure = 1.05;
       }}
     >
-      {/* Camera at chest height, pulled back enough to frame head → waist */}
-      <PerspectiveCamera makeDefault position={[0, 0.05, 2.4]} fov={44} near={0.01} far={10} />
+      {/* Framed on signing space: shoulders → just above head, arms visible */}
+      <PerspectiveCamera makeDefault position={[0, 0.15, 2.2]} fov={42} near={0.01} far={10} />
 
       <ambientLight intensity={0.22} color="#f8ece2" />
       <directionalLight
@@ -85,6 +99,7 @@ export function AvatarViewer({ envelope, modelUrl, className }: AvatarViewerProp
           url={modelUrl}
           pose={pose}
           active={active}
+          signFrameRef={signFrameRef}
           scale={1}
           position={[0, -1.2, 0]}
         />

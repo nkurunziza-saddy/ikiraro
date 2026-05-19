@@ -84,13 +84,39 @@ export type SignPlan = {
 
 // ─── Renderer Queue ──────────────────────────────────────────────────────────
 
+export type MotionType =
+  | "none"
+  | "shake"
+  | "arc"
+  | "tap"
+  | "circle"
+  | "z-trace"
+  | "j-trace"
+  | "g-push"
+  | "h-slide"
+  | "d-arc"
+  | "n-dip"
+  | "k-push";
+
+// Per-sign dominant-arm override (deltas from the generic SIGN pose).
+export type ArmTarget = {
+  rArmX?: number;
+  rArmZ?: number;
+  rArmY?: number;
+  rForeX?: number;
+  rForeZ?: number;
+  rForeY?: number;
+  rHandX?: number;
+};
+
 export type FrameItem = {
   type: "lexeme" | "fingerspell" | "number" | "pause" | "pointing";
   value: string;
   label: string;
   sublabel?: string;
   duration: number;
-  motion?: "none" | "shake" | "arc" | "tap" | "circle";
+  motion?: MotionType;
+  armTarget?: ArmTarget;
   facialExpression?: string;
   coarticulation?: CoarticulationMode;
 };

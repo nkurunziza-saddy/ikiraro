@@ -1,5 +1,5 @@
 import type { SttModel } from "@ikiraro/engine/types";
-import { AudioVisualizer } from "@ikiraro/components";
+import { AudioVisualizer, Button } from "@ikiraro/components";
 import type { CaptureStatus } from "@ikiraro/communication";
 
 const STT_OPTIONS: SttModel[] = ["whisper-large-v3", "whisper-large-v3-turbo"];
@@ -32,30 +32,13 @@ export function SpeechComposer({
   return (
     <div className="flex flex-col gap-8">
       {/* Model + controls row */}
-      <div
-        className="flex items-center justify-between pb-4"
-        style={{ borderBottom: "1px solid var(--rule-soft)" }}
-      >
+      <div className="border-rule-soft flex items-center justify-between pb-4 border-b">
         <div className="flex flex-col gap-1">
-          <span
-            className="text-[10px]"
-            style={{
-              fontFamily: "var(--font-mono)",
-              color: "var(--stone)",
-              letterSpacing: "0.3px",
-            }}
-          >
-            Model
-          </span>
+          <span className="font-mono text-stone text-[10px] tracking-[0.3px]">Model</span>
           <select
             value={sttModel}
             onChange={(e) => setSttModel(e.target.value as SttModel)}
-            className="text-[13px] font-medium outline-none"
-            style={{
-              background: "transparent",
-              color: "var(--ink)",
-              letterSpacing: "-0.2px",
-            }}
+            className="text-ink bg-transparent text-[13px] font-medium outline-none tracking-[-0.2px]"
           >
             {STT_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
@@ -67,40 +50,30 @@ export function SpeechComposer({
 
         <div className="flex gap-2">
           {!isCapturing ? (
-            <button
+            <Button
               onClick={onStart}
               disabled={isWorking}
-              className="px-5 py-2 text-[13px] font-medium transition-all disabled:opacity-40"
-              style={{
-                background: "transparent",
-                color: "var(--ink)",
-                borderRadius: "2px",
-                border: "1px solid var(--rule)",
-              }}
+              variant="outline"
+              className="border-rule text-ink rounded-[2px] h-auto bg-transparent px-5 py-2 text-[13px] font-medium"
             >
               Record
-            </button>
+            </Button>
           ) : (
             <>
-              <button
+              <Button
                 onClick={onStop}
                 disabled={isWorking}
-                className="px-5 py-2 text-[13px] font-medium transition-all disabled:opacity-40"
-                style={{
-                  background: "var(--primary)",
-                  color: "var(--on-primary)",
-                  borderRadius: "2px",
-                }}
+                className="bg-primary text-on-primary rounded-[2px] h-auto px-5 py-2 text-[13px] font-medium"
               >
                 Commit
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={onCancel}
-                className="px-4 py-2 text-[12px] transition-colors"
-                style={{ color: "var(--steel)" }}
+                variant="ghost"
+                className="text-steel h-auto px-4 py-2 text-[12px] hover:bg-transparent hover:text-ink"
               >
                 Cancel
-              </button>
+              </Button>
             </>
           )}
         </div>
@@ -110,14 +83,7 @@ export function SpeechComposer({
       {isCapturing && (
         <div className="flex flex-col gap-4 py-4">
           <AudioVisualizer level={captureLevel} count={32} />
-          <p
-            className="text-[11px] text-center"
-            style={{
-              fontFamily: "var(--font-mono)",
-              color: "var(--primary)",
-              letterSpacing: "0.5px",
-            }}
-          >
+          <p className="text-primary font-mono text-center text-[11px] tracking-[0.5px]">
             Listening…
           </p>
         </div>
@@ -125,23 +91,12 @@ export function SpeechComposer({
 
       {/* Vocabulary hints */}
       <div className="flex flex-col gap-3">
-        <span
-          className="text-[10px]"
-          style={{ fontFamily: "var(--font-mono)", color: "var(--stone)", letterSpacing: "0.3px" }}
-        >
-          Vocabulary hints
-        </span>
+        <span className="font-mono text-stone text-[10px] tracking-[0.3px]">Vocabulary hints</span>
         <textarea
           value={speechPrompt}
           onChange={(e) => setSpeechPrompt(e.target.value)}
           placeholder="Add specific names or terms…"
-          className="w-full text-[14px] leading-relaxed outline-none resize-none pb-4"
-          style={{
-            background: "transparent",
-            color: "var(--ink)",
-            borderBottom: "1px solid var(--rule-soft)",
-            minHeight: "80px",
-          }}
+          className="text-ink border-rule-soft w-full min-h-[80px] resize-none border-b pb-4 text-[14px] leading-relaxed outline-none bg-transparent"
         />
       </div>
     </div>

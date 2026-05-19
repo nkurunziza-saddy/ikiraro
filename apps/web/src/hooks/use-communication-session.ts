@@ -1,8 +1,18 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, startTransition } from "react";
 import type { TranslationEnvelope, SttModel, IkiraroToken } from "@ikiraro/engine/types";
 import { createIkiraro, type IkiraroRuntime, type CaptureStatus } from "@ikiraro/communication";
 
 export type ComposerMode = "speech" | "text" | "sign";
+
+interface SessionState {
+  status: string;
+  error: string | null;
+  activeEnvelope: TranslationEnvelope | null;
+  compositionTokens: IkiraroToken[];
+  compositionText: string;
+  captureStatus: CaptureStatus;
+  captureLevel: number;
+}
 
 /**
  * useCommunicationSession consolidates the logical flow of the dashboard.
@@ -15,14 +25,16 @@ export function useCommunicationSession(onCommit: (env: TranslationEnvelope) => 
   const [runtime, setRuntime] = useState<IkiraroRuntime | null>(null);
   const [mode, setMode] = useState<ComposerMode>("text");
 
-  // Sync state from runtime plugins
-  const [sessionStatus, setSessionStatus] = useState<string>("idle");
-  const [sessionError, setSessionError] = useState<string | null>(null);
-  const [activeEnvelope, setActiveEnvelope] = useState<TranslationEnvelope | null>(null);
-  const [compositionTokens, setCompositionTokens] = useState<IkiraroToken[]>([]);
-  const [compositionText, setCompositionText] = useState("");
-  const [captureStatus, setCaptureStatus] = useState<CaptureStatus>("idle");
-  const [captureLevel, setCaptureLevel] = useState(0);
+  // Consolidated state for runtime sync
+  const [session, setSession] = useState<SessionState>({
+    status: "idle",
+    error: null,
+    activeEnvelope: null,
+    compositionTokens: [],
+    compositionText: "",
+    captureStatus: "idle",
+    captureLevel: 0,
+  });
 
   // Draft states
   const [textDraft, setTextDraft] = useState("");
@@ -38,7 +50,7 @@ export function useCommunicationSession(onCommit: (env: TranslationEnvelope) => 
       try {
         const r = await createIkiraro({
           sdk: {
-            groqApiKey: import.meta.env.VITE_GROQ_API_KEY || "YOUR_GROQ_API_KEY",
+            groqApiKey: import.meta.env.VITE_GROQ_API_KEY,
           },
         });
         if (!active) {
@@ -51,12 +63,17 @@ export function useCommunicationSession(onCommit: (env: TranslationEnvelope) => 
         // Unified subscription for all state updates
         const updateSync = () => {
           const state = r.getState().plugins;
-          setSessionStatus(state.session?.status || "idle");
-          setSessionError(state.session?.error || null);
-          setActiveEnvelope(state.session?.lastEnvelope || null);
-          setCompositionTokens(state.composition?.tokens || []);
-          setCompositionText(state.composition?.text || "");
-          setCaptureStatus(state.speech?.status || "idle");
+          startTransition(() => {
+            setSession((prev) => ({
+              ...prev,
+              status: state.session?.status || "idle",
+              error: state.session?.error || null,
+              activeEnvelope: state.session?.lastEnvelope || null,
+              compositionTokens: state.composition?.tokens || [],
+              compositionText: state.composition?.text || "",
+              captureStatus: state.speech?.status || "idle",
+            }));
+          });
         };
 
         const unsubscribeAll = r.subscribeAll(() => {
@@ -64,7 +81,9 @@ export function useCommunicationSession(onCommit: (env: TranslationEnvelope) => 
         });
 
         const unsubscribeLevel = r.subscribe("speech:level-update", (event) => {
-          setCaptureLevel(event.payload);
+          startTransition(() => {
+            setSession((prev) => ({ ...prev, captureLevel: event.payload }));
+          });
         });
 
         const unsubscribeTranslation = r.subscribe("translation:finished", (event) => {
@@ -78,7 +97,7 @@ export function useCommunicationSession(onCommit: (env: TranslationEnvelope) => 
         };
       } catch {
         if (!active) return;
-        setSessionError("Failed to initialize communication runtime.");
+        setSession((prev) => ({ ...prev, error: "Failed to initialize communication runtime." }));
       }
     };
 
@@ -129,9 +148,9 @@ export function useCommunicationSession(onCommit: (env: TranslationEnvelope) => 
   return {
     mode,
     setMode,
-    previewEnvelope: activeEnvelope,
-    isWorking: sessionStatus === "translating" || sessionStatus === "recording",
-    error: sessionError,
+    previewEnvelope: session.activeEnvelope,
+    isWorking: session.status === "translating" || session.status === "recording",
+    error: session.error,
     textDraft,
     setTextDraft,
     signUnits,
@@ -157,10 +176,10 @@ export function useCommunicationSession(onCommit: (env: TranslationEnvelope) => 
         source: "ui",
       });
     },
-    captureStatus,
-    captureLevel,
-    compositionTokens,
-    compositionText,
+    captureStatus: session.captureStatus,
+    captureLevel: session.captureLevel,
+    compositionTokens: session.compositionTokens,
+    compositionText: session.compositionText,
     runtime,
   };
 }

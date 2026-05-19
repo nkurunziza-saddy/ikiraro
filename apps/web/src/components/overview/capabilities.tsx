@@ -33,35 +33,32 @@ export function OverviewCapabilities() {
   ];
 
   return (
-    <section className="bg-[var(--paper-card)] border-b border-[var(--rule-soft)] py-24">
-      <div className="mx-auto max-w-7xl px-6">
+    <section className="py-24 border-b border-border">
+      <div className="mx-auto max-w-7xl px-6 md:px-10">
         <SectionHead
           num="02 / Capabilities"
-          eye="Input → Plan → Render"
           headline={
             <>
-              Speak, type, sign, or spell —{" "}
-              <span className="italic text-[var(--primary-deep)] font-normal">
-                without barriers.
-              </span>
+              Speak, type, sign, or spell.{" "}
+              <span className="text-muted-foreground font-normal">Without barriers.</span>
             </>
           }
-          lede="Ikiraro covers all four ways a person can produce language. On-device vision, Groq STT, and a local-first gloss planner — in one SDK."
+          lede="Ikiraro covers all four ways a person can produce language. On-device vision, Groq STT, and a local-first gloss planner in one SDK."
         />
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 border-t border-[var(--rule)] border-l border-[var(--rule-soft)] mt-0">
+        <div className="border-border mt-0 grid border-l border-t md:grid-cols-2 lg:grid-cols-4">
           {capabilities.map(({ tag, headline, body, items, viz }) => (
             <div
               key={tag}
-              className="flex flex-col p-7 border-r border-b border-[var(--rule-soft)] bg-[var(--paper-card)] transition-colors duration-200 hover:bg-[var(--paper-soft)] group"
+              className="bg-background border-border group flex flex-col p-7 transition-colors duration-200 border-b border-r hover:bg-secondary"
             >
               {/* Head */}
-              <div className="flex items-center justify-between mb-5">
-                <span className="text-[11px] font-mono text-[var(--stone)] tracking-[0.5px]">
-                  <strong className="text-[var(--primary)] font-medium">{tag[0]}</strong>
+              <div className="mb-5 flex items-center justify-between">
+                <span className="text-muted-foreground text-[11px] tracking-[0.5px]">
+                  <strong className="text-foreground font-medium">{tag[0]}</strong>
                   {tag.slice(1)}
                 </span>
-                <div className="w-8 h-8 rounded-full bg-[var(--paper-soft)] border border-[var(--rule-soft)] flex items-center justify-center text-[var(--primary)] group-hover:bg-[var(--paper-card)] transition-colors">
+                <div className="bg-secondary border-border text-foreground group-hover:bg-background flex size-8 items-center justify-center rounded-full border transition-colors">
                   {viz === "wave" && <WaveIcon />}
                   {viz === "text" && <TextIcon />}
                   {viz === "vision" && <VisionIcon />}
@@ -69,13 +66,13 @@ export function OverviewCapabilities() {
                 </div>
               </div>
 
-              <h3 className="text-[24px] font-sans font-medium tracking-[-0.7px] leading-snug mb-2">
+              <h3 className="mb-2 text-[20px] font-semibold leading-snug tracking-tight">
                 {headline}
               </h3>
-              <p className="text-[14px] leading-relaxed mb-5 text-[var(--slate-text)]">{body}</p>
+              <p className="text-muted-foreground mb-5 text-[14px] leading-relaxed">{body}</p>
 
               {/* Mini visualization */}
-              <div className="mb-5 h-14 rounded-[3px] border border-[var(--rule-soft)] bg-[var(--paper-soft)] p-2 flex items-end gap-[2px] overflow-hidden group-hover:bg-[var(--paper-card)] transition-colors">
+              <div className="border-border bg-secondary rounded-sm group-hover:bg-background mb-5 flex h-14 items-end gap-[2px] overflow-hidden border p-2 transition-colors">
                 {viz === "wave" && <WaveViz />}
                 {viz === "text" && <TextViz />}
                 {viz === "vision" && <VisionViz />}
@@ -83,13 +80,13 @@ export function OverviewCapabilities() {
               </div>
 
               {/* Feature list */}
-              <ul className="flex flex-col gap-2.5 mt-auto pt-4 border-t border-[var(--rule-soft)]">
+              <ul className="border-border mt-auto flex flex-col gap-2.5 border-t pt-4">
                 {items.map((item) => (
                   <li
                     key={item}
-                    className="flex items-center gap-2.5 text-[13px] text-[var(--slate-text)]"
+                    className="text-muted-foreground flex items-center gap-2.5 text-[13px]"
                   >
-                    <span className="w-1 h-1 rounded-full bg-[var(--primary)] shrink-0" />
+                    <span className="bg-foreground h-1 w-1 shrink-0 rounded-full" />
                     {item}
                   </li>
                 ))}
@@ -162,12 +159,13 @@ const WaveViz = () => (
     {Array.from({ length: 20 }, (_, i) => (
       <span
         key={i}
-        className="flex-1 rounded-[1px] bg-gradient-to-b from-[var(--primary)] to-[var(--sunshine-500)] animate-[viz-rise_var(--dur)_ease-in-out_var(--del)_infinite]"
+        className="bg-foreground flex-1 rounded-[1px] animate-[viz-rise_var(--dur)_ease-in-out_var(--del)_infinite]"
         style={{
           ["--dur" as any]: `${1.2 + (i % 4) * 0.2}s`,
           ["--del" as any]: `${(i * 0.06).toFixed(2)}s`,
           minHeight: "10%",
           maxHeight: "90%",
+          opacity: 0.6,
         }}
       />
     ))}
@@ -175,9 +173,9 @@ const WaveViz = () => (
 );
 
 const TextViz = () => (
-  <div className="flex flex-col gap-1 w-full justify-center h-full">
+  <div className="flex h-full w-full flex-col justify-center gap-1">
     {["HELLO ██████ ██", "HOW ████ YOU", "SIGN █████"].map((line) => (
-      <div key={line} className="text-[10px] font-mono text-[var(--primary)] opacity-70">
+      <div key={line} className="text-foreground font-mono text-[10px] opacity-50">
         {line}
       </div>
     ))}
@@ -185,11 +183,11 @@ const TextViz = () => (
 );
 
 const VisionViz = () => (
-  <div className="flex items-center justify-center w-full gap-2">
+  <div className="flex w-full items-center justify-center gap-2">
     {["A", "S", "L"].map((l) => (
       <span
         key={l}
-        className="w-7 h-7 flex items-center justify-center text-[16px] font-mono font-semibold bg-[var(--paper-card)] border border-[var(--rule)] text-[var(--primary)] rounded-[2px]"
+        className="bg-background border-border text-foreground flex size-7 items-center justify-center rounded-sm border font-mono text-[16px] font-semibold"
       >
         {l}
       </span>
@@ -198,14 +196,12 @@ const VisionViz = () => (
 );
 
 const KeyboardViz = () => (
-  <div className="grid grid-cols-10 gap-[3px] w-full items-center">
+  <div className="grid w-full grid-cols-10 items-center gap-[3px]">
     {Array.from({ length: 26 }, (_, i) => (
       <span
         key={i}
-        className={`h-[10px] flex items-center justify-center text-[7px] font-mono rounded-[1px] border border-[var(--rule)] ${
-          i % 5 === 2
-            ? "bg-[var(--primary)] text-[var(--on-primary)]"
-            : "bg-[var(--paper-card)] text-transparent"
+        className={`flex h-[10px] items-center justify-center rounded-[1px] border border-border font-mono text-[7px] ${
+          i % 5 === 2 ? "bg-foreground text-background" : "bg-background text-transparent"
         }`}
       >
         {String.fromCharCode(65 + i)}

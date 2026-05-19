@@ -10,12 +10,7 @@
 export * from "@ikiraro/communication";
 
 // Core rendering components
-export {
-  SignPlayer3D,
-  SignModelGLTF,
-  SignModelProcedural,
-  WebSpeechProvider,
-} from "@ikiraro/components";
+export { AvatarViewer, SignModelGLTF, WebSpeechProvider } from "@ikiraro/components";
 export type { SpeakOptions } from "@ikiraro/components";
 
 // Planning primitives — deterministic pipeline, pose library, renderer

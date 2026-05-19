@@ -1,52 +1,47 @@
 import { Link } from "@tanstack/react-router";
+import { Button } from "@ikiraro/components";
 
 export function OverviewHero() {
   return (
-    <section className="mx-auto max-w-7xl px-6 pt-20 pb-28">
-      <div className="max-w-5xl">
-        <div className="inline-flex items-center gap-3 mb-7 text-[11px] font-mono text-[var(--steel)] tracking-[0.5px]">
-          <span className="text-[var(--primary)] font-medium">00</span>
-          <span className="w-5 h-px bg-[var(--rule)]" />
-          Local-first ASL SDK · Browser-native
-        </div>
-
-        <h1
-          className="leading-[1.01] mb-7 text-balance font-sans font-medium text-[clamp(52px,7vw,80px)] tracking-[-3px] max-w-[18ch]"
-          style={{ fontFeatureSettings: "'ss01', 'cv11'" }}
-        >
-          Speech &amp; sign.{" "}
-          <span className="italic text-[var(--primary-deep)] font-normal">
-            Understood together.
-          </span>
+    <section className="mx-auto max-w-7xl px-6 md:px-10 py-24 md:py-40">
+      <div className="max-w-2xl">
+        <h1 className="text-[32px] md:text-[40px] leading-[1.1] mb-6 font-bold tracking-tight text-foreground">
+          The interface for silent communication.
         </h1>
 
-        <p className="text-[17px] leading-relaxed mb-10 max-w-2xl text-[var(--slate-text)]">
-          Ikiraro is a local-first browser SDK that converts speech, typed text, and ASL
-          fingerspelling into synchronized 3D sign animation — all in the browser, with no server
-          required.
+        <p className="text-muted-foreground text-[15px] md:text-[16px] leading-relaxed mb-10">
+          Sensa is a refined browser SDK that converts speech, text, and ASL into synchronized 3D
+          sign animation. Designed for privacy, speed, and effortless integration.
         </p>
 
-        <div className="flex flex-wrap items-center gap-4 mb-12">
-          <Link
-            to="/demo"
-            className="inline-flex items-center gap-2 px-6 py-3.5 text-[14px] font-medium transition-all bg-[var(--primary)] text-[var(--on-primary)] rounded-[3px] shadow-[0_1px_0_var(--primary-deep),0_6px_14px_-4px_rgba(180,61,17,0.35)] hover:translate-y-[-1px] active:translate-y-[1px]"
+        <div className="flex items-center gap-4 mb-16">
+          <Button
+            render={<Link to="/demo" />}
+            className="bg-foreground text-background rounded-md h-10 px-6 text-[13px] font-bold transition-all hover:opacity-90"
           >
-            Launch the demo
-          </Link>
-          <a
-            href="https://github.com"
-            className="inline-flex items-center gap-2 px-6 py-3.5 text-[14px] transition-all bg-transparent text-[var(--ink)] rounded-[3px] border border-[var(--rule)] hover:border-[var(--ink)]"
+            Get Started
+          </Button>
+          <Button
+            render={<Link to="/sdk" />}
+            variant="outline"
+            className="text-foreground border-border hover:bg-secondary rounded-md h-10 px-6 text-[13px] font-semibold transition-all"
           >
-            Read the docs →
-          </a>
+            Documentation
+          </Button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-8 text-[13px] text-[var(--steel)]">
-          {["Open source", "Zero backend required", "TypeScript SDK", "WebGPU / WASM"].map((t) => (
-            <span key={t} className="flex items-center gap-2">
-              <span className="w-1 h-1 rounded-full bg-[var(--primary)]" />
-              {t}
-            </span>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-16 border-t border-border pt-12">
+          {[
+            { title: "Privacy", desc: "No data ever leaves the browser." },
+            { title: "Speed", desc: "High-performance sign rendering." },
+            { title: "Sync", desc: "Perfectly synchronized output." },
+          ].map((item) => (
+            <div key={item.title}>
+              <div className="text-[13px] font-bold text-foreground uppercase tracking-wider mb-2">
+                {item.title}
+              </div>
+              <div className="text-[14px] text-muted-foreground leading-relaxed">{item.desc}</div>
+            </div>
           ))}
         </div>
       </div>

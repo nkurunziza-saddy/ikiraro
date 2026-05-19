@@ -1,6 +1,7 @@
-import type { FrameItem } from "../types";
+import type { FrameItem, MotionType } from "../types";
 import type { SignCanvas, RendererState, PlaybackOptions } from "./renderer-types";
 import { resolveHandshape, mixHandshapes } from "./pose-library";
+import { resolveLexemePose } from "./lexeme-poses";
 import { coarticulationBlend } from "./coarticulation";
 
 /**
@@ -131,6 +132,13 @@ export class RendererDirector {
     }
   }
 
+  private resolveHandshapeForFrame(frame: FrameItem) {
+    if (frame.type === "lexeme") {
+      return resolveLexemePose(frame.label)?.handshape ?? resolveHandshape(frame.value);
+    }
+    return resolveHandshape(frame.value);
+  }
+
   private updateCanvas() {
     const frame = this.queue[this.state.frameIndex];
     if (!frame) {
@@ -141,15 +149,22 @@ export class RendererDirector {
     if (frame.type === "pause") {
       this.canvas.clear();
       this.canvas.setOverlay("Pause");
+      this.canvas.setMotion?.("none", 0);
       return;
     }
 
-    const currentHandshape = resolveHandshape(frame.value);
+    const currentHandshape = this.resolveHandshapeForFrame(frame);
     this.canvas.setOverlay(frame.label, frame.sublabel);
 
     if (this.canvas.setExpression && frame.facialExpression) {
       this.canvas.setExpression(frame.facialExpression);
     }
+
+    this.canvas.setMotion?.(
+      (frame.motion ?? "none") as MotionType,
+      this.state.progress,
+      frame.armTarget,
+    );
 
     const hasNext = this.state.frameIndex < this.queue.length - 1;
     const blend = coarticulationBlend(
@@ -159,7 +174,7 @@ export class RendererDirector {
     );
 
     if (blend !== null) {
-      const nextHandshape = resolveHandshape(this.queue[this.state.frameIndex + 1]!.value);
+      const nextHandshape = this.resolveHandshapeForFrame(this.queue[this.state.frameIndex + 1]!);
       this.canvas.setPose(mixHandshapes(currentHandshape, nextHandshape, blend));
     } else {
       this.canvas.setPose(currentHandshape);

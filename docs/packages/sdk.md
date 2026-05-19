@@ -1,93 +1,129 @@
 # @ikiraro/sdk
 
-The SDK package is the public npm distribution facade. It re-exports the full public API of `@ikiraro/communication`, `@ikiraro/components`, and selected `@ikiraro/engine` exports under a single package name.
+The Ikiraro SDK is the primary entry point for developers building sign language translation and rendering applications. It provides a unified, high-level API by aggregating the core capabilities of the Ikiraro ecosystem:
 
-**Package name**: `@ikiraro/sdk`  
-**Built with**: tsup (bundler for npm distribution)
-
----
-
-## Purpose
-
-Internal monorepo consumers import directly from `@ikiraro/communication`, `@ikiraro/components`, and `@ikiraro/engine`. External npm consumers (`npm install @ikiraro/sdk`) import everything from `@ikiraro/sdk`.
-
-The SDK package does not add any logic — it is purely an aggregation layer.
+- **Runtime & Communication** (`@ikiraro/communication`): Managed translation sessions, speech/text capture, and plugin system.
+- **Rendering Components** (`@ikiraro/components`): 3D avatar viewers, audio visualizers, and UI primitives.
+- **Translation Engine** (`@ikiraro/engine`): Deterministic planning, pose library, and AI-driven gloss generation.
 
 ---
 
-## Exports
-
-### `@ikiraro/sdk` (main)
-
-```typescript
-// From @ikiraro/communication
-export * from "@ikiraro/communication";         // createIkiraro, IkiraroRuntime, EventBus, plugins,
-                                                 // IkiraroSDK, useIkiraro, useHandTracking, etc.
-
-// From @ikiraro/components
-export { SignPlayer3D, SignModelGLTF, ... } from "@ikiraro/components";
-export { PipelineView, HandOverlay, AudioVisualizer, ... } from "@ikiraro/components";
-
-// From @ikiraro/engine/planning
-export { buildPlanFromGloss, buildPlanFromUnits, createEnvelope, RendererDirector, ... } from "@ikiraro/engine/planning";
-
-// From @ikiraro/engine/types
-export type { SignToken, SignPlan, TranslationEnvelope, FrameItem, IkiraroToken, ... } from "@ikiraro/engine/types";
-```
-
----
-
-## Release Scripts
-
-From the root `package.json`:
+## Installation
 
 ```bash
-# Bump version (patch/minor/major)
-bun run release:sdk:version:patch
-bun run release:sdk:version:minor
-bun run release:sdk:version:major
-
-# Verify before publishing (build + typecheck + test + pack dry-run)
-bun run release:sdk:verify
-
-# Publish to npm
-bun run release:sdk:publish
+npm install @ikiraro/sdk
+# or
+bun add @ikiraro/sdk
 ```
 
-`release:sdk:verify` runs the full pipeline before any publish:
+## Quick Start
 
-1. `bun run build` — turbo builds all packages.
-2. `bun run check-types` — TypeScript check.
-3. `bun run test` — vitest.
-4. `bun pm pack --dry-run` — verifies the tarball without uploading.
+The easiest way to use Ikiraro is through the `useIkiraro` hook, which manages the runtime lifecycle and provides a reactive state snapshot.
 
----
+```tsx
+import { useIkiraro, AvatarViewer } from "@ikiraro/sdk";
 
-## Usage (External Consumer)
-
-```typescript
-import {
-  createIkiraro,
-  useHandTracking,
-  SignPlayer3D,
-  PipelineView,
-} from "@ikiraro/sdk";
-
-// Bootstrap the runtime
-const runtime = await createIkiraro({
-  sdk: { groqApiKey: process.env.GROQ_API_KEY },
-});
-
-// React app
 function App() {
-  const camera = useHandTracking();
+  const { snapshot, translate, isReady } = useIkiraro({
+    sdk: { groqApiKey: "your-api-key" },
+  });
 
   return (
-    <div>
-      <video ref={camera.videoRef} autoPlay muted playsInline />
-      <HandOverlay tracking={camera.tracking} />
-      <PipelineView envelope={currentEnvelope} />
+    <div className="flex flex-col gap-4">
+      {/* 1. Render the 3D Avatar */}
+      <AvatarViewer
+        envelope={snapshot.lastEnvelope}
+        modelUrl="/avatar.glb"
+        className="w-full h-[400px]"
+      />
+
+      {/* 2. Trigger translation */}
+      <input
+        placeholder="Type something to sign…"
+        disabled={!isReady}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            translate(e.currentTarget.value);
+            e.currentTarget.value = "";
+          }
+        }}
+      />
+
+      {/* 3. Observe status */}
+      <p>Status: {snapshot.status}</p>
     </div>
   );
 }
 ```
+
+---
+
+## Key Exports
+
+### Communication & Runtime
+
+- `createIkiraro`: Factory to bootstrap the runtime.
+- `useIkiraro`: React hook for easy integration.
+- `IkiraroSDK`: Effect-based API for one-off translations.
+- `useHandTracking`: Hook for camera-based sign recognition.
+
+### Rendering
+
+- `AvatarViewer`: The primary 3D component for displaying sign language.
+- `SignModelGLTF`: Low-level 3D model component (uses `@react-three/fiber`).
+- `WebSpeechProvider`: Singleton for Text-to-Speech synchronization.
+
+### Engine Primitives
+
+- `buildPlanFromGloss`: Convert ASL Gloss to a temporal sign plan.
+- `buildPlanFromUnits`: Create a deterministic plan from individual sign units.
+- `createEnvelope`: Package a plan with input metadata for rendering.
+- `RendererDirector`: Orchestrates the animation frame queue.
+
+---
+
+## Advanced Usage
+
+### Manual Runtime Control
+
+If you need control outside of React, you can use the factory directly:
+
+```typescript
+import { createIkiraro } from "@ikiraro/sdk";
+
+const runtime = await createIkiraro({
+  sdk: { groqApiKey: "..." },
+});
+
+runtime.subscribe("translation:finished", (event) => {
+  console.log("Translation complete:", event.payload);
+});
+
+runtime.dispatch({
+  type: "session:cmd:start",
+  payload: { mode: "text", text: "Hello world" },
+  timestamp: Date.now(),
+  source: "app",
+});
+```
+
+### Deterministic Signing
+
+For fixed phrases or fingerspelling where you don't want AI variance:
+
+```typescript
+import { translateUnits } from "@ikiraro/sdk";
+
+// These units correspond to specific poses in the Ikiraro library
+translateUnits(["H", "E", "L", "L", "O"]);
+```
+
+---
+
+## Package Architecture
+
+The SDK is a "facade" package. It does not contain its own logic but rather re-exports selected stable APIs from internal packages. This ensures that external consumers have a clean, versioned interface while allowing the internal engine to evolve rapidly.
+
+- **Main entry**: `@ikiraro/sdk`
+- **Components subpath**: `@ikiraro/sdk/components`
+- **Engine subpath**: `@ikiraro/sdk/engine`

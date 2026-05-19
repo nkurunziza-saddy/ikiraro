@@ -1,5 +1,5 @@
 export type { GlossRegistryEntry } from "./gloss-registry";
-export { isKnownGloss, getGlossDurationMs } from "./gloss-registry";
+export { isKnownGloss, getGlossDurationMs, GLOSS_REGISTRY_KEYS } from "./gloss-registry";
 
 export { normalizeText } from "./normalizer";
 
@@ -29,10 +29,16 @@ export type { FrameItem } from "../types";
 
 export * from "./pose-library";
 
+export { resolveLexemePose, LEXEME_POSES } from "./lexeme-poses";
+export type { LexemePose } from "./lexeme-poses";
+
+export { computeMotionDelta } from "./motion-paths";
+export type { MotionDelta } from "./motion-paths";
+
 export { RendererDirector } from "./renderer-director";
 export type { SignCanvas, RendererState, PlaybackOptions, HandPose } from "./renderer-types";
 export { coarticulationBlend } from "./coarticulation";
-export type { CoarticulationMode } from "../types";
+export type { CoarticulationMode, MotionType, ArmTarget } from "../types";
 
 export { GLOSS_OUTPUT_SCHEMA, GlossOutputSchema, GroqChatResponseSchema } from "./schemas";
 export type { GlossOutput, GroqChatResponse } from "./schemas";

@@ -26,7 +26,7 @@ export function OverviewPipeline() {
     {
       num: "03",
       name: "Plan",
-      desc: "Groq Llama produces a normalized ASL gloss with clause boundaries, timing, and coarticulation metadata.",
+      desc: "Groq Llama produces a normalized ASL gloss with clause boundaries, timing, and coarticulation blending.",
       lat: "Inference",
       ms: "~38 ms",
       icon: (
@@ -60,31 +60,30 @@ export function OverviewPipeline() {
   ];
 
   return (
-    <section className="py-24 border-b border-[var(--rule-soft)]">
-      <div className="mx-auto max-w-7xl px-6">
+    <section className="py-24 border-b border-border">
+      <div className="mx-auto max-w-7xl px-6 md:px-10">
         <SectionHead
           num="03 / Inside Ikiraro"
-          eye="How it works"
           headline={
             <>
               Five stages.{" "}
-              <span className="italic text-[var(--primary-deep)] font-normal">Under the hood.</span>
+              <span className="text-muted-foreground font-normal">Under the hood.</span>
             </>
           }
           lede="Everything on the vision path runs in a Web Worker, with zero round-trips. Speech uses Groq's API for sub-50 ms transcription. No screen content ever leaves unless you explicitly configure it."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-7 mt-14">
+        <div className="mt-14 grid grid-cols-1 gap-7 md:grid-cols-3 lg:grid-cols-5">
           {stages.map((card, i) => (
             <div
               key={card.num}
-              className="flex flex-col bg-[var(--paper-card)] border border-[var(--rule-soft)] rounded-[3px] p-5.5 relative transition-all duration-200 hover:border-[var(--rule)] hover:translate-y-[-1px] ik-pipe-card"
+              className="border-border relative flex flex-col rounded border p-5 transition-all duration-200 hover:border-foreground/30 hover:-translate-y-px"
             >
-              <div className="flex justify-between items-center mb-5">
-                <span className="text-[10.5px] font-mono text-[var(--stone)] tracking-[0.6px]">
+              <div className="mb-5 flex items-center justify-between">
+                <span className="text-muted-foreground text-[10.5px] tracking-[0.6px]">
                   {card.num}
                 </span>
-                <div className="w-7 h-7 rounded-full bg-[var(--paper-soft)] border border-[var(--rule-soft)] flex items-center justify-center text-[var(--primary)]">
+                <div className="bg-secondary border-border text-foreground flex size-7 items-center justify-center rounded-full border">
                   <svg
                     width="12"
                     height="12"
@@ -98,21 +97,21 @@ export function OverviewPipeline() {
                 </div>
               </div>
 
-              <div className="text-[12px] font-semibold uppercase mb-2.5 text-[var(--ink)] tracking-[1.6px]">
+              <div className="text-foreground mb-2.5 text-[12px] font-semibold uppercase tracking-[1.6px]">
                 {card.name}
               </div>
 
-              <p className="text-[13px] leading-relaxed mb-auto text-[var(--slate-text)]">
+              <p className="text-muted-foreground mb-auto text-[13px] leading-relaxed">
                 {card.desc}
               </p>
 
-              <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-[var(--rule-soft)] font-mono text-[11px]">
-                <span className="uppercase text-[10px] text-[var(--stone)] tracking-[0.4px]">
+              <div className="border-border mt-4 flex items-center justify-between border-t pt-3.5 font-mono text-[11px]">
+                <span className="text-muted-foreground uppercase text-[10px] tracking-[0.4px]">
                   {card.lat}
                 </span>
-                <span className="flex items-center gap-1.5 font-medium text-[var(--ink)]">
+                <span className="text-foreground flex items-center gap-1.5 font-medium">
                   <span
-                    className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] shadow-[0_0_0_2px_rgba(200,68,42,0.18)] animate-[live-pulse_1.4s_ease-in-out_infinite]"
+                    className="bg-foreground animate-[live-pulse_1.4s_ease-in-out_infinite] h-1.5 w-1.5 rounded-full"
                     style={{ animationDelay: `${i * 0.2}s` }}
                   />
                   {card.ms}
@@ -123,25 +122,27 @@ export function OverviewPipeline() {
         </div>
 
         {/* Pipeline summary */}
-        <div className="flex items-center justify-between flex-wrap gap-6 mt-10 px-7 py-5 bg-[var(--ink)] text-[var(--on-dark)] rounded-[3px]">
-          <div className="text-[14px] text-white/80">
-            <strong className="text-white font-semibold">72 ms</strong>, median. Every step
+        <div className="bg-foreground text-background mt-10 flex flex-wrap items-center justify-between gap-6 rounded px-7 py-5">
+          <div className="text-background/80 text-[14px]">
+            <strong className="font-semibold text-background">72 ms</strong>, median. Every step
             on-device or Groq-accelerated. Zero round-trips for vision.
           </div>
-          <div className="flex gap-8 font-mono text-[12px]">
+          <div className="flex gap-8 text-[12px]">
             {[
               { lbl: "SDK weight", val: "38 kb" },
               { lbl: "Vision worker", val: "WASM" },
               { lbl: "Server calls", val: "0*" },
             ].map(({ lbl, val }) => (
               <div key={lbl} className="flex flex-col gap-1">
-                <span className="text-white/40 text-[10px] tracking-[0.5px] uppercase">{lbl}</span>
-                <span className="text-[var(--sunshine-300)] text-[16px] font-medium">{val}</span>
+                <span className="text-[10px] uppercase tracking-[0.5px] text-background/40">
+                  {lbl}
+                </span>
+                <span className="text-background/70 text-[16px] font-medium">{val}</span>
               </div>
             ))}
           </div>
         </div>
-        <p className="text-[11px] mt-3 font-mono text-[var(--stone)]">
+        <p className="text-muted-foreground mt-3 font-mono text-[11px]">
           * Speech mode sends audio to Groq. Vision and text/manual modes are fully local.
         </p>
       </div>

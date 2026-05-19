@@ -6,6 +6,22 @@ import type {
   TranslationContext,
 } from "@ikiraro/engine/types";
 import type { CaptureStatus } from "../capture/types";
+
+/**
+ * Flattened view of runtime state for convenient React consumption.
+ * Prefer this over digging into `getState().plugins.*`.
+ */
+export interface RuntimeSnapshot {
+  status: "idle" | "recording" | "translating" | "finished" | "error";
+  isTranslating: boolean;
+  lastEnvelope: TranslationEnvelope | null;
+  compositionTokens: IkiraroToken[];
+  compositionText: string;
+  speechStatus: CaptureStatus;
+  speechLevel: number;
+  error: string | null;
+}
+
 import type { CompositionState } from "./plugins/composition";
 import type { TranslationState } from "./plugins/translation";
 import type { InspectorState } from "./plugins/inspector";
