@@ -40,10 +40,10 @@ function SdkLayout() {
           {/* Sidebar */}
           <aside className="hidden lg:block w-44 shrink-0 sticky top-24 self-start">
             <div className="flex items-center gap-2 mb-6">
-              <span className="bg-foreground text-background rounded px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest">
+              <span className="bg-foreground text-background rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest">
                 SDK
               </span>
-              <span className="text-muted-foreground font-mono text-[10px]">v0.3.1</span>
+              <span className="text-muted-foreground text-[10px]">v0.3.2</span>
             </div>
 
             <nav className="flex flex-col gap-5">
