@@ -240,7 +240,7 @@ export type CameraTrackingState = {
   currentWord: string;
   sentence: string[];
   sentenceText: string;
-  committedWord: string | null;
+  committedToken: SignToken | null;
 };
 
 export interface HandshapeDefinition {

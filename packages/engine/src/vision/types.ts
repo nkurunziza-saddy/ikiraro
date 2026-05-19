@@ -48,6 +48,10 @@ export interface ILinguisticStrategy {
   update(sign: string, context: WordBufferContext): SignToken | null;
   commit?(): SignToken | null;
   reset(): void;
+  /** Returns the in-progress (uncommitted) text for this strategy, if any. */
+  getInProgress?(): string;
+  /** Replaces the last accumulated character — used for manual correction. */
+  overrideLast?(sign: string): void;
 }
 
 export interface LinguisticBufferConfig {
@@ -65,7 +69,7 @@ export interface VisionEventMap {
   "hand-found": { landmarks: import("../types").HandLandmarks };
   "hand-lost": void;
   "sign-detected": { sign: string; confidence: number };
-  "word-committed": string;
+  "word-committed": import("../types").SignToken;
   "buffer-update": { currentWord: string; sentenceText: string };
   "fps-update": number;
   error: string;

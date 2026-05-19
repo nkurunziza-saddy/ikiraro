@@ -54,8 +54,8 @@ export class VisionSystem {
         this.emit("hand-lost", undefined);
       }
 
-      if (tracking.committedWord) {
-        this.emit("word-committed", tracking.committedWord);
+      if (tracking.committedToken) {
+        this.emit("word-committed", tracking.committedToken);
       }
 
       this.emit("buffer-update", {

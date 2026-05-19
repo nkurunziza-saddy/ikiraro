@@ -1,0 +1,1280 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sensa — Utility Components</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lexend:wght@400;500&display=swap"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      /* ====== Components page chrome ====== */
+      body {
+        padding-bottom: 120px;
+      }
+
+      .doc-hero {
+        padding: 96px 0 64px;
+        border-bottom: 1px solid var(--rule-soft);
+      }
+      .doc-hero .eye {
+        font-family: var(--ff-ui);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 2.2px;
+        text-transform: uppercase;
+        color: var(--steel);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+      .doc-hero .eye::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--rule);
+        max-width: 240px;
+      }
+      .doc-hero h1 {
+        font-family: var(--ff-display);
+        font-size: 64px;
+        font-weight: 400;
+        letter-spacing: -1.5px;
+        line-height: 1.04;
+        margin: 0 0 20px;
+        max-width: 880px;
+      }
+      .doc-hero h1 em {
+        font-style: italic;
+        color: var(--primary-deep);
+      }
+      .doc-hero p.lede {
+        font-family: var(--ff-ui);
+        color: var(--slate);
+        max-width: 640px;
+        font-size: 17px;
+        line-height: 1.6;
+      }
+      .doc-hero .toc {
+        margin-top: 44px;
+        display: flex;
+        gap: 0;
+        border-top: 1px solid var(--rule-soft);
+        border-bottom: 1px solid var(--rule-soft);
+        flex-wrap: wrap;
+      }
+      .doc-hero .toc a {
+        flex: 1;
+        min-width: 160px;
+        padding: 16px 20px;
+        border-right: 1px solid var(--rule-soft);
+        font-family: var(--ff-ui);
+        font-size: 13px;
+        color: var(--slate);
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+      .doc-hero .toc a:hover {
+        background: var(--paper-card);
+        color: var(--ink);
+      }
+      .doc-hero .toc a:last-child {
+        border-right: 0;
+      }
+      .doc-hero .toc a .n {
+        font-family: var(--ff-display);
+        font-style: italic;
+        color: var(--primary);
+        font-size: 18px;
+      }
+
+      /* Component "spec" block */
+      .spec {
+        padding: 80px 0;
+        border-bottom: 1px solid var(--rule-soft);
+      }
+      .spec-head {
+        display: grid;
+        grid-template-columns: 64px 1fr;
+        gap: 24px;
+        margin-bottom: 40px;
+      }
+      .spec-head .n {
+        font-family: var(--ff-display);
+        font-style: italic;
+        font-size: 36px;
+        color: var(--primary);
+        line-height: 1;
+        letter-spacing: -1px;
+      }
+      .spec-head .meta {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .spec-head .eye {
+        font-family: var(--ff-ui);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 2.2px;
+        text-transform: uppercase;
+        color: var(--steel);
+      }
+      .spec-head h2 {
+        font-family: var(--ff-display);
+        font-size: 36px;
+        font-weight: 400;
+        letter-spacing: -0.6px;
+        line-height: 1.1;
+        margin: 0;
+      }
+      .spec-head h2 em {
+        font-style: italic;
+        color: var(--primary-deep);
+      }
+      .spec-head p {
+        font-family: var(--ff-ui);
+        color: var(--slate);
+        font-size: 15.5px;
+        line-height: 1.6;
+        max-width: 620px;
+        margin: 6px 0 0;
+      }
+
+      /* Demo frames — where the actual components sit */
+      .frame {
+        background: var(--paper-card);
+        border: 1px solid var(--rule-soft);
+        border-radius: var(--r-lg);
+        padding: 56px 40px;
+        position: relative;
+        min-height: 220px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+      }
+      .frame.tall {
+        min-height: 320px;
+      }
+      .frame.dark {
+        background: #1f1b14;
+        border-color: #2f2a1f;
+      }
+      .frame.dark::before {
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      }
+      .frame::before {
+        /* Subtle reference grid (8px) so component proportions are legible */
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(31, 27, 20, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(31, 27, 20, 0.04) 1px, transparent 1px);
+        background-size: 8px 8px;
+        pointer-events: none;
+        opacity: 0.8;
+      }
+      .frame > * {
+        position: relative;
+      }
+      .frame-label {
+        position: absolute;
+        top: 12px;
+        left: 16px;
+        font-family: var(--ff-ui);
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--stone);
+      }
+      .frame.dark .frame-label {
+        color: rgba(241, 236, 227, 0.4);
+      }
+
+      /* Multi-state grid — a row of variants side by side */
+      .variant-grid {
+        display: grid;
+        gap: 16px;
+        margin-top: 16px;
+      }
+      .variant-grid.cols-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .variant-grid.cols-3 {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .variant-grid.cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      /* Side-by-side: notes + frame */
+      .pair {
+        display: grid;
+        grid-template-columns: 1fr 1.8fr;
+        gap: 32px;
+        align-items: start;
+      }
+      .pair .notes {
+        font-family: var(--ff-ui);
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--slate);
+      }
+      .pair .notes h4 {
+        font-family: var(--ff-ui);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--stone);
+        margin: 0 0 12px;
+      }
+      .pair .notes ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .pair .notes li {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      .pair .notes li::before {
+        content: "—";
+        color: var(--primary);
+        font-family: var(--ff-display);
+        font-style: italic;
+        flex-shrink: 0;
+      }
+      .pair .notes code {
+        font-family: var(--ff-mono);
+        font-size: 12.5px;
+        background: var(--paper-soft);
+        padding: 1px 6px;
+        border-radius: 3px;
+        color: var(--ink);
+      }
+
+      /* Side legend  */
+      .legend {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+        font-family: var(--ff-ui);
+        font-size: 12px;
+        color: var(--steel);
+      }
+      .legend .item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .legend .chip {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+        background: var(--primary);
+      }
+
+      @media (max-width: 1023px) {
+        .pair {
+          grid-template-columns: 1fr;
+        }
+        .variant-grid.cols-3,
+        .variant-grid.cols-4 {
+          grid-template-columns: 1fr 1fr;
+        }
+        .frame {
+          padding: 36px 20px;
+        }
+      }
+
+      /* ============================================================
+     ACTUAL COMPONENT STYLES — copied from the demo section so this
+     page is self-contained. Same selectors so any later refinements
+     to demo.jsx flow here too.
+     ============================================================ */
+
+      /* Toolbar — the floating accessibility control */
+      .c-toolbar {
+        display: inline-flex;
+        gap: 4px;
+        background: var(--ink);
+        color: var(--on-dark);
+        border-radius: var(--r-full);
+        padding: 6px;
+        box-shadow: var(--sh-3);
+      }
+      .c-toolbar button {
+        background: transparent;
+        color: var(--on-dark-muted);
+        width: 32px;
+        height: 32px;
+        border-radius: var(--r-full);
+        display: grid;
+        place-items: center;
+        transition:
+          background 0.15s,
+          color 0.15s;
+        border: 0;
+        cursor: pointer;
+      }
+      .c-toolbar button:hover {
+        background: rgba(241, 236, 227, 0.08);
+        color: var(--on-dark);
+      }
+      .c-toolbar button.on {
+        background: var(--primary);
+        color: var(--on-primary);
+      }
+      .c-toolbar button svg {
+        width: 15px;
+        height: 15px;
+      }
+      .c-toolbar .divider {
+        width: 1px;
+        margin: 6px 2px;
+        background: rgba(241, 236, 227, 0.14);
+      }
+
+      /* Caption bar — bottom-of-stage captions */
+      .c-caption {
+        background: rgba(31, 27, 20, 0.94);
+        color: var(--on-dark);
+        border-radius: var(--r-sm);
+        padding: 12px 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-family: var(--ff-ui);
+        font-size: 14px;
+        box-shadow: var(--sh-3);
+        min-width: 320px;
+      }
+      .c-caption .cc {
+        background: var(--primary);
+        color: var(--on-primary);
+        padding: 2px 7px;
+        border-radius: var(--r-xs);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+      }
+      .c-caption.compact {
+        padding: 8px 12px;
+        font-size: 13px;
+        min-width: 0;
+      }
+
+      /* Voice bar — listening indicator */
+      .c-voice {
+        background: var(--paper-card);
+        border: 1px solid var(--rule-soft);
+        border-radius: var(--r-full);
+        padding: 10px 18px 10px 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-family: var(--ff-ui);
+        font-size: 13px;
+        color: var(--slate);
+        font-style: italic;
+        box-shadow: var(--sh-2);
+      }
+      .c-voice .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--primary);
+        animation: c-pulse 1s ease-in-out infinite;
+      }
+      @keyframes c-pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.4;
+          transform: scale(0.7);
+        }
+      }
+      .c-voice.recording .dot {
+        background: #c8442a;
+      }
+      .c-voice.idle .dot {
+        background: var(--stone);
+        animation: none;
+      }
+
+      /* Toggle row — full panel row */
+      .c-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 16px;
+        background: var(--paper-card);
+        border: 1px solid var(--rule-soft);
+        border-radius: var(--r-sm);
+        min-width: 320px;
+      }
+      .c-toggle .meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .c-toggle .icon {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--r-xs);
+        background: var(--paper-soft);
+        border: 1px solid var(--rule-soft);
+        display: grid;
+        place-items: center;
+        color: var(--primary);
+      }
+      .c-toggle .icon svg {
+        width: 16px;
+        height: 16px;
+      }
+      .c-toggle .lbl {
+        font-family: var(--ff-ui);
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--ink);
+      }
+      .c-toggle .desc {
+        font-family: var(--ff-ui);
+        font-size: 12px;
+        color: var(--steel);
+        font-style: italic;
+        margin-top: 1px;
+      }
+
+      /* Switch */
+      .c-switch {
+        position: relative;
+        width: 36px;
+        height: 20px;
+        background: var(--rule);
+        border-radius: var(--r-full);
+        transition: background 0.2s;
+        flex-shrink: 0;
+        border: 0;
+        cursor: pointer;
+        padding: 0;
+      }
+      .c-switch::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        background: var(--paper-card);
+        border-radius: 50%;
+        transition: left 0.2s;
+        box-shadow: 0 1px 2px rgba(31, 27, 20, 0.2);
+      }
+      .c-switch.on {
+        background: var(--primary);
+      }
+      .c-switch.on::after {
+        left: 18px;
+      }
+
+      /* Annotation card — floats on hero stage */
+      .c-anno {
+        background: var(--paper-card);
+        color: var(--ink);
+        border-radius: var(--r-sm);
+        padding: 12px 16px;
+        font-family: var(--ff-ui);
+        font-size: 13px;
+        font-weight: 500;
+        box-shadow: var(--sh-3);
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid var(--rule-soft);
+        max-width: 360px;
+      }
+      .c-anno .icon-pad {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--r-xs);
+        background: var(--paper-soft);
+        display: grid;
+        place-items: center;
+        color: var(--primary);
+        border: 1px solid var(--rule-soft);
+        flex-shrink: 0;
+      }
+      .c-anno .icon-pad svg {
+        width: 14px;
+        height: 14px;
+      }
+      .c-anno .meta-sm {
+        font-size: 11px;
+        color: var(--steel);
+        margin-top: 2px;
+        font-weight: 400;
+        font-style: italic;
+      }
+
+      /* Person card — overlay on photo */
+      .c-person {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(31, 27, 20, 0.78);
+        color: var(--on-dark);
+        backdrop-filter: blur(12px);
+        border-radius: var(--r-sm);
+        padding: 10px 14px 10px 10px;
+        font-family: var(--ff-ui);
+        font-size: 13px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .c-person .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--sunshine-300), var(--primary-deep));
+        display: grid;
+        place-items: center;
+        color: var(--on-primary);
+        font-family: var(--ff-display);
+        font-size: 16px;
+      }
+      .c-person .name {
+        font-weight: 500;
+      }
+      .c-person .role {
+        opacity: 0.65;
+        font-size: 12px;
+        margin-top: 1px;
+        font-style: italic;
+      }
+      .c-person .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--sunshine-300);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin-left: 8px;
+        padding-left: 12px;
+        border-left: 1px solid rgba(255, 255, 255, 0.14);
+        text-transform: uppercase;
+      }
+      .c-person .live::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--sunshine-300);
+        animation: c-pulse 1.6s ease-in-out infinite;
+      }
+
+      /* Badge */
+      .c-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 9px;
+        border-radius: var(--r-xs);
+        font-family: var(--ff-ui);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+      .c-badge.solid {
+        background: var(--primary);
+        color: var(--on-primary);
+      }
+      .c-badge.outline {
+        background: transparent;
+        color: var(--primary-deep);
+        border: 1px solid var(--primary);
+      }
+      .c-badge.cream {
+        background: var(--paper-soft);
+        color: var(--ink);
+        border: 1px solid var(--rule-soft);
+      }
+      .c-badge.dark {
+        background: var(--ink);
+        color: var(--on-dark);
+      }
+
+      /* Eyebrow component */
+      .c-eyebrow {
+        font-family: var(--ff-ui);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 2.2px;
+        text-transform: uppercase;
+        color: var(--steel);
+        display: inline-flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .c-eyebrow::before {
+        content: "";
+        width: 24px;
+        height: 1px;
+        background: var(--rule);
+      }
+
+      /* Input */
+      .c-input {
+        background: var(--paper-card);
+        color: var(--ink);
+        border: 1px solid var(--rule);
+        border-radius: var(--r-sm);
+        padding: 11px 14px;
+        height: 42px;
+        font-family: var(--ff-ui);
+        font-size: 14px;
+        min-width: 280px;
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .c-input:focus {
+        border-color: var(--primary);
+      }
+      .c-input::placeholder {
+        color: var(--stone);
+        font-style: italic;
+      }
+
+      /* Code highlight pill */
+      .c-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--paper-card);
+        border: 1px solid var(--rule-soft);
+        padding: 6px 12px 6px 6px;
+        border-radius: var(--r-full);
+        font-family: var(--ff-ui);
+        font-size: 13px;
+        color: var(--slate);
+      }
+      .c-pill .ic {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--paper-soft);
+        display: grid;
+        place-items: center;
+        color: var(--primary);
+      }
+      .c-pill .ic svg {
+        width: 12px;
+        height: 12px;
+      }
+
+      /* CC popout */
+      .c-popout {
+        background: var(--ink);
+        color: var(--on-dark);
+        border-radius: var(--r-sm);
+        padding: 10px 14px;
+        font-family: var(--ff-ui);
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: var(--sh-3);
+      }
+      .c-popout .key {
+        border: 1px solid rgba(241, 236, 227, 0.25);
+        background: rgba(241, 236, 227, 0.08);
+        padding: 2px 8px;
+        border-radius: var(--r-xs);
+        font-family: var(--ff-mono);
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ==================== HERO ==================== -->
+    <section class="doc-hero">
+      <div class="container">
+        <div class="eye">Sensa · UI Kit · v3</div>
+        <h1>Components — <em>the toolbar, the captions, the bits that move.</em></h1>
+        <p class="lede">
+          A reference page for every interactive piece in the live-demo section, plus the smaller
+          atoms they're built from. Each is shown across states and sizes — copy a block and drop it
+          anywhere on the page.
+        </p>
+        <nav class="toc">
+          <a href="#toolbar"><span class="n">01</span><span>Toolbar</span></a>
+          <a href="#caption"><span class="n">02</span><span>Captions</span></a>
+          <a href="#voice"><span class="n">03</span><span>Voice bar</span></a>
+          <a href="#switch"><span class="n">04</span><span>Switch & toggle</span></a>
+          <a href="#annotation"><span class="n">05</span><span>Annotation</span></a>
+          <a href="#person"><span class="n">06</span><span>Person card</span></a>
+          <a href="#atoms"><span class="n">07</span><span>Atoms</span></a>
+        </nav>
+      </div>
+    </section>
+
+    <!-- ==================== 01 · TOOLBAR ==================== -->
+    <section class="spec" id="toolbar">
+      <div class="container">
+        <div class="spec-head">
+          <div class="n">01</div>
+          <div class="meta">
+            <div class="eye">Section · Toolbar</div>
+            <h2>The floating <em>toolbar.</em></h2>
+            <p>
+              The signature Sensa control — sits over any page, dark capsule on cream. Each pill
+              toggles a single assistive feature. Active state uses the ember accent.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="notes">
+            <h4>Anatomy</h4>
+            <ul>
+              <li>
+                Pill container <code>border-radius: 9999px</code>, ink fill, 6px inner padding
+              </li>
+              <li>Buttons are 32 × 32, full round, transparent until hover</li>
+              <li>Active button = ember <code>#C8442A</code> with cream icon</li>
+              <li>Icons stroke 1.8, 15 × 15 inside the button</li>
+              <li>Optional vertical divider (1px hairline at 14% on-dark)</li>
+            </ul>
+          </div>
+          <div>
+            <div class="frame tall">
+              <span class="frame-label">Default · five features</span>
+              <div class="c-toolbar" role="toolbar" aria-label="Sensa toolbar">
+                <button aria-label="Read aloud">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19" />
+                    <path d="M19 12a7 7 0 0 0-3-5.8M16 8.2a3.5 3.5 0 0 1 0 7.6" />
+                  </svg>
+                </button>
+                <button aria-label="Voice">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="9" y="3" width="6" height="11" rx="3" />
+                    <path d="M19 11a7 7 0 0 1-14 0M12 18v3" />
+                  </svg>
+                </button>
+                <button class="on" aria-label="Captions" aria-pressed="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                    <path d="M8 10a2 2 0 1 0 0 4M16 10a2 2 0 1 0 0 4" />
+                  </svg>
+                </button>
+                <button aria-label="Magnifier">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-3.5-3.5" />
+                  </svg>
+                </button>
+                <button aria-label="Contrast">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 3v18a9 9 0 0 0 0-18Z" fill="currentColor" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="variant-grid cols-2" style="margin-top: 16px">
+              <div class="frame">
+                <span class="frame-label">Compact · three features</span>
+                <div class="c-toolbar">
+                  <button class="on" aria-label="Read">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19" />
+                      <path d="M19 12a7 7 0 0 0-3-5.8M16 8.2a3.5 3.5 0 0 1 0 7.6" />
+                    </svg>
+                  </button>
+                  <button aria-label="Voice">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <rect x="9" y="3" width="6" height="11" rx="3" />
+                      <path d="M19 11a7 7 0 0 1-14 0M12 18v3" />
+                    </svg>
+                  </button>
+                  <button aria-label="Zoom">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <circle cx="11" cy="11" r="7" />
+                      <path d="m20 20-3.5-3.5" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="frame">
+                <span class="frame-label">Extended · grouped with divider</span>
+                <div class="c-toolbar">
+                  <button class="on" aria-label="Read">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19" />
+                      <path d="M19 12a7 7 0 0 0-3-5.8M16 8.2a3.5 3.5 0 0 1 0 7.6" />
+                    </svg>
+                  </button>
+                  <button aria-label="Voice">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <rect x="9" y="3" width="6" height="11" rx="3" />
+                      <path d="M19 11a7 7 0 0 1-14 0M12 18v3" />
+                    </svg>
+                  </button>
+                  <span class="divider"></span>
+                  <button aria-label="Zoom">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <circle cx="11" cy="11" r="7" />
+                      <path d="m20 20-3.5-3.5" />
+                    </svg>
+                  </button>
+                  <button aria-label="Contrast">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M12 3v18a9 9 0 0 0 0-18Z" fill="currentColor" />
+                    </svg>
+                  </button>
+                  <span class="divider"></span>
+                  <button aria-label="Settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <circle cx="12" cy="12" r="3" />
+                      <path
+                        d="M12 1v6m0 10v6M4.22 4.22l4.24 4.24m7.08 7.08 4.24 4.24M1 12h6m10 0h6M4.22 19.78l4.24-4.24m7.08-7.08 4.24-4.24"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 02 · CAPTIONS ==================== -->
+    <section class="spec" id="caption">
+      <div class="container">
+        <div class="spec-head">
+          <div class="n">02</div>
+          <div class="meta">
+            <div class="eye">Section · Captions</div>
+            <h2>Live <em>caption bar.</em></h2>
+            <p>
+              The dark bar that pins itself to the bottom of any media surface and renders Sensa's
+              live transcription. CC tag uses the ember stamp to mark the channel.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="notes">
+            <h4>Anatomy</h4>
+            <ul>
+              <li>Background <code>rgba(31,27,20,.94)</code> — deep ink with translucency</li>
+              <li>3px radius, 12 / 16 padding, drop shadow at sh-3</li>
+              <li>CC pill: solid ember, 10px uppercase letter-spaced</li>
+              <li>Body text 14px Inter on cream</li>
+              <li>Compact size drops to 13 / 8-12 padding</li>
+            </ul>
+          </div>
+          <div>
+            <div class="frame tall dark">
+              <span class="frame-label">Default</span>
+              <div class="c-caption">
+                <span class="cc">CC</span>
+                <span>Sensa reads the page aloud in 38 languages.</span>
+              </div>
+            </div>
+            <div class="variant-grid cols-2" style="margin-top: 16px">
+              <div class="frame dark">
+                <span class="frame-label">Long line</span>
+                <div class="c-caption">
+                  <span class="cc">CC</span>
+                  <span
+                    >Every irreversible action waits for the user's verbal confirmation — "yes" or
+                    "no."</span
+                  >
+                </div>
+              </div>
+              <div class="frame dark">
+                <span class="frame-label">Compact</span>
+                <div class="c-caption compact">
+                  <span class="cc">CC</span>
+                  <span>Try saying "Add to cart."</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 03 · VOICE BAR ==================== -->
+    <section class="spec" id="voice">
+      <div class="container">
+        <div class="spec-head">
+          <div class="n">03</div>
+          <div class="meta">
+            <div class="eye">Section · Voice</div>
+            <h2>The <em>voice listening</em> indicator.</h2>
+            <p>
+              A round pill that floats on the page while Sensa is listening for a command. The
+              pulsing dot makes the state obvious without text.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="notes">
+            <h4>States</h4>
+            <ul>
+              <li><strong>Idle</strong> — muted stone dot, no animation</li>
+              <li><strong>Listening</strong> — ember dot pulsing 1s ease-in-out</li>
+              <li><strong>Recording</strong> — saturated ember, slower pulse</li>
+              <li>Body text in italic to read as live system speech, not chrome</li>
+            </ul>
+          </div>
+          <div>
+            <div class="variant-grid cols-3">
+              <div class="frame">
+                <span class="frame-label">Idle</span>
+                <div class="c-voice idle">
+                  <span class="dot"></span>
+                  <span>Tap the mic to begin.</span>
+                </div>
+              </div>
+              <div class="frame">
+                <span class="frame-label">Listening</span>
+                <div class="c-voice">
+                  <span class="dot"></span>
+                  <span>Listening…</span>
+                </div>
+              </div>
+              <div class="frame">
+                <span class="frame-label">Recognized</span>
+                <div class="c-voice recording">
+                  <span class="dot"></span>
+                  <span>"Add the cheaper one to my cart."</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 04 · SWITCH + TOGGLE ==================== -->
+    <section class="spec" id="switch">
+      <div class="container">
+        <div class="spec-head">
+          <div class="n">04</div>
+          <div class="meta">
+            <div class="eye">Section · Controls</div>
+            <h2>Switch &amp; <em>toggle row.</em></h2>
+            <p>
+              The control sitting next to every feature in the side panel. Switch in isolation is
+              reusable; the full row pairs it with an icon, label, and short description.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="notes">
+            <h4>Anatomy</h4>
+            <ul>
+              <li>Switch is 36 × 20, 9999px radius. Off uses the rule-tan, on uses ember.</li>
+              <li>Thumb is 16 × 16, cream, with 1px soft shadow. Slides 16px on toggle.</li>
+              <li>Toggle row: 32px icon pad on left, two-line label, switch right-aligned.</li>
+              <li>Description text in italic to soften it next to the label.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="variant-grid cols-2">
+              <div class="frame">
+                <span class="frame-label">Switch · off</span>
+                <button class="c-switch" aria-pressed="false"></button>
+              </div>
+              <div class="frame">
+                <span class="frame-label">Switch · on</span>
+                <button class="c-switch on" aria-pressed="true"></button>
+              </div>
+            </div>
+            <div class="variant-grid cols-2" style="margin-top: 16px">
+              <div class="frame">
+                <span class="frame-label">Toggle row · off</span>
+                <div class="c-toggle">
+                  <div class="meta">
+                    <div class="icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19" />
+                        <path d="M19 12a7 7 0 0 0-3-5.8M16 8.2a3.5 3.5 0 0 1 0 7.6" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div class="lbl">Read aloud</div>
+                      <div class="desc">Neural text-to-speech</div>
+                    </div>
+                  </div>
+                  <button class="c-switch"></button>
+                </div>
+              </div>
+              <div class="frame">
+                <span class="frame-label">Toggle row · on</span>
+                <div class="c-toggle">
+                  <div class="meta">
+                    <div class="icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <rect x="3" y="5" width="18" height="14" rx="2" />
+                        <path d="M8 10a2 2 0 1 0 0 4M16 10a2 2 0 1 0 0 4" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div class="lbl">Live captions</div>
+                      <div class="desc">Subtitles for any media</div>
+                    </div>
+                  </div>
+                  <button class="c-switch on"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 05 · ANNOTATION CARD ==================== -->
+    <section class="spec" id="annotation">
+      <div class="container">
+        <div class="spec-head">
+          <div class="n">05</div>
+          <div class="meta">
+            <div class="eye">Section · Floating annotations</div>
+            <h2>The <em>annotation card.</em></h2>
+            <p>
+              Floats over hero imagery or product UI to call out a feature. Cream paper background,
+              ember icon pad, two-line text with an italic detail line.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="notes">
+            <h4>Anatomy</h4>
+            <ul>
+              <li>Cream card on subtle drop shadow, 3px radius, 12 / 16 padding</li>
+              <li>Icon pad 28 × 28, cream fill with hairline border, ember icon</li>
+              <li>Primary line: 13px medium ink</li>
+              <li>Detail line: 11px italic stone, hangs as a quote</li>
+              <li>Max width 360px before clipping</li>
+            </ul>
+          </div>
+          <div>
+            <div class="variant-grid cols-2">
+              <div class="frame">
+                <span class="frame-label">Reading aloud</span>
+                <div class="c-anno">
+                  <div class="icon-pad">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19" />
+                      <path d="M19 12a7 7 0 0 0-3-5.8M16 8.2a3.5 3.5 0 0 1 0 7.6" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div>Reading aloud</div>
+                    <div class="meta-sm">"…a 65" OLED that looks hand-painted."</div>
+                  </div>
+                </div>
+              </div>
+              <div class="frame">
+                <span class="frame-label">Voice intent</span>
+                <div class="c-anno">
+                  <div class="icon-pad">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <rect x="9" y="3" width="6" height="11" rx="3" />
+                      <path d="M19 11a7 7 0 0 1-14 0M12 18v3" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div>"Add the cheaper one"</div>
+                    <div class="meta-sm">Voice intent · 96% accuracy</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 06 · PERSON CARD ==================== -->
+    <section class="spec" id="person">
+      <div class="container">
+        <div class="spec-head">
+          <div class="n">06</div>
+          <div class="meta">
+            <div class="eye">Section · Identity</div>
+            <h2>The <em>person card.</em></h2>
+            <p>
+              Identifies the human in a demo or screenshot. Dark glass on photo, two-line name +
+              role, optional live indicator with pulsing dot.
+            </p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="notes">
+            <h4>Anatomy</h4>
+            <ul>
+              <li>Translucent ink background <code>rgba(31,27,20,.78)</code> with blur</li>
+              <li>32 × 32 avatar — gradient from sunshine to ember-deep, italic initial</li>
+              <li>Optional "LIVE" tag separated by 1px on-dark hairline</li>
+            </ul>
+          </div>
+          <div>
+            <div class="frame tall dark">
+              <span class="frame-label">Default with live</span>
+              <div class="c-person">
+                <div class="avatar">M</div>
+                <div>
+                  <div class="name">Maya · paralegal</div>
+                  <div class="role">Browsing with voice navigation</div>
+                </div>
+                <span class="live">Live</span>
+              </div>
+            </div>
+            <div class="variant-grid cols-2" style="margin-top: 16px">
+              <div class="frame dark">
+                <span class="frame-label">No live tag</span>
+                <div class="c-person">
+                  <div class="avatar">E</div>
+                  <div>
+                    <div class="name">Esther O'Connell</div>
+                    <div class="role">VP Product, Northwind</div>
+                  </div>
+                </div>
+              </div>
+              <div class="frame dark">
+                <span class="frame-label">Short identity</span>
+                <div class="c-person">
+                  <div class="avatar">A</div>
+                  <div>
+                    <div class="name">Anonymous user</div>
+                    <div class="role">42 active sessions</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 07 · ATOMS ==================== -->
+    <section class="spec" id="atoms">
+      <div class="container">
+        <div class="spec-head">
+          <div class="n">07</div>
+          <div class="meta">
+            <div class="eye">Section · Smaller pieces</div>
+            <h2>The <em>atoms.</em></h2>
+            <p>
+              The building blocks shared across the demo — badges, eyebrows, the input field, and
+              the labeled feature pill. All use the same paper-tan-ember palette.
+            </p>
+          </div>
+        </div>
+
+        <div class="variant-grid cols-2">
+          <div class="frame">
+            <span class="frame-label">Badges</span>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap">
+              <span class="c-badge solid">New</span>
+              <span class="c-badge outline">Beta</span>
+              <span class="c-badge cream">Most teams</span>
+              <span class="c-badge dark">v3</span>
+            </div>
+          </div>
+          <div class="frame">
+            <span class="frame-label">Eyebrow</span>
+            <span class="c-eyebrow">For the open web</span>
+          </div>
+          <div class="frame">
+            <span class="frame-label">Input</span>
+            <input class="c-input" type="text" placeholder="Type a command" />
+          </div>
+          <div class="frame">
+            <span class="frame-label">Feature pill</span>
+            <span class="c-pill">
+              <span class="ic"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <polyline points="20 6 9 17 4 12" /></svg
+              ></span>
+              <span>WCAG 2.2 AA</span>
+            </span>
+          </div>
+          <div class="frame">
+            <span class="frame-label">Shortcut popout</span>
+            <div class="c-popout">
+              <span>Toggle the toolbar</span>
+              <span class="key">⌘</span>
+              <span class="key">/</span>
+            </div>
+          </div>
+          <div class="frame">
+            <span class="frame-label">Color tokens</span>
+            <div class="legend" style="margin: 0">
+              <span class="item"><span class="chip" style="background: #c8442a"></span>Ember</span>
+              <span class="item"><span class="chip" style="background: #1f1b14"></span>Ink</span>
+              <span class="item"><span class="chip" style="background: #f1ece3"></span>Linen</span>
+              <span class="item"><span class="chip" style="background: #faf6eb"></span>Card</span>
+              <span class="item"><span class="chip" style="background: #d3c9b5"></span>Rule</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== INTERACTION SCRIPTS ==================== -->
+    <script>
+      // Click-to-toggle on every switch / toolbar button. Keeps the page lively
+      // without needing a build system.
+      document.querySelectorAll(".c-switch").forEach((s) => {
+        s.addEventListener("click", () => s.classList.toggle("on"));
+      });
+      document.querySelectorAll(".c-toolbar").forEach((bar) => {
+        bar.addEventListener("click", (e) => {
+          const btn = e.target.closest("button");
+          if (btn) btn.classList.toggle("on");
+        });
+      });
+    </script>
+  </body>
+</html>

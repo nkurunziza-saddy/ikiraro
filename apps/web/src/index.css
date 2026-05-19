@@ -1,8 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/dm-sans";
-@import "@fontsource-variable/geist";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -45,77 +45,191 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  --font-sans: "DM Sans Variable", sans-serif;
-  --font-heading: "Geist Variable", sans-serif;
+  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", monospace;
+  --font-heading: "Inter Variable", "Inter", system-ui, sans-serif;
+
+  /* Sensa editorial palette — mapped so Tailwind utilities work (text-ink, bg-paper-soft, etc.) */
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-charcoal: var(--charcoal);
+  --color-slate-text: var(--slate-text);
+  --color-steel: var(--steel);
+  --color-stone: var(--stone);
+  --color-on-dark: var(--on-dark);
+  --color-on-primary: var(--on-primary);
+  --color-paper: var(--paper);
+  --color-paper-soft: var(--paper-soft);
+  --color-paper-card: var(--paper-card);
+  --color-paper-deep: var(--paper-deep);
+  --color-primary-deep: var(--primary-deep);
+  --color-primary-soft: var(--primary-soft);
+  --color-sunshine-300: var(--sunshine-300);
+  --color-sunshine-500: var(--sunshine-500);
+  --color-sunshine-700: var(--sunshine-700);
+  --color-rule: var(--rule);
+  --color-rule-soft: var(--rule-soft);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Nearly-square corners — Sensa editorial discipline */
+  --radius: 0.1875rem; /* 3px */
+
+  /* Ember & Linen — semantic Shadcn tokens */
+  --background: #fcfcf8;
+  --foreground: #1f1b14;
+  --card: #ffffff;
+  --card-foreground: #1f1b14;
+  --popover: #ffffff;
+  --popover-foreground: #1f1b14;
+  --primary: #c8442a;
+  --primary-foreground: #fbf8f0;
+  --secondary: #f4efe3;
+  --secondary-foreground: #1f1b14;
+  --muted: #ede9dc;
+  --muted-foreground: #6e664e;
+  --accent: #f4efe3;
+  --accent-foreground: #1f1b14;
+  --destructive: #c8442a;
+  --border: #e5e0d0;
+  --input: #e5e0d0;
+  --ring: #c8442a;
+  --chart-1: #c8442a;
+  --chart-2: #e5a35c;
+  --chart-3: #847761;
+  --chart-4: #f0d192;
+  --chart-5: #a33619;
+  --sidebar: #f4efe3;
+  --sidebar-foreground: #1f1b14;
+  --sidebar-primary: #c8442a;
+  --sidebar-primary-foreground: #fbf8f0;
+  --sidebar-accent: #ede9dc;
+  --sidebar-accent-foreground: #1f1b14;
+  --sidebar-border: #e5e0d0;
+  --sidebar-ring: #c8442a;
+
+  /* Sensa editorial colour palette — use directly in component classes */
+  --ink: #1f1b14;
+  --ink-soft: #2f2a1f;
+  --charcoal: #3f382a;
+  --slate-text: #4f4838;
+  --steel: #6e664e;
+  --stone: #847761;
+  --muted-text: #b0a689;
+  --on-dark: #f1ece3;
+  --on-primary: #fbf8f0;
+  --paper: #fcfcf8;
+  --paper-soft: #f4efe3;
+  --paper-card: #ffffff;
+  --paper-deep: #efe9d8;
+  --primary-deep: #a33619;
+  --primary-soft: #d86445;
+  --sunshine-300: #f0d192;
+  --sunshine-500: #e5a35c;
+  --rule: #e5e0d0;
+  --rule-soft: #ede9dc;
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+/* =================== Voice bar pulse =================== */
+@keyframes voice-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.7);
+  }
+}
+
+/* =================== Ticker marquee =================== */
+@keyframes ticker-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ik-ticker {
+  background: var(--ink);
+  color: var(--on-dark);
+  padding: 13px 0;
+  overflow: hidden;
+  position: relative;
+  border-top: 1px solid var(--ink-soft);
+  border-bottom: 1px solid var(--ink-soft);
+}
+.ik-ticker::before,
+.ik-ticker::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  z-index: 2;
+  pointer-events: none;
+}
+.ik-ticker::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--ink), transparent);
+}
+.ik-ticker::after {
+  right: 0;
+  background: linear-gradient(-90deg, var(--ink), transparent);
+}
+
+.ik-ticker-track {
+  display: flex;
+  gap: 48px;
+  align-items: center;
+  white-space: nowrap;
+  width: max-content;
+  animation: ticker-marquee 60s linear infinite;
+}
+
+/* =================== Waveform bar animation =================== */
+@keyframes viz-rise {
+  0%,
+  100% {
+    height: 20%;
+  }
+  50% {
+    height: 85%;
+  }
+}
+
+/* =================== Live dot pulse =================== */
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+}
+
+/* =================== Pipeline card connector =================== */
+.ik-pipe-card:not(:last-child)::after {
+  content: "›";
+  position: absolute;
+  top: 50%;
+  right: -18px;
+  transform: translateY(-50%);
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--rule);
+  background: var(--paper);
+  width: 14px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  z-index: 2;
 }
 
 @layer base {
@@ -124,11 +238,20 @@
   }
 
   html {
-    @apply bg-background font-sans;
+    background: var(--paper);
+    @apply font-sans;
   }
 
   body {
-    @apply min-h-svh bg-background font-sans text-foreground antialiased;
+    @apply min-h-svh font-sans antialiased;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 15.5px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern", "liga";
   }
 
   h1,
@@ -139,6 +262,12 @@
   h6 {
     font-family: var(--font-heading);
     letter-spacing: -0.03em;
+    font-weight: 500;
+  }
+
+  ::selection {
+    background: var(--primary);
+    color: var(--on-primary);
   }
 
   button:not(:disabled),

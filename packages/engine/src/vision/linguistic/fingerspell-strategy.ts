@@ -48,6 +48,19 @@ export class FingerspellStrategy implements ILinguisticStrategy {
     return token;
   }
 
+  getInProgress(): string {
+    return this.buffer;
+  }
+
+  overrideLast(sign: string): void {
+    if (this.buffer.length > 0) {
+      this.buffer = this.buffer.slice(0, -1) + sign;
+    } else {
+      this.buffer = sign;
+    }
+    this.lastLetter = sign;
+  }
+
   reset(): void {
     this.buffer = "";
     this.lastLetter = "";

@@ -9,24 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SdkTestRouteImport } from './routes/sdk-test'
-import { Route as SdkPublishedTestRouteImport } from './routes/sdk-published-test'
-import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DemoRouteImport } from './routes/demo'
 import { Route as IndexRouteImport } from './routes/index'
 
-const SdkTestRoute = SdkTestRouteImport.update({
-  id: '/sdk-test',
-  path: '/sdk-test',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SdkPublishedTestRoute = SdkPublishedTestRouteImport.update({
-  id: '/sdk-published-test',
-  path: '/sdk-published-test',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const DemoRoute = DemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,59 +25,37 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/sdk-published-test': typeof SdkPublishedTestRoute
-  '/sdk-test': typeof SdkTestRoute
+  '/demo': typeof DemoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/sdk-published-test': typeof SdkPublishedTestRoute
-  '/sdk-test': typeof SdkTestRoute
+  '/demo': typeof DemoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/sdk-published-test': typeof SdkPublishedTestRoute
-  '/sdk-test': typeof SdkTestRoute
+  '/demo': typeof DemoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/sdk-published-test' | '/sdk-test'
+  fullPaths: '/' | '/demo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/sdk-published-test' | '/sdk-test'
-  id: '__root__' | '/' | '/dashboard' | '/sdk-published-test' | '/sdk-test'
+  to: '/' | '/demo'
+  id: '__root__' | '/' | '/demo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
-  SdkPublishedTestRoute: typeof SdkPublishedTestRoute
-  SdkTestRoute: typeof SdkTestRoute
+  DemoRoute: typeof DemoRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sdk-test': {
-      id: '/sdk-test'
-      path: '/sdk-test'
-      fullPath: '/sdk-test'
-      preLoaderRoute: typeof SdkTestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sdk-published-test': {
-      id: '/sdk-published-test'
-      path: '/sdk-published-test'
-      fullPath: '/sdk-published-test'
-      preLoaderRoute: typeof SdkPublishedTestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,9 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
-  SdkPublishedTestRoute: SdkPublishedTestRoute,
-  SdkTestRoute: SdkTestRoute,
+  DemoRoute: DemoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

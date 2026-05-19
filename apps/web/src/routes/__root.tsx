@@ -39,11 +39,11 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 
 function RootDocument() {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
-      <body className="overflow-x-hidden bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
+      <body className="overflow-x-hidden">
         <div className="flex min-h-svh flex-col">
           <Header />
           <main className="flex-1">

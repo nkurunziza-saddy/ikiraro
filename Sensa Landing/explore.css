@@ -1,0 +1,530 @@
+/* ==================================================================
+   EXPLORE — three direction studies for Sensa
+   Shared structure / different tokens. Same content in each artboard.
+   ================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400;1,7..72,500&family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700&family=Geist:wght@300;400;500;600;700&family=Onest:wght@300;400;500;600;700&family=Funnel+Display:wght@300;400;500;600&family=Funnel+Sans:wght@300;400;500;600&family=Archivo+Narrow:wght@400;500;600;700&family=Big+Shoulders+Display:wght@300;400;500;600;700&family=Antonio:wght@300;400;500;600;700&display=swap");
+
+/* ==================== shared layout ==================== */
+.opt {
+  width: 1100px;
+  height: 920px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--ff-body);
+  font-size: 15px;
+  line-height: 1.55;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.opt * {
+  box-sizing: border-box;
+}
+.opt h1,
+.opt h2,
+.opt h3,
+.opt h4 {
+  margin: 0;
+  font-weight: 400;
+}
+.opt p {
+  margin: 0;
+}
+
+/* Top nav strip */
+.opt-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 56px;
+  border-bottom: 1px solid var(--rule);
+  flex-shrink: 0;
+}
+.opt-nav .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--ff-display);
+  font-size: 22px;
+  letter-spacing: -0.3px;
+}
+.opt-nav .brand .mark {
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+.opt-nav .brand .mark::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--bg);
+  border-radius: 50%;
+}
+.opt-nav .nav-links {
+  display: flex;
+  gap: 26px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.opt-nav .nav-cta {
+  background: var(--ink);
+  color: var(--bg);
+  padding: 8px 16px;
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+/* Hero — centered, COMPACT (no oversized titles) */
+.opt-hero {
+  padding: 56px 96px 36px;
+  text-align: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.opt-eyebrow {
+  font-family: var(--ff-body);
+  font-size: 10px;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.opt-eyebrow .ln {
+  width: 24px;
+  height: 1px;
+  background: var(--rule);
+}
+.opt-eyebrow .glyph {
+  color: var(--accent);
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 14px;
+}
+
+.opt-hero h1 {
+  font-family: var(--ff-display);
+  font-size: 58px; /* COMPACT — down from 112 */
+  line-height: 1.04;
+  letter-spacing: var(--display-tracking, -1.5px);
+  font-weight: var(--display-weight, 400);
+  max-width: 700px;
+  margin: 0 auto 18px;
+  text-wrap: balance;
+}
+.opt-hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: var(--italic-weight, 400);
+}
+
+.opt-hero .lede {
+  font-family: var(--ff-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 480px;
+  margin: 0 auto 28px;
+}
+
+.opt-hero .ctas {
+  display: inline-flex;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.opt-btn {
+  padding: 10px 18px;
+  border-radius: 3px;
+  font-family: var(--ff-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+.opt-btn-primary {
+  background: var(--accent);
+  color: var(--on-accent, var(--bg));
+}
+.opt-btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--rule);
+}
+
+.opt-meta {
+  display: inline-flex;
+  gap: 18px;
+  color: var(--muted);
+  font-size: 12px;
+  font-style: italic;
+  align-items: center;
+}
+.opt-meta .sep {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  background: var(--rule);
+  border-radius: 50%;
+}
+
+/* Section divider rule */
+.opt-rule {
+  height: 1px;
+  background: var(--rule);
+  margin: 0 56px;
+  flex-shrink: 0;
+}
+
+/* Sub-block — features OR stats */
+.opt-feat {
+  padding: 28px 56px 28px;
+  flex: 1;
+  min-height: 0;
+}
+.opt-feat .label {
+  font-family: var(--ff-body);
+  font-size: 10px;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.opt-feat .grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid var(--rule);
+}
+.opt-feat .tile {
+  padding: 22px 22px 22px 0;
+  border-right: 1px solid var(--rule);
+}
+.opt-feat .tile:last-child {
+  border-right: 0;
+}
+.opt-feat .tile:not(:first-child) {
+  padding-left: 22px;
+}
+.opt-feat .tile .num {
+  font-family: var(--ff-body);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.opt-feat .tile h4 {
+  font-family: var(--ff-display);
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+  margin: 0 0 6px;
+  font-weight: var(--display-weight, 400);
+}
+.opt-feat .tile p {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+/* Palette strip — bottom of artboard */
+.opt-palette {
+  display: flex;
+  gap: 10px;
+  padding: 22px 56px 26px;
+  border-top: 1px solid var(--rule);
+  align-items: center;
+  background: var(--card-soft, transparent);
+  flex-shrink: 0;
+}
+.opt-palette .label {
+  font-family: var(--ff-body);
+  font-size: 10px;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 8px;
+}
+.opt-palette .swatch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-family: "JetBrains Mono", monospace;
+  color: var(--ink-soft);
+}
+.opt-palette .chip {
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  border: 1px solid var(--rule);
+  flex-shrink: 0;
+}
+.opt-palette .font-name {
+  margin-left: auto;
+  font-family: var(--ff-display);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink);
+}
+.opt-palette .font-name small {
+  font-family: var(--ff-body);
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 8px;
+}
+
+/* ============== OPTION A — Ember & Linen ============== */
+.opt-a {
+  --bg: #f1ece3;
+  --card: #faf6eb;
+  --card-soft: #ece4d5;
+  --ink: #1f1b14;
+  --ink-soft: #4f4838;
+  --muted: #847761;
+  --accent: #c8442a; /* smoky ember — earthier than the prior orange */
+  --on-accent: #fbf8f0;
+  --rule: #d3c9b5;
+  --ff-display: "Instrument Serif", Georgia, serif;
+  --ff-body: "Literata", Georgia, serif;
+  --display-weight: 400;
+  --display-tracking: -1.2px;
+  --italic-weight: 400;
+}
+
+/* ============== OPTION B — Moss Editorial ============== */
+.opt-b {
+  --bg: #efede3;
+  --card: #f6f3e7;
+  --card-soft: #e8e5d6;
+  --ink: #1a2018;
+  --ink-soft: #3f4a3e;
+  --muted: #6f7a6b;
+  --accent: #3f5e3a; /* deep moss */
+  --on-accent: #f6f3e7;
+  --rule: #c9ccbb;
+  --ff-display: "DM Serif Display", Georgia, serif;
+  --ff-body: "IBM Plex Serif", Georgia, serif;
+  --display-weight: 400;
+  --display-tracking: -2px;
+  --italic-weight: 400;
+}
+.opt-b .opt-hero h1 em {
+  color: #b47a3e;
+} /* burnt brass secondary */
+
+/* ============== OPTION C — Midnight & Saffron ============== */
+.opt-c {
+  --bg: #ece6d6;
+  --card: #f6f0dd;
+  --card-soft: #e1dac4;
+  --ink: #131830;
+  --ink-soft: #3a415e;
+  --muted: #6a6e85;
+  --accent: #c99327; /* saffron */
+  --on-accent: #131830;
+  --rule: #c7c0ab;
+  --ff-display: "Cormorant Garamond", Georgia, serif;
+  --ff-body: "Spectral", Georgia, serif;
+  --display-weight: 500;
+  --display-tracking: -1.8px;
+  --italic-weight: 400;
+}
+.opt-c .opt-hero h1 em {
+  color: #3a4773;
+} /* lapis secondary */
+
+/* ============== OPTION D — Cocoa & Sage ============== */
+.opt-d {
+  --bg: #f5f0e6;
+  --card: #fbf7ec;
+  --card-soft: #ece5d2;
+  --ink: #2d211a; /* deep cocoa */
+  --ink-soft: #5a4d40;
+  --muted: #8c7e6e;
+  --accent: #6b7f5a; /* dusty sage */
+  --on-accent: #fbf7ec;
+  --rule: #d8cdb6;
+  --ff-display: "Instrument Serif", Georgia, serif;
+  --ff-body: "IBM Plex Serif", Georgia, serif;
+  --display-weight: 400;
+  --display-tracking: -1px;
+  --italic-weight: 400;
+}
+.opt-d .opt-hero h1 em {
+  color: #b26a3d;
+} /* terra accent for italics */
+
+/* =================================================================
+   SANS-SERIF STUDIES — all use OPTION A's palette so the typography
+   choice is what you're really judging. Italics swap for weight+color
+   emphasis (sans-italics tend to look like slanted regular).
+   ================================================================= */
+.opt-e,
+.opt-f,
+.opt-g,
+.opt-h {
+  --bg: #f1ece3;
+  --card: #faf6eb;
+  --card-soft: #ece4d5;
+  --ink: #1f1b14;
+  --ink-soft: #4f4838;
+  --muted: #847761;
+  --accent: #c8442a;
+  --on-accent: #fbf8f0;
+  --rule: #d3c9b5;
+  --italic-weight: 600;
+}
+.opt-e .opt-hero h1 em,
+.opt-f .opt-hero h1 em,
+.opt-g .opt-hero h1 em,
+.opt-h .opt-hero h1 em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--accent);
+}
+.opt-e .opt-meta,
+.opt-f .opt-meta,
+.opt-g .opt-meta,
+.opt-h .opt-meta {
+  font-style: normal;
+}
+.opt-e .opt-eyebrow .glyph,
+.opt-f .opt-eyebrow .glyph,
+.opt-g .opt-eyebrow .glyph,
+.opt-h .opt-eyebrow .glyph {
+  font-style: normal;
+}
+.opt-e .opt-palette .font-name,
+.opt-f .opt-palette .font-name,
+.opt-g .opt-palette .font-name,
+.opt-h .opt-palette .font-name {
+  font-style: normal;
+  font-weight: 500;
+}
+
+/* ============== E — Bricolage (variable, has personality) ============== */
+.opt-e {
+  --ff-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --ff-body: "Bricolage Grotesque", system-ui, sans-serif;
+  --display-weight: 500;
+  --display-tracking: -2.4px;
+}
+.opt-e .opt-hero h1 {
+  font-variation-settings: "opsz" 64;
+}
+
+/* ============== F — Geist (Vercel, technical clarity) ============== */
+.opt-f {
+  --ff-display: "Geist", system-ui, sans-serif;
+  --ff-body: "Geist", system-ui, sans-serif;
+  --display-weight: 600;
+  --display-tracking: -2.6px;
+}
+
+/* ============== G — Onest (clean, modern, friendly) ============== */
+.opt-g {
+  --ff-display: "Onest", system-ui, sans-serif;
+  --ff-body: "Onest", system-ui, sans-serif;
+  --display-weight: 600;
+  --display-tracking: -2px;
+}
+
+/* ============== H — Funnel (condensed, distinctive editorial sans) ============== */
+.opt-h {
+  --ff-display: "Funnel Display", system-ui, sans-serif;
+  --ff-body: "Funnel Sans", system-ui, sans-serif;
+  --display-weight: 500;
+  --display-tracking: -1.8px;
+}
+
+/* =================================================================
+   TALL DISPLAY STUDIES — condensed, narrow, professional headings
+   ================================================================= */
+.opt-i,
+.opt-j,
+.opt-k {
+  --bg: #f1ece3;
+  --card: #faf6eb;
+  --card-soft: #ece4d5;
+  --ink: #1f1b14;
+  --ink-soft: #4f4838;
+  --muted: #847761;
+  --accent: #c8442a;
+  --on-accent: #fbf8f0;
+  --rule: #d3c9b5;
+  --italic-weight: 600;
+}
+.opt-i .opt-hero h1 em,
+.opt-j .opt-hero h1 em,
+.opt-k .opt-hero h1 em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--accent);
+}
+.opt-i .opt-meta,
+.opt-j .opt-meta,
+.opt-k .opt-meta {
+  font-style: normal;
+}
+.opt-i .opt-eyebrow .glyph,
+.opt-j .opt-eyebrow .glyph,
+.opt-k .opt-eyebrow .glyph {
+  font-style: normal;
+}
+.opt-i .opt-palette .font-name,
+.opt-j .opt-palette .font-name,
+.opt-k .opt-palette .font-name {
+  font-style: normal;
+  font-weight: 500;
+}
+
+/* Tall display sets — show off the height. Bigger heading, tighter tracking. */
+.opt-i .opt-hero h1,
+.opt-j .opt-hero h1,
+.opt-k .opt-hero h1 {
+  font-size: 84px;
+  line-height: 0.98;
+  letter-spacing: -2.5px;
+  max-width: 760px;
+  text-transform: uppercase;
+}
+.opt-i .opt-feat .tile h4,
+.opt-j .opt-feat .tile h4,
+.opt-k .opt-feat .tile h4 {
+  text-transform: uppercase;
+  font-size: 18px;
+  letter-spacing: -0.2px;
+  font-weight: 600;
+}
+
+/* ============== I — Archivo Narrow (clean narrow grotesque) ============== */
+.opt-i {
+  --ff-display: "Archivo Narrow", system-ui, sans-serif;
+  --ff-body: "Geist", system-ui, sans-serif;
+  --display-weight: 600;
+}
+
+/* ============== J — Big Shoulders Display (tall, contemporary) ============== */
+.opt-j {
+  --ff-display: "Big Shoulders Display", system-ui, sans-serif;
+  --ff-body: "Onest", system-ui, sans-serif;
+  --display-weight: 500;
+}
+
+/* ============== K — Antonio (tall geometric, professional) ============== */
+.opt-k {
+  --ff-display: "Antonio", system-ui, sans-serif;
+  --ff-body: "Geist", system-ui, sans-serif;
+  --display-weight: 500;
+}

@@ -8,7 +8,9 @@ export const GlossOutputSchema = z.object({
 
 export const GLOSS_OUTPUT_SCHEMA = Schema.Struct({
   gloss: Schema.String.pipe(Schema.minLength(1)),
-  confidence: Schema.Number.pipe(Schema.between(0, 1)),
+  confidence: Schema.optional(Schema.Number.pipe(Schema.between(0, 1))).pipe(
+    Schema.withDefaults({ constructor: () => 1, decoding: () => 1 }),
+  ),
 });
 
 export const GroqChatResponseSchema = z.object({

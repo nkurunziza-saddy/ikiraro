@@ -9,7 +9,7 @@ const EMPTY_TRACKING: CameraTrackingState = {
   currentWord: "",
   sentence: [],
   sentenceText: "",
-  committedWord: null,
+  committedToken: null,
 };
 
 /**

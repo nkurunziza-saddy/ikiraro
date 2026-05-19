@@ -2,6 +2,7 @@ import { useMemo, useRef } from "react";
 import { useFrame, useGraph } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import { REST_POSE, type Handshape } from "@ikiraro/engine/planning";
 import { springStep } from "@ikiraro/engine/math";
 
@@ -87,7 +88,11 @@ export function SignModelGLTF({
   position = [0, 0, 0],
   rotation = [0, 0, 0],
 }: SignModelGLTFProps) {
-  const { scene } = useGLTF(url);
+  const { scene: rawScene } = useGLTF(url);
+  // Clone per-instance so useFrame mutations never corrupt the cached original.
+  // Without this, navigating away and back re-uses the mutated scene and
+  // bindQuatsRef captures already-modified quaternions as the "bind pose".
+  const scene = useMemo(() => SkeletonUtils.clone(rawScene) as THREE.Group, [rawScene]);
   const { nodes } = useGraph(scene);
 
   // [0-18: joint angles, 19-37: velocities, 38: signProgress, 39: signVelocity]

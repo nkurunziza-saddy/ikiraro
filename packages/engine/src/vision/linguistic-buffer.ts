@@ -72,9 +72,24 @@ export class LinguisticBuffer {
     return null;
   }
 
+  getInProgress(): string {
+    for (const strategy of this.config.strategies) {
+      const v = strategy.getInProgress?.();
+      if (v) return v;
+    }
+    return "";
+  }
+
+  overrideLast(sign: string): void {
+    for (const strategy of this.config.strategies) {
+      if (strategy.overrideLast) {
+        strategy.overrideLast(sign);
+        return;
+      }
+    }
+  }
+
   getState(): BufferState {
-    // Note: This is a simplified state for compatibility with existing UI.
-    // In a truly deep architecture, the UI would observe the SignToken list directly.
     const text = this.tokens
       .map((t) => {
         if (t.type === "fingerspell") return t.text;
@@ -84,7 +99,7 @@ export class LinguisticBuffer {
       .join(" ");
 
     return {
-      currentWord: "", // Logic moved to tokens
+      currentWord: this.getInProgress(),
       sentence: this.tokens.map((t) => (t.type === "lexeme" ? t.lexemeId : (t as any).text)),
       sentenceText: text,
     };

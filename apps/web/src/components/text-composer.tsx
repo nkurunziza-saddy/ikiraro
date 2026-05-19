@@ -8,16 +8,25 @@ export function TextComposer({
   isWorking: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-6">
-      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
-        Typed Input
+    <div className="flex flex-col gap-4">
+      <span
+        className="text-[10px]"
+        style={{ fontFamily: "var(--font-mono)", color: "var(--stone)", letterSpacing: "0.3px" }}
+      >
+        Hearing-side message
       </span>
       <textarea
         value={textDraft}
         onChange={(e) => setTextDraft(e.target.value)}
         disabled={isWorking}
-        placeholder="Enter hearing-side message..."
-        className="min-h-32 w-full bg-transparent text-lg leading-relaxed outline-none transition-all placeholder:text-muted-foreground/20 focus:border-primary border-b border-border/30 pb-6 disabled:opacity-50"
+        placeholder="Enter hearing-side message…"
+        className="w-full text-[18px] leading-relaxed outline-none resize-none pb-6 transition-all disabled:opacity-50"
+        style={{
+          background: "transparent",
+          color: "var(--ink)",
+          borderBottom: "1px solid var(--rule-soft)",
+          minHeight: "120px",
+        }}
       />
     </div>
   );

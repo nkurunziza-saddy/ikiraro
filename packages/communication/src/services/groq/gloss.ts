@@ -4,7 +4,7 @@ import { Groq } from "./client";
 import { GLOSS_OUTPUT_SCHEMA } from "@ikiraro/engine/planning";
 
 const DEFAULT_GROQ_GLOSS_URL = "https://api.groq.com/openai/v1/chat/completions";
-const DEFAULT_GLOSS_MODEL = "llama-3.1-70b-versatile";
+const DEFAULT_GLOSS_MODEL = "llama-3.3-70b-versatile";
 
 const SYSTEM_PROMPT = `
 You are a professional ASL Gloss translator.

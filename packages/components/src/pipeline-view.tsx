@@ -1,5 +1,4 @@
 import type { TranslationEnvelope } from "@ikiraro/engine/types";
-import { SignPlayer3D } from "./sign-player-3d";
 
 function DetailCard({ label, value }: { label: string; value: string }) {
   return (
@@ -25,13 +24,7 @@ function SummaryStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function PipelineView({
-  envelope,
-  modelUrl,
-}: {
-  envelope: TranslationEnvelope | null;
-  modelUrl?: string;
-}) {
+export function PipelineView({ envelope }: { envelope: TranslationEnvelope | null }) {
   if (!envelope) {
     return (
       <div className="rounded-xl border border-dashed bg-muted/5 px-6 py-16 text-center">
@@ -59,13 +52,6 @@ export function PipelineView({
           label="Confidence"
           value={`${Math.round(envelope.plan.metadata.confidence * 100)}%`}
         />
-      </div>
-
-      <div className="space-y-6">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">
-          Visual Execution
-        </p>
-        <SignPlayer3D envelope={envelope} modelUrl={modelUrl} />
       </div>
 
       <div className="space-y-4 pt-8 border-t border-border/30">

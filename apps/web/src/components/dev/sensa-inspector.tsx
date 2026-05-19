@@ -11,6 +11,15 @@ interface IkiraroInspectorProps {
  */
 export function IkiraroInspector({ runtime }: IkiraroInspectorProps) {
   const { state } = useIkiraro(runtime);
+
+  if (!state) {
+    return (
+      <div className="fixed bottom-4 right-4 w-96 bg-black/90 border border-white/10 rounded-xl p-4 shadow-2xl font-mono text-xs text-white/50 z-50">
+        Initializing runtime...
+      </div>
+    );
+  }
+
   const events: IkiraroEvent[] = state.plugins.inspector?.events || [];
 
   return (

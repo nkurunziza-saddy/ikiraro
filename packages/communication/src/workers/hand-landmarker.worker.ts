@@ -1,12 +1,9 @@
 /// <reference lib="webworker" />
 
 import { FilesetResolver, HandLandmarker } from "@mediapipe/tasks-vision";
-import {
-  IkiraroSurgicalClassifier,
-  WordBuffer,
-  evaluateHandGeometry,
-} from "@ikiraro/engine/vision";
+import { SignDetectionPipeline, evaluateHandGeometry } from "@ikiraro/engine/vision";
 import type { CameraTrackingState } from "@ikiraro/engine/vision";
+import type { SignToken } from "@ikiraro/engine/types";
 
 import type { MainToWorkerMessage, WorkerToMainMessage } from "../capture/hand-tracking-types";
 
@@ -22,8 +19,7 @@ const MIN_CLASSIFICATION_HAND_AREA = 0.005;
 const SIGNING_ZONE = { minX: 0.08, maxX: 0.92, minY: 0.06, maxY: 0.94 } as const;
 
 let handLandmarker: HandLandmarker | null = null;
-let classifier = new IkiraroSurgicalClassifier();
-let wordBuffer = new WordBuffer({ pauseThresholdMs: 700, minSignDurationMs: 120 });
+let pipeline = new SignDetectionPipeline(undefined, { pauseThresholdMs: 700 });
 let initPromise: Promise<void> | null = null;
 
 const debugMode = import.meta.env.DEV;
@@ -74,18 +70,17 @@ async function initializeWorker(): Promise<void> {
 }
 
 function getTrackingState(
-  result: ReturnType<IkiraroSurgicalClassifier["process"]> | null,
   landmarks: CameraTrackingState["landmarks"],
-  committedWord: string | null,
+  committedToken: SignToken | null,
 ): CameraTrackingState {
-  const state = wordBuffer.getState();
+  const state = pipeline.getBufferState();
   return {
     landmarks,
-    classification: result,
+    classification: pipeline.lastClassification,
     currentWord: state.currentWord,
     sentence: state.sentence,
     sentenceText: state.sentenceText,
-    committedWord,
+    committedToken,
   };
 }
 
@@ -99,22 +94,20 @@ self.onmessage = async (event: MessageEvent<MainToWorkerMessage>) => {
     }
 
     if (message.type === "reset") {
-      classifier.reset();
-      wordBuffer.clearAll();
+      pipeline.reset();
       return;
     }
 
     if (message.type === "correct") {
-      wordBuffer.overrideLastSign(message.sign);
-      postMessage({ type: "result", frameId: -1, tracking: getTrackingState(null, [], null) });
+      pipeline.overrideLast(message.sign);
+      postMessage({ type: "result", frameId: -1, tracking: getTrackingState([], null) });
       return;
     }
 
     if (message.type === "dispose") {
       handLandmarker?.close();
       handLandmarker = null;
-      classifier.reset();
-      wordBuffer.clearAll();
+      pipeline.reset();
       return;
     }
 
@@ -153,13 +146,13 @@ self.onmessage = async (event: MessageEvent<MainToWorkerMessage>) => {
 
         if (classifyWith && isUsable) {
           // Pass image landmarks as the second arg so spatialZone stays image-based.
-          const classification = classifier.process(classifyWith, imageLandmarks);
-          const committedWord = wordBuffer.update(classification.sign);
+          const committedToken = pipeline.process(classifyWith, imageLandmarks);
+          const classification = pipeline.lastClassification;
 
           // Debug: log feature vector when a high-confidence sign is first locked.
           if (
             debugMode &&
-            classification.sign &&
+            classification?.sign &&
             classification.sign !== lastDebugSign &&
             classification.confidence >= 0.8
           ) {
@@ -173,23 +166,23 @@ self.onmessage = async (event: MessageEvent<MainToWorkerMessage>) => {
           postMessage({
             type: "result",
             frameId: message.frameId,
-            tracking: getTrackingState(classification, imageLandmarks ?? [], committedWord),
+            tracking: getTrackingState(imageLandmarks ?? [], committedToken),
           });
         } else if (imageLandmarks) {
           lastDebugSign = null;
-          const committedWord = wordBuffer.update(null);
+          const committedToken = pipeline.tick();
           postMessage({
             type: "result",
             frameId: message.frameId,
-            tracking: getTrackingState(null, imageLandmarks, committedWord),
+            tracking: getTrackingState(imageLandmarks, committedToken),
           });
         } else {
           lastDebugSign = null;
-          const committedWord = wordBuffer.update(null);
+          const committedToken = pipeline.tick();
           postMessage({
             type: "result",
             frameId: message.frameId,
-            tracking: getTrackingState(null, [], committedWord),
+            tracking: getTrackingState([], committedToken),
           });
         }
       } finally {

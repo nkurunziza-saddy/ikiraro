@@ -22,88 +22,133 @@ function formatTimestamp(value: string): string {
   });
 }
 
-function ThreadMetric({ label, value, helper }: { label: string; value: string; helper?: string }) {
+function Metric({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="flex flex-col gap-1 px-1">
-      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+    <div className="flex flex-col gap-1.5">
+      <p
+        className="text-[10px]"
+        style={{ fontFamily: "var(--font-mono)", color: "var(--stone)", letterSpacing: "0.3px" }}
+      >
         {label}
       </p>
-      <p className="text-sm leading-relaxed font-semibold text-foreground/90 whitespace-pre-wrap">
+      <p className="text-[14px] leading-snug font-medium" style={{ color: "var(--ink)" }}>
         {value}
       </p>
-      {helper ? (
-        <p className="text-[10px] font-medium text-muted-foreground/40 uppercase tracking-wide">
-          {helper}
+      {sub && (
+        <p className="text-[11px]" style={{ color: "var(--steel)" }}>
+          {sub}
         </p>
-      ) : null}
+      )}
     </div>
   );
 }
 
 export function ConversationThread({ entries }: { entries: ConversationEntry[] }) {
+  if (entries.length === 0) {
+    return (
+      <div
+        className="px-6 py-14 text-center"
+        style={{
+          border: "1px dashed var(--rule)",
+          borderRadius: "3px",
+        }}
+      >
+        <p
+          className="text-[11px]"
+          style={{ fontFamily: "var(--font-mono)", color: "var(--stone)", letterSpacing: "0.3px" }}
+        >
+          No translations yet — compose and commit to populate history.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-12">
-      {entries.length === 0 ? (
-        <div className="rounded-xl border border-dashed bg-muted/10 px-4 py-16 text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-          History is empty
-        </div>
-      ) : (
-        [...entries].reverse().map((entry, index) => (
-          <div
-            key={entry.id}
-            className={`space-y-8 ${index !== 0 ? "pt-12 border-t border-border/30" : ""}`}
-          >
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-md bg-muted px-2 py-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-                  {entry.mode}
-                </span>
-                <span className="rounded-md bg-muted px-2 py-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-                  {entry.track}
-                </span>
-                <span className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest ml-1">
-                  {formatTimestamp(entry.createdAt)}
-                </span>
-              </div>
-              {entry.intakeModel && (
-                <span className="text-[9px] font-bold uppercase tracking-widest text-primary/60 border border-primary/20 rounded-md px-2 py-1">
-                  {entry.intakeModel}
-                </span>
-              )}
+    <div className="flex flex-col gap-0">
+      {[...entries].reverse().map((entry) => (
+        <div
+          key={entry.id}
+          className="py-10"
+          style={{ borderBottom: "1px solid var(--rule-soft)" }}
+        >
+          {/* Entry header */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-7">
+            <div className="flex items-center gap-2">
+              <span
+                className="px-2 py-0.5 text-[10px] font-medium"
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  background: "var(--paper-soft)",
+                  color: "var(--stone)",
+                  borderRadius: "2px",
+                  border: "1px solid var(--rule-soft)",
+                }}
+              >
+                {entry.mode}
+              </span>
+              <span
+                className="px-2 py-0.5 text-[10px] font-medium"
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  background: "var(--paper-soft)",
+                  color: "var(--stone)",
+                  borderRadius: "2px",
+                  border: "1px solid var(--rule-soft)",
+                }}
+              >
+                {entry.track}
+              </span>
+              <span
+                className="text-[11px] ml-1"
+                style={{ fontFamily: "var(--font-mono)", color: "var(--stone)" }}
+              >
+                {formatTimestamp(entry.createdAt)}
+              </span>
             </div>
 
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              <ThreadMetric label="Source" value={entry.raw || "—"} />
-              <ThreadMetric
-                label="Gloss"
-                value={entry.signPlan.glossText || entry.normalized || "—"}
-              />
-              <ThreadMetric
-                label="Plan"
-                value={entry.signPlan.strategy}
-                helper={`${Math.round(entry.signPlan.metadata.confidence * 100)}% confidence`}
-              />
-              <ThreadMetric
-                label="Execution"
-                value={entry.rendererQueue.map((f) => f.label).join(" · ") || "—"}
-                helper={`${entry.signPlan.clauses.length} clauses`}
-              />
-            </div>
-
-            {entry.note && (
-              <div className="max-w-2xl border-l-2 pl-6">
-                <p className="text-xs leading-relaxed text-muted-foreground/70 italic">
-                  {entry.note}
-                </p>
-              </div>
+            {entry.intakeModel && (
+              <span
+                className="px-2 py-0.5 text-[10px]"
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  color: "var(--primary)",
+                  border: "1px solid var(--rule-soft)",
+                  borderRadius: "2px",
+                }}
+              >
+                {entry.intakeModel}
+              </span>
             )}
-
-            <div className="pt-2">
-              <TtsControls text={entry.normalized} />
-            </div>
           </div>
-        ))
-      )}
+
+          {/* Metrics grid */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-7">
+            <Metric label="Source" value={entry.raw || "—"} />
+            <Metric label="Gloss" value={entry.signPlan.glossText || entry.normalized || "—"} />
+            <Metric
+              label="Strategy"
+              value={entry.signPlan.strategy}
+              sub={`${Math.round(entry.signPlan.metadata.confidence * 100)}% confidence`}
+            />
+            <Metric
+              label="Execution"
+              value={entry.rendererQueue.map((f) => f.label).join(" · ") || "—"}
+              sub={`${entry.signPlan.clauses.length} clauses`}
+            />
+          </div>
+
+          {/* Planner note */}
+          {entry.note && (
+            <div className="mb-5 pl-5" style={{ borderLeft: "2px solid var(--rule)" }}>
+              <p className="text-[13px] leading-relaxed italic" style={{ color: "var(--steel)" }}>
+                {entry.note}
+              </p>
+            </div>
+          )}
+
+          <TtsControls text={entry.normalized} />
+        </div>
+      ))}
     </div>
   );
 }

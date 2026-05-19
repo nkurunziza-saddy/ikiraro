@@ -1,13 +1,9 @@
 import type { SttModel } from "@ikiraro/engine/types";
-import { AudioVisualizer, Button } from "@ikiraro/components";
+import { AudioVisualizer } from "@ikiraro/components";
 import type { CaptureStatus } from "@ikiraro/communication";
 
 const STT_OPTIONS: SttModel[] = ["whisper-large-v3", "whisper-large-v3-turbo"];
 
-/**
- * SpeechComposer is a pure view component that displays speech capture status.
- * All logic for MediaRecorder and context is handled by the hook and bridge.
- */
 export function SpeechComposer({
   sttModel,
   setSttModel,
@@ -34,20 +30,36 @@ export function SpeechComposer({
   const isCapturing = captureStatus === "capturing";
 
   return (
-    <div className="flex flex-col gap-10">
-      <div className="flex items-center justify-between border-b border-border/30 pb-4">
+    <div className="flex flex-col gap-8">
+      {/* Model + controls row */}
+      <div
+        className="flex items-center justify-between pb-4"
+        style={{ borderBottom: "1px solid var(--rule-soft)" }}
+      >
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+          <span
+            className="text-[10px]"
+            style={{
+              fontFamily: "var(--font-mono)",
+              color: "var(--stone)",
+              letterSpacing: "0.3px",
+            }}
+          >
             Model
           </span>
           <select
             value={sttModel}
-            onChange={(event) => setSttModel(event.target.value as SttModel)}
-            className="bg-transparent text-sm font-bold uppercase tracking-widest outline-none focus:text-primary"
+            onChange={(e) => setSttModel(e.target.value as SttModel)}
+            className="text-[13px] font-medium outline-none"
+            style={{
+              background: "transparent",
+              color: "var(--ink)",
+              letterSpacing: "-0.2px",
+            }}
           >
-            {STT_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option.split("-")[1] || option}
+            {STT_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
               </option>
             ))}
           </select>
@@ -55,59 +67,81 @@ export function SpeechComposer({
 
         <div className="flex gap-2">
           {!isCapturing ? (
-            <Button
+            <button
               onClick={onStart}
               disabled={isWorking}
-              variant="outline"
-              size="sm"
-              className="px-6 font-bold uppercase tracking-widest"
+              className="px-5 py-2 text-[13px] font-medium transition-all disabled:opacity-40"
+              style={{
+                background: "transparent",
+                color: "var(--ink)",
+                borderRadius: "2px",
+                border: "1px solid var(--rule)",
+              }}
             >
               Record
-            </Button>
+            </button>
           ) : (
             <>
-              <Button
-                variant="destructive"
+              <button
                 onClick={onStop}
                 disabled={isWorking}
-                size="sm"
-                className="px-6 font-bold uppercase tracking-widest"
+                className="px-5 py-2 text-[13px] font-medium transition-all disabled:opacity-40"
+                style={{
+                  background: "var(--primary)",
+                  color: "var(--on-primary)",
+                  borderRadius: "2px",
+                }}
               >
                 Commit
-              </Button>
-              <Button
-                variant="ghost"
+              </button>
+              <button
                 onClick={onCancel}
-                size="sm"
-                className="px-4 font-bold uppercase tracking-widest"
+                className="px-4 py-2 text-[12px] transition-colors"
+                style={{ color: "var(--steel)" }}
               >
                 Cancel
-              </Button>
+              </button>
             </>
           )}
         </div>
       </div>
 
+      {/* Capture visualizer */}
       {isCapturing && (
         <div className="flex flex-col gap-4 py-4">
           <AudioVisualizer level={captureLevel} count={32} />
-          <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-center text-primary/60 animate-pulse">
-            Listening
+          <p
+            className="text-[11px] text-center"
+            style={{
+              fontFamily: "var(--font-mono)",
+              color: "var(--primary)",
+              letterSpacing: "0.5px",
+            }}
+          >
+            Listening…
           </p>
         </div>
       )}
 
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
-            Vocabulary Hints
-          </span>
-        </div>
+      {/* Vocabulary hints */}
+      <div className="flex flex-col gap-3">
+        <span
+          className="text-[10px]"
+          style={{ fontFamily: "var(--font-mono)", color: "var(--stone)", letterSpacing: "0.3px" }}
+        >
+          Vocabulary hints
+        </span>
         <textarea
           value={speechPrompt}
-          onChange={(event) => setSpeechPrompt(event.target.value)}
-          placeholder="Add specific names or terms..."
-          className="min-h-24 w-full bg-transparent text-sm leading-relaxed outline-none placeholder:text-muted-foreground/30 focus:border-primary border-b border-border/30 pb-4"
+          onChange={(e) => setSpeechPrompt(e.target.value)}
+          placeholder="Add specific names or terms…"
+          className="w-full text-[14px] leading-relaxed outline-none resize-none pb-4"
+          style={{
+            background: "transparent",
+            color: "var(--ink)",
+            borderBottom: "1px solid var(--rule-soft)",
+            minHeight: "80px",
+          }}
         />
       </div>
     </div>

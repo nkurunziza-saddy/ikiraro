@@ -1,0 +1,1681 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sensa — Accessibility for the open web</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Lexend:wght@400;500&display=swap"
+    />
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link
+      rel="stylesheet"
+      href="https://api.fontshare.com/v2/css?f[]=general-sans@200,300,400,500,600,700&display=swap"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+
+    <script
+      src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+      integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+      integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+      integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="image-slot.js"></script>
+
+    <template id="__bundler_thumbnail" data-bg-color="#F1ECE3">
+      <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+        <rect width="1200" height="800" fill="#F1ECE3" />
+        <g transform="translate(600 410)">
+          <defs>
+            <linearGradient id="thumb-sun" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#C8442A" />
+              <stop offset=".55" stop-color="#D68131" />
+              <stop offset="1" stop-color="#E0B547" />
+            </linearGradient>
+          </defs>
+          <circle r="150" fill="url(#thumb-sun)" />
+          <circle r="86" fill="none" stroke="#F1ECE3" stroke-width="16" />
+          <circle r="28" fill="#F1ECE3" />
+        </g>
+        <g font-family="Georgia, 'Times New Roman', serif" fill="#1F1B14" text-anchor="middle">
+          <text x="600" y="640" font-size="84" font-style="italic">Sensa</text>
+          <text x="600" y="700" font-size="22" letter-spacing="6" fill="#847761">
+            ACCESSIBILITY · FOR THE OPEN WEB
+          </text>
+        </g>
+      </svg>
+    </template>
+  </head>
+  <body>
+    <!-- Edition mark hidden in techy mode -->
+    <div class="edition-mark" aria-hidden="true" style="display: none">
+      <span>Sensa v3.0</span>
+    </div>
+
+    <!-- ====== PROMO BANNER ====== -->
+    <div class="promo-banner">
+      <span class="badge">Shipping</span>
+      <span
+        >Voice shopping, live captions, and ASL beta — now in
+        <span data-brand-name>Sensa</span> v3.</span
+      >
+      <a href="#">Read the dispatch&nbsp;→</a>
+    </div>
+
+    <!-- ====== TOP NAV ====== -->
+    <header class="topnav">
+      <div class="container topnav-inner">
+        <a class="brand" href="#">
+          <svg class="mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="sensa-mark" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#D7531F" />
+                <stop offset=".55" stop-color="#DF7F26" />
+                <stop offset="1" stop-color="#E6B532" />
+              </linearGradient>
+            </defs>
+            <circle cx="14" cy="14" r="13" fill="url(#sensa-mark)" />
+            <circle cx="14" cy="14" r="7.5" fill="none" stroke="#FBF6E6" stroke-width="1.5" />
+            <circle cx="14" cy="14" r="2.5" fill="#FBF6E6" />
+          </svg>
+          <span data-brand-name>Sensa</span>
+        </a>
+        <nav>
+          <a href="#features">Platform</a>
+          <a href="#demo">Demo</a>
+          <a href="#developers">Developers</a>
+          <a href="#customers">Customers</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#">Manifesto</a>
+        </nav>
+        <div class="nav-right">
+          <a href="#" class="contact">Contact sales</a>
+          <a href="#" class="btn btn-dark">Open dashboard</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ====== HERO ====== -->
+    <section class="hero">
+      <div class="hero-sun-ring" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <div class="hero-pre">
+          <span class="mark" aria-hidden="true"></span>
+          <span class="ver">Sensa v3.0</span>
+          <span class="slash">/</span>
+          <span>Accessibility platform for the open web</span>
+        </div>
+
+        <div class="hero-grid">
+          <div class="hero-left">
+            <h1>
+              The web,<br />
+              <em>made reachable</em><br />
+              for&nbsp;everyone.
+            </h1>
+
+            <p class="lede">
+              A single script tag gives any site read-aloud, voice navigation, live captions, and
+              assisted shopping &mdash; so the&nbsp;
+              <strong>1.3 billion people</strong> who can't fully use the internet today, can.
+            </p>
+
+            <div class="cta-row">
+              <a href="#" class="btn btn-primary">Install in 60 seconds</a>
+              <a href="#walkthrough" class="btn btn-secondary">Watch the demo&nbsp;&rarr;</a>
+            </div>
+
+            <div class="hero-trustline">
+              <span class="item"><strong>240+</strong>&nbsp;product teams shipping</span>
+              <span class="item"><strong>14-day</strong>&nbsp;trial, no card</span>
+              <span class="item"><strong>Free</strong>&nbsp;forever for non-profits</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-horizon" aria-hidden="true"></div>
+      <a href="#signal" class="hero-hint" aria-label="Scroll to live demo">
+        <span class="dot"></span>
+        <span>Live below</span>
+        <span class="arrow">&darr;</span>
+      </a>
+    </section>
+
+    <!-- ====== SENSA LIVE · signal card lifted out of the hero ====== -->
+    <section class="section-signal" id="signal">
+      <div class="container">
+        <div class="signal-intro">
+          <span class="eye">/ live</span>
+          <h2>What <span data-brand-name>Sensa</span> is doing <em>right now.</em></h2>
+        </div>
+        <div class="signal-wrap">
+          <div class="signal-card" id="signal-card">
+            <div class="signal-head">
+              <span class="status">
+                <span class="dot"></span>
+                <span data-brand-name>Sensa</span>
+                <span class="mode">· now <span id="mode-name">reading</span></span>
+              </span>
+              <span class="meta">
+                <span id="signal-time">00:14</span>
+                <span class="lang">EN&nbsp;US</span>
+              </span>
+            </div>
+
+            <div class="signal-wave" id="signal-wave" aria-hidden="true"></div>
+
+            <div class="signal-caption">
+              <span class="cc">CC</span>
+              <span class="text" id="signal-text"
+                >"a 65-inch OLED panel that looks hand-painted."</span
+              ><span class="cursor"></span>
+            </div>
+
+            <div class="signal-meters">
+              <div class="row">
+                <div class="top">
+                  <span class="lbl">Speed</span>
+                  <span class="val" id="meter-speed-val">1.4&times;</span>
+                </div>
+                <div class="bar"><span id="meter-speed-bar" style="width: 56%"></span></div>
+              </div>
+              <div class="row">
+                <div class="top">
+                  <span class="lbl">Voice</span>
+                  <span class="val" id="meter-voice-val">Maya</span>
+                </div>
+                <div class="bar"><span id="meter-voice-bar" style="width: 72%"></span></div>
+              </div>
+            </div>
+
+            <div class="signal-modes" id="signal-modes">
+              <button class="on" data-mode="reading">Reading</button>
+              <button data-mode="voice">Voice command</button>
+              <button data-mode="captioning">Captioning</button>
+              <button data-mode="shopping">Shopping</button>
+              <button data-mode="translating">Translating</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hero animations -->
+    <script>
+      (() => {
+        // ------ Waveform bars ------
+        const wave = document.getElementById("signal-wave");
+        const BAR_COUNT = 48;
+        if (wave) {
+          for (let i = 0; i < BAR_COUNT; i++) {
+            const b = document.createElement("span");
+            b.className = "bar";
+            // Stagger each bar's animation so the wave looks organic, and vary the
+            // bar's vertical center via flex-basis is too costly — instead pick a
+            // random animation-delay and animation-duration per bar.
+            b.style.animationDelay = (Math.random() * 1.6).toFixed(2) + "s";
+            b.style.animationDuration = (1.2 + Math.random() * 1.2).toFixed(2) + "s";
+            wave.appendChild(b);
+          }
+        }
+
+        // ------ Live count ticker — tiny random walk so it feels alive ------
+        const countEl = document.getElementById("live-count");
+        if (countEl) {
+          setInterval(() => {
+            const cur = parseInt(countEl.textContent.replace(/,/g, ""), 10);
+            const delta = Math.floor(Math.random() * 7) - 3;
+            countEl.textContent = Math.max(1, cur + delta).toLocaleString();
+          }, 1400);
+        }
+
+        // ------ Session timer in the signal card ------
+        const timeEl = document.getElementById("signal-time");
+        let elapsed = 14;
+        if (timeEl) {
+          setInterval(() => {
+            elapsed = (elapsed + 1) % 3600;
+            const m = String(Math.floor(elapsed / 60)).padStart(2, "0");
+            const s = String(elapsed % 60).padStart(2, "0");
+            timeEl.textContent = `${m}:${s}`;
+          }, 1000);
+        }
+
+        // ------ Modes — cycle the caption text and meters per active mode ------
+        const MODES = {
+          reading: {
+            label: "reading",
+            lines: [
+              '"a 65-inch OLED panel that looks hand-painted."',
+              '"perfect blacks, 144 hertz, two-year warranty."',
+              '"free shipping by Friday — confirm to add to cart."',
+              '"reading at one point four times speed, voice Maya."',
+            ],
+            speed: { val: "1.4×", bar: 56 },
+            voice: { val: "Maya", bar: 72 },
+          },
+          voice: {
+            label: "listening",
+            lines: [
+              '"Open the cart."',
+              '"Find a cheaper one — under fifteen hundred."',
+              '"Read the reviews."',
+              '"Yes — confirm the purchase."',
+            ],
+            speed: { val: "low", bar: 22 },
+            voice: { val: "user", bar: 95 },
+          },
+          captioning: {
+            label: "captioning",
+            lines: [
+              '"…and that\'s when we knew the prototype worked."',
+              '"so we shipped on a Tuesday afternoon, no fanfare."',
+              '"twelve hours later, captions were in production."',
+            ],
+            speed: { val: "real-time", bar: 88 },
+            voice: { val: "speaker", bar: 64 },
+          },
+          shopping: {
+            label: "shopping",
+            lines: [
+              '"Adding Halo 65" OLED to cart — $1,399."',
+              '"Applying Visa ending 4421 — confirm out loud."',
+              '"Order placed. Ships Tuesday. Receipt sent."',
+            ],
+            speed: { val: "—", bar: 0 },
+            voice: { val: "Sensa", bar: 100 },
+          },
+          translating: {
+            label: "translating",
+            lines: [
+              '"Página traducida al español. Continúa leyendo."',
+              '"한국어로 번역 중. 음성 안내 시작."',
+              '"Traduit en français. Lecture à voix haute."',
+            ],
+            speed: { val: "1.0×", bar: 50 },
+            voice: { val: "multi", bar: 80 },
+          },
+        };
+
+        let activeMode = "reading";
+        let lineIdx = 0;
+        let cycleTimer = null;
+
+        const textEl = document.getElementById("signal-text");
+        const modeNameEl = document.getElementById("mode-name");
+        const speedVal = document.getElementById("meter-speed-val");
+        const speedBar = document.getElementById("meter-speed-bar");
+        const voiceVal = document.getElementById("meter-voice-val");
+        const voiceBar = document.getElementById("meter-voice-bar");
+
+        function cycle() {
+          const m = MODES[activeMode];
+          if (!m || !textEl) return;
+          lineIdx = (lineIdx + 1) % m.lines.length;
+          textEl.style.opacity = 0;
+          setTimeout(() => {
+            textEl.textContent = m.lines[lineIdx];
+            textEl.style.opacity = 1;
+          }, 240);
+        }
+
+        function setMode(name) {
+          const m = MODES[name];
+          if (!m) return;
+          activeMode = name;
+          lineIdx = -1;
+          if (modeNameEl) modeNameEl.textContent = m.label;
+          if (speedVal) speedVal.textContent = m.speed.val;
+          if (speedBar) speedBar.style.width = m.speed.bar + "%";
+          if (voiceVal) voiceVal.textContent = m.voice.val;
+          if (voiceBar) voiceBar.style.width = m.voice.bar + "%";
+          cycle();
+          clearInterval(cycleTimer);
+          cycleTimer = setInterval(cycle, 3200);
+        }
+
+        document.querySelectorAll("#signal-modes button").forEach((b) => {
+          b.addEventListener("click", () => {
+            document
+              .querySelectorAll("#signal-modes button")
+              .forEach((o) => o.classList.remove("on"));
+            b.classList.add("on");
+            setMode(b.dataset.mode);
+          });
+        });
+
+        // Auto-rotate through all modes every 8s if user hasn't interacted
+        let userPicked = false;
+        document.querySelectorAll("#signal-modes button").forEach((b) => {
+          b.addEventListener("click", () => {
+            userPicked = true;
+          });
+        });
+        const modeNames = Object.keys(MODES);
+        let autoIdx = 0;
+        setInterval(() => {
+          if (userPicked) return;
+          autoIdx = (autoIdx + 1) % modeNames.length;
+          const next = modeNames[autoIdx];
+          document.querySelectorAll("#signal-modes button").forEach((o) => {
+            o.classList.toggle("on", o.dataset.mode === next);
+          });
+          setMode(next);
+        }, 8200);
+
+        // Kick things off
+        setMode("reading");
+      })();
+    </script>
+
+    <!-- ====== TRUST STRIP (right after hero) ====== -->
+    <section class="trust-strip">
+      <div class="container">
+        <div class="trust-row">
+          <div class="cell">
+            <div class="val">38<span class="unit">/ langs</span></div>
+            <div class="lbl">Read aloud + captions</div>
+          </div>
+          <div class="cell">
+            <div class="val">12<span class="unit">/ kb</span></div>
+            <div class="lbl">Added page weight</div>
+          </div>
+          <div class="cell">
+            <div class="val">96<span class="unit">/ %</span></div>
+            <div class="lbl">Voice intent accuracy</div>
+          </div>
+          <div class="cell">
+            <div class="val">WCAG<span class="unit">/ 2.2 AA</span></div>
+            <div class="lbl">SOC 2 · GDPR · EU AI Act</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== LOGO WALL ====== -->
+    <section class="logo-wall">
+      <div class="container">
+        <p class="label">Trusted by product teams shipping inclusive software</p>
+        <div class="row">
+          <div class="item">VESTRA</div>
+          <div class="item lm">Northwind</div>
+          <div class="item">FOLIO <span class="ampersand">&amp;</span> Co.</div>
+          <div class="item lm">Atelier</div>
+          <div class="item">Harborlight</div>
+          <div class="item">PIVOT 9</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== LIVE ACTIVITY TICKER ====== -->
+    <section class="ticker" aria-label="Live activity">
+      <div class="ticker-track">
+        <!-- Set 1 -->
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Reading "about us" aloud</span
+          ><span class="t-who">— Mateo, Madrid</span><span class="t-tag">EN→ES</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Captioning a livestream</span
+          ><span class="t-who">— Aarav, Mumbai</span><span class="t-tag">live</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Voice shopping</span
+          ><span class="t-who">— Sarah, Seattle</span><span class="t-tag">"add to cart"</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Magnifying 240%</span
+          ><span class="t-who">— Anwen, Cardiff</span><span class="t-tag">vision</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Translating page</span
+          ><span class="t-who">— Yuki, Tokyo</span><span class="t-tag">EN→JA</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Plain-language rewrite</span
+          ><span class="t-who">— Owen, Belfast</span><span class="t-tag">cognitive</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Keyboard navigation</span
+          ><span class="t-who">— Priya, Bengaluru</span><span class="t-tag">motor</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Dwell-click confirmed</span
+          ><span class="t-who">— Helmut, Berlin</span><span class="t-tag">"yes"</span></span
+        >
+        <span class="t-sep">·</span>
+        <!-- Set 2 (duplicate for seamless loop) -->
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Reading "about us" aloud</span
+          ><span class="t-who">— Mateo, Madrid</span><span class="t-tag">EN→ES</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Captioning a livestream</span
+          ><span class="t-who">— Aarav, Mumbai</span><span class="t-tag">live</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Voice shopping</span
+          ><span class="t-who">— Sarah, Seattle</span><span class="t-tag">"add to cart"</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Magnifying 240%</span
+          ><span class="t-who">— Anwen, Cardiff</span><span class="t-tag">vision</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Translating page</span
+          ><span class="t-who">— Yuki, Tokyo</span><span class="t-tag">EN→JA</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Plain-language rewrite</span
+          ><span class="t-who">— Owen, Belfast</span><span class="t-tag">cognitive</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Keyboard navigation</span
+          ><span class="t-who">— Priya, Bengaluru</span><span class="t-tag">motor</span></span
+        >
+        <span class="t-sep">·</span>
+        <span class="t-item"
+          ><span class="t-dot"></span><span class="t-action">Dwell-click confirmed</span
+          ><span class="t-who">— Helmut, Berlin</span><span class="t-tag">"yes"</span></span
+        >
+        <span class="t-sep">·</span>
+      </div>
+    </section>
+
+    <!-- ====== STATS / IMPACT ====== -->
+    <section class="stats-band">
+      <div class="container">
+        <div class="section-head">
+          <div class="sec-num">01 / The Case</div>
+          <div class="sec-meta">
+            <h2>
+              1 in 6 people on the internet live with a disability.
+              <em>Most of the web wasn't built for them.</em>
+            </h2>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="cell">
+            <div class="pre">A · Population</div>
+            <div class="num">1.3<span class="sup">b</span></div>
+            <div class="lbl">
+              People worldwide with a significant disability — collectively spending $13T annually.
+            </div>
+          </div>
+          <div class="cell">
+            <div class="pre">B · Failure</div>
+            <div class="num">96<span class="sup">%</span></div>
+            <div class="lbl">
+              Of the top one million homepages still fail automated WCAG checks in 2026.
+            </div>
+          </div>
+          <div class="cell">
+            <div class="pre">C · Abandonment</div>
+            <div class="num">71<span class="sup">%</span></div>
+            <div class="lbl">
+              Of disabled users will leave a site that's hard to use — and never return.
+            </div>
+          </div>
+          <div class="cell">
+            <div class="pre">D · Recovery</div>
+            <div class="num">11<span class="sup">×</span></div>
+            <div class="lbl">
+              Average increase in completed checkouts after teams ship
+              <span data-brand-name>Sensa</span>. Across 240 sites.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== LIVE DEMO ====== -->
+    <section class="section" id="demo">
+      <div class="container">
+        <div class="section-head">
+          <div class="sec-num">02 / Try it here</div>
+          <div class="sec-meta">
+            <h2>A single toolbar. <em>Nine ways</em> to read, move, and buy.</h2>
+            <p class="lede">
+              This is the real <span data-brand-name>Sensa</span> toolbar — not a screenshot. Flip a
+              switch and watch the sample article respond instantly.
+            </p>
+          </div>
+        </div>
+
+        <div id="demo-mount"></div>
+      </div>
+    </section>
+
+    <!-- ====== 03 · CAPABILITIES (Read / Move / See / Buy) ====== -->
+    <section class="section section-features" id="features">
+      <div class="container">
+        <div class="section-head">
+          <div class="sec-num">03 / Capabilities</div>
+          <div class="sec-meta">
+            <h2>Read, move, see, buy &mdash; <em>without barriers.</em></h2>
+            <p class="lede">
+              <span data-brand-name>Sensa</span> covers all four ways a person uses the web.
+              On-device, in 38&nbsp;languages, with one script tag.
+            </p>
+          </div>
+        </div>
+
+        <div class="rmsb-grid">
+          <!-- Read -->
+          <div class="rmsb">
+            <div class="rmsb-head">
+              <span class="rmsb-tag"><b>R</b>&nbsp;/&nbsp;Read</span>
+              <span class="rmsb-icon"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19" />
+                  <path d="M19 12a7 7 0 0 0-3-5.8M16 8.2a3.5 3.5 0 0 1 0 7.6" /></svg
+              ></span>
+            </div>
+            <h3>Hear every word.</h3>
+            <p>For low vision, dyslexia, and tired eyes. Read-aloud, summarize, simplify.</p>
+            <div class="rmsb-viz">
+              <div class="viz-read">
+                <span class="b" style="animation-delay: 0s"></span>
+                <span class="b" style="animation-delay: 0.15s"></span>
+                <span class="b" style="animation-delay: 0.32s"></span>
+                <span class="b" style="animation-delay: 0.07s"></span>
+                <span class="b" style="animation-delay: 0.4s"></span>
+                <span class="b" style="animation-delay: 0.21s"></span>
+                <span class="b" style="animation-delay: 0.55s"></span>
+                <span class="b" style="animation-delay: 0.11s"></span>
+                <span class="b" style="animation-delay: 0.38s"></span>
+                <span class="b" style="animation-delay: 0.18s"></span>
+                <span class="b" style="animation-delay: 0.45s"></span>
+                <span class="b" style="animation-delay: 0.05s"></span>
+                <span class="b" style="animation-delay: 0.6s"></span>
+                <span class="b" style="animation-delay: 0.25s"></span>
+                <span class="b" style="animation-delay: 0.35s"></span>
+              </div>
+            </div>
+            <ul>
+              <li>Read-aloud in 38 languages</li>
+              <li>Plain-language rewrite</li>
+              <li>Line focus &amp; dyslexia font</li>
+            </ul>
+          </div>
+
+          <!-- Move -->
+          <div class="rmsb">
+            <div class="rmsb-head">
+              <span class="rmsb-tag"><b>M</b>&nbsp;/&nbsp;Move</span>
+              <span class="rmsb-icon"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <rect x="9" y="3" width="6" height="11" rx="3" />
+                  <path d="M19 11a7 7 0 0 1-14 0M12 18v3" /></svg
+              ></span>
+            </div>
+            <h3>Navigate without a&nbsp;mouse.</h3>
+            <p>For motor impairments. Spoken commands map directly to your DOM.</p>
+            <div class="rmsb-viz">
+              <div class="viz-move">
+                <span class="k"></span><span class="k"></span><span class="k"></span
+                ><span class="k on"></span><span class="k"></span><span class="k"></span
+                ><span class="k"></span><span class="k"></span><span class="k"></span
+                ><span class="k"></span> <span class="k"></span><span class="k"></span
+                ><span class="k on"></span><span class="k"></span><span class="k"></span
+                ><span class="k"></span><span class="k"></span><span class="k on"></span
+                ><span class="k"></span><span class="k"></span> <span class="k"></span
+                ><span class="k"></span><span class="k"></span><span class="k spc on"></span
+                ><span class="k"></span><span class="k"></span><span class="k"></span
+                ><span class="k"></span>
+              </div>
+            </div>
+            <ul>
+              <li>Voice navigation &middot; 96% accuracy</li>
+              <li>Keyboard-only mode + dwell click</li>
+              <li>Switch-control support</li>
+            </ul>
+          </div>
+
+          <!-- See -->
+          <div class="rmsb">
+            <div class="rmsb-head">
+              <span class="rmsb-tag"><b>S</b>&nbsp;/&nbsp;See</span>
+              <span class="rmsb-icon"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m20 20-3.5-3.5" /></svg
+              ></span>
+            </div>
+            <h3>Make pages legible.</h3>
+            <p>Magnifier, contrast, colorblind correction. No layout shifts.</p>
+            <div class="rmsb-viz">
+              <div class="viz-see">
+                <span class="word">small print is hard to read.</span>
+                <span class="lens">a</span>
+              </div>
+            </div>
+            <ul>
+              <li>Magnifier &middot; 110&ndash;400%</li>
+              <li>8 contrast themes + colorblind</li>
+              <li>Reading font + line focus</li>
+            </ul>
+          </div>
+
+          <!-- Buy -->
+          <div class="rmsb">
+            <div class="rmsb-head">
+              <span class="rmsb-tag"><b>B</b>&nbsp;/&nbsp;Buy</span>
+              <span class="rmsb-icon"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="9" cy="21" r="1.5" />
+                  <circle cx="18" cy="21" r="1.5" />
+                  <path d="M3 4h2l2.6 12.3a2 2 0 0 0 2 1.7h8a2 2 0 0 0 2-1.6L21 8H6" /></svg
+              ></span>
+            </div>
+            <h3>Shop with your&nbsp;voice.</h3>
+            <p>
+              Find, compare, autofill, confirm — by speaking. The signature
+              <span data-brand-name>Sensa</span> power.
+            </p>
+            <div class="rmsb-viz">
+              <div class="viz-buy">
+                <span class="step done"></span>
+                <span class="step done"></span>
+                <span class="step now"></span>
+                <span class="step"></span>
+                <span class="step"></span>
+              </div>
+            </div>
+            <ul>
+              <li>"Find a 65&Prime; OLED under $1,500"</li>
+              <li>Autofill + verbal confirmation</li>
+              <li>Receipt read aloud after</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 04 · PIPELINE / Inside Sensa ====== -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div class="sec-num">04 / Inside <span data-brand-name>Sensa</span></div>
+          <div class="sec-meta">
+            <h2>How it works — <em>under the hood.</em></h2>
+            <p class="lede">
+              Everything runs on-device. The longest leg of the journey is 38 milliseconds. No
+              screen contents ever leave your user's browser.
+            </p>
+          </div>
+        </div>
+
+        <div class="pipeline">
+          <div class="pipe-card">
+            <div class="head">
+              <span class="num">01</span>
+              <span class="icon"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="3" width="6" height="11" rx="3" />
+                  <path d="M19 11a7 7 0 0 1-14 0M12 18v3" /></svg
+              ></span>
+            </div>
+            <div class="name">Input</div>
+            <p class="desc">
+              Voice, keyboard, gaze, or switch. <span data-brand-name>Sensa</span> listens to
+              whatever the user has.
+            </p>
+            <div class="lat">
+              <span class="ms-label">Capture</span>
+              <span class="ms-val">~5 ms</span>
+            </div>
+          </div>
+
+          <div class="pipe-card">
+            <div class="head">
+              <span class="num">02</span>
+              <span class="icon"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="16 18 22 12 16 6" />
+                  <polyline points="8 6 2 12 8 18" /></svg
+              ></span>
+            </div>
+            <div class="name">Parse</div>
+            <p class="desc">
+              Reads the rendered DOM, auto-detects landmarks, headings, forms, and product fields.
+            </p>
+            <div class="lat">
+              <span class="ms-label">DOM scan</span>
+              <span class="ms-val">~12 ms</span>
+            </div>
+          </div>
+
+          <div class="pipe-card">
+            <div class="head">
+              <span class="num">03</span>
+              <span class="icon"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3" />
+                  <path
+                    d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"
+                  /></svg
+              ></span>
+            </div>
+            <div class="name">Intent</div>
+            <p class="desc">
+              Whisper-tiny + a <span data-brand-name>Sensa</span>-trained intent model, running on
+              WebGPU. Multilingual.
+            </p>
+            <div class="lat">
+              <span class="ms-label">Inference</span>
+              <span class="ms-val">~38 ms</span>
+            </div>
+          </div>
+
+          <div class="pipe-card">
+            <div class="head">
+              <span class="num">04</span>
+              <span class="icon"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2 4 7v6c0 4.5 3 8 8 9 5-1 8-4.5 8-9V7l-8-5z" />
+                  <polyline points="9 12 11 14 15 10" /></svg
+              ></span>
+            </div>
+            <div class="name">Action</div>
+            <p class="desc">
+              Maps to a DOM element. Irreversible actions wait for a spoken "yes." Logs nothing.
+            </p>
+            <div class="lat">
+              <span class="ms-label">Dispatch</span>
+              <span class="ms-val">~3 ms</span>
+            </div>
+          </div>
+
+          <div class="pipe-card">
+            <div class="head">
+              <span class="num">05</span>
+              <span class="icon"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19" />
+                  <path d="M19 12a7 7 0 0 0-3-5.8M16 8.2a3.5 3.5 0 0 1 0 7.6" /></svg
+              ></span>
+            </div>
+            <div class="name">Output</div>
+            <p class="desc">
+              Neural TTS streams the response. Common phrases cached for instant playback.
+            </p>
+            <div class="lat">
+              <span class="ms-label">Synthesis</span>
+              <span class="ms-val">~14 ms</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pipe-summary">
+          <div class="left">
+            <strong>72 ms</strong>, median. Every step on-device. Zero round-trips to a server.
+          </div>
+          <div class="totals">
+            <div class="item">
+              <span class="lbl">Model size</span><span class="val">38&nbsp;MB</span>
+            </div>
+            <div class="item">
+              <span class="lbl">Page added</span><span class="val">12&nbsp;KB</span>
+            </div>
+            <div class="item"><span class="lbl">Backend calls</span><span class="val">0</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 05 · VIDEO WALKTHROUGH ====== -->
+    <section class="section" id="walkthrough">
+      <div class="container">
+        <div class="section-head">
+          <div class="sec-num">05 / Walkthrough</div>
+          <div class="sec-meta">
+            <h2>See it run in <em>90&nbsp;seconds.</em></h2>
+            <p class="lede">
+              A real <span data-brand-name>Sensa</span> session — installing the script, reading a
+              product page, voice-shopping. Captioned by <span data-brand-name>Sensa</span> itself.
+            </p>
+          </div>
+        </div>
+
+        <div class="walk">
+          <div class="walk-player">
+            <div class="walk-meta">
+              <span class="dot"></span>
+              <span>Walkthrough · captioned by <span data-brand-name>Sensa</span></span>
+            </div>
+            <button class="walk-play" aria-label="Play walkthrough">
+              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20" /></svg>
+            </button>
+            <div class="walk-caption">
+              <span class="cc">CC</span>
+              <span>"And that's how you install — one script tag in your &lt;head&gt;."</span>
+              <span class="by">auto</span>
+            </div>
+            <div class="walk-scrub">
+              <span>00:18</span>
+              <div class="bar">
+                <span class="progress"></span>
+                <span class="chap passed" style="left: 0%"></span>
+                <span class="chap passed" style="left: 24%"></span>
+                <span class="chap" style="left: 43%"></span>
+                <span class="chap" style="left: 59%"></span>
+                <span class="chap" style="left: 87%"></span>
+              </div>
+              <span>01:32</span>
+            </div>
+          </div>
+
+          <div class="walk-chapters">
+            <div class="title">Chapters</div>
+            <div class="chapter on">
+              <span class="t">00:00</span>
+              <span class="nm">Install in one&nbsp;line</span>
+              <span class="dur">22s</span>
+            </div>
+            <div class="chapter">
+              <span class="t">00:22</span>
+              <span class="nm">Read a product page aloud</span>
+              <span class="dur">18s</span>
+            </div>
+            <div class="chapter">
+              <span class="t">00:40</span>
+              <span class="nm">Magnify &amp; contrast</span>
+              <span class="dur">14s</span>
+            </div>
+            <div class="chapter">
+              <span class="t">00:54</span>
+              <span class="nm">Voice shopping flow</span>
+              <span class="dur">26s</span>
+            </div>
+            <div class="chapter">
+              <span class="t">01:20</span>
+              <span class="nm">Dashboard analytics</span>
+              <span class="dur">12s</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 05 · LANGUAGES WALL ====== -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div class="sec-num">06 / Languages</div>
+          <div class="sec-meta">
+            <h2>Native to <em>every reader.</em></h2>
+            <p class="lede">
+              38 languages for read-aloud and live captions. 14 for voice control.
+              <span data-brand-name>Sensa</span> speaks how your users speak — in their script, with
+              their accent.
+            </p>
+          </div>
+        </div>
+
+        <div class="lang-grid">
+          <div class="lang">
+            <span class="native">English</span>
+            <span class="code">EN-US</span>
+            <span class="count">4,329 active</span>
+          </div>
+          <div class="lang">
+            <span class="native">Español</span>
+            <span class="code">ES</span>
+            <span class="count">2,917 active</span>
+          </div>
+          <div class="lang">
+            <span class="native">中文</span>
+            <span class="code">ZH</span>
+            <span class="count">1,438 active</span>
+          </div>
+          <div class="lang">
+            <span class="native">한국어</span>
+            <span class="code">KO</span>
+            <span class="count">1,224 active</span>
+          </div>
+          <div class="lang">
+            <span class="native">日本語</span>
+            <span class="code">JA</span>
+            <span class="count">982 active</span>
+          </div>
+          <div class="lang">
+            <span class="native">العربية</span>
+            <span class="code">AR</span>
+            <span class="count">873 active</span>
+          </div>
+          <div class="lang">
+            <span class="native">हिन्दी</span>
+            <span class="code">HI</span>
+            <span class="count">798 active</span>
+          </div>
+          <div class="lang">
+            <span class="native">Português</span>
+            <span class="code">PT</span>
+            <span class="count">643 active</span>
+          </div>
+          <div class="lang">
+            <span class="native">Français</span>
+            <span class="code">FR</span>
+            <span class="count">612 active</span>
+          </div>
+          <div class="lang">
+            <span class="native">Deutsch</span>
+            <span class="code">DE</span>
+            <span class="count">587 active</span>
+          </div>
+          <div class="lang">
+            <span class="native">Tiếng Việt</span>
+            <span class="code">VI</span>
+            <span class="count">442 active</span>
+          </div>
+          <div class="lang more">
+            <span class="native">+27 more</span>
+            <span class="code">view all →</span>
+            <span class="count">&nbsp;</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 06 · HOW IT WORKS ====== -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div class="sec-num">07 / How it works</div>
+          <div class="sec-meta">
+            <h2>Three steps. Then your users get the&nbsp;entire&nbsp;internet.</h2>
+          </div>
+        </div>
+        <div class="steps-row">
+          <div class="step">
+            <div class="num">01</div>
+            <h4>Drop in the script.</h4>
+            <p>
+              Paste a single line into your &lt;head&gt;.
+              <span data-brand-name>Sensa</span> auto-detects landmarks, headings, and product
+              fields. No tagging required.
+            </p>
+          </div>
+          <div class="step">
+            <div class="num">02</div>
+            <h4>Configure once.</h4>
+            <p>
+              Pick the assistive features you want exposed, brand the toolbar to your colors, and
+              choose how the trigger appears on screen.
+            </p>
+          </div>
+          <div class="step">
+            <div class="num">03</div>
+            <h4>Ship. Measure. Repeat.</h4>
+            <p>
+              The dashboard shows you which features people use, where the page still fails, and how
+              much more your inclusive users buy.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== TESTIMONIAL ====== -->
+    <section class="section-tight section-testimonial" id="customers">
+      <div class="container">
+        <div class="section-head">
+          <div class="sec-num">08 / Customer story</div>
+          <div class="sec-meta">
+            <h2 style="font-size: 22px; font-weight: 500; color: var(--steel); letter-spacing: 0">
+              Northwind Retail · e-commerce
+            </h2>
+          </div>
+        </div>
+
+        <div class="testimonial">
+          <div>
+            <div class="quote-mark">“</div>
+            <p class="quote">
+              We rolled out <span data-brand-name>Sensa</span> on a Tuesday afternoon. By Friday,
+              <em>voice checkout</em> was our third-most-used path. We didn't know there was a
+              market this size.
+            </p>
+            <div class="who">
+              <div class="avatar">EO</div>
+              <div>
+                <div class="name">Esther O'Connell</div>
+                <div class="role">VP of Product · Northwind Retail</div>
+              </div>
+            </div>
+            <a href="#" class="btn-link" style="margin-top: 36px; display: inline-block"
+              >Read the case study →</a
+            >
+          </div>
+          <div class="panel">
+            <image-slot
+              id="testimonial-photo"
+              placeholder="A portrait or product shot — your customer at work."
+              shape="rect"
+              radius="3"
+            ></image-slot>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== INSTALL ====== -->
+    <section class="section" id="developers">
+      <div class="container">
+        <div class="section-head">
+          <div class="sec-num">09 / For developers</div>
+          <div class="sec-meta">
+            <h2 style="font-size: 22px; font-weight: 500; color: var(--steel); letter-spacing: 0">
+              SDK · 38&nbsp;KB gzipped
+            </h2>
+          </div>
+        </div>
+
+        <div class="install">
+          <div>
+            <h2>One <em>script tag.</em><br />Zero refactors.</h2>
+            <p class="lede">
+              <span data-brand-name>Sensa</span> runs entirely client-side. It reads the rendered
+              DOM, never your source. The whole bundle is 38&nbsp;KB gzipped, and it ships only what
+              each user actually turns on — average page weight added: 12&nbsp;KB.
+            </p>
+            <div class="cta-row" style="display: flex; gap: 14px; flex-wrap: wrap">
+              <a href="#" class="btn btn-dark">Read the docs</a>
+              <a href="#" class="btn btn-secondary">View on GitHub&nbsp;→</a>
+            </div>
+          </div>
+          <div class="code-frame">
+            <div class="code-head">
+              <div class="dots"><i></i><i></i><i></i></div>
+              <span class="tab">index.html</span>
+            </div>
+            <pre><span class="c-com">&lt;!-- Drop this anywhere in &lt;head&gt;. That's the whole install. --&gt;</span>
+<span class="c-tag">&lt;script</span>
+  <span class="c-prop">src</span>=<span class="c-str">"https://cdn.sensa.dev/v3/sensa.js"</span>
+  <span class="c-prop">data-key</span>=<span class="c-str">"pub_8f3a...d21"</span>
+  <span class="c-prop">data-features</span>=<span class="c-str">"voice, read, captions, shop"</span>
+  <span class="c-prop">defer</span><span class="c-tag">&gt;&lt;/script&gt;</span>
+
+<span class="c-com">// Need it headless? Drive it from your own UI:</span>
+<span class="c-key">import</span> { <span class="c-fn">sensa</span> } <span class="c-key">from</span> <span class="c-str">"@sensa/sdk"</span>;
+
+<span class="c-fn">sensa</span>.<span class="c-fn">readAloud</span>(<span class="c-str">"article"</span>);
+<span class="c-fn">sensa</span>.<span class="c-fn">listen</span>(<span class="c-str">"checkout intent"</span>, <span class="c-fn">handleBuy</span>);</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== PRICING ====== -->
+    <section class="section section-pricing" id="pricing">
+      <div class="container">
+        <div class="section-head">
+          <div class="sec-num">10 / Pricing</div>
+          <div class="sec-meta">
+            <h2>Priced by reach. <em>Not</em> by how many people need&nbsp;help.</h2>
+            <p class="lede">
+              Assistive features are always free for end users. You pay for the platform.
+            </p>
+          </div>
+        </div>
+
+        <div class="pricing-grid">
+          <div class="tier">
+            <div class="tier-head">
+              <div class="tier-name">Open</div>
+            </div>
+            <div class="tier-price">$0<span class="per">/forever</span></div>
+            <div class="tier-blurb">For non-profits, schools, and personal sites.</div>
+            <ul>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                All assistive features
+              </li>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Up to 10k monthly users
+              </li>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Community support
+              </li>
+            </ul>
+            <a href="#" class="btn btn-secondary">Get started</a>
+          </div>
+
+          <div class="tier">
+            <div class="tier-head">
+              <div class="tier-name">Studio</div>
+            </div>
+            <div class="tier-price">$149<span class="per">/mo</span></div>
+            <div class="tier-blurb">For small product teams shipping inclusive sites.</div>
+            <ul>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                100k monthly users
+              </li>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Brand the toolbar
+              </li>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Analytics dashboard
+              </li>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Email support
+              </li>
+            </ul>
+            <a href="#" class="btn btn-secondary">Start a 14-day trial</a>
+          </div>
+
+          <div class="tier featured">
+            <div class="tier-head">
+              <div class="tier-name">Scale</div>
+              <span class="badge">Most teams</span>
+            </div>
+            <div class="tier-price">$899<span class="per">/mo</span></div>
+            <div class="tier-blurb">For growing products with real disabled communities.</div>
+            <ul>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                1M monthly users
+              </li>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Voice shopping &amp; checkout
+              </li>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                ASL/BSL captions beta
+              </li>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Quarterly accessibility audit
+              </li>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Priority support · 4h SLA
+              </li>
+            </ul>
+            <a href="#" class="btn btn-primary">Start a 14-day trial</a>
+          </div>
+
+          <div class="tier">
+            <div class="tier-head">
+              <div class="tier-name">Enterprise</div>
+            </div>
+            <div class="tier-price" style="font-size: 44px">Custom</div>
+            <div class="tier-blurb">Self-hosted, SSO, custom voice models, dedicated CSM.</div>
+            <ul>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Unlimited users
+              </li>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Self-hosted / on-prem
+              </li>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Custom voice models
+              </li>
+              <li>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Dedicated CSM
+              </li>
+            </ul>
+            <a href="#" class="btn btn-secondary">Contact sales</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== FAQ ====== -->
+    <section class="section">
+      <div class="container-narrow">
+        <div class="section-head centered">
+          <div class="sec-num">11 / FAQ</div>
+          <div class="sec-meta">
+            <h2>Answered honestly.</h2>
+          </div>
+        </div>
+
+        <div class="faq">
+          <details class="faq-item" open>
+            <summary data-n="01">
+              <span>Does <span data-brand-name>Sensa</span> send my users' data anywhere?</span>
+              <svg
+                class="ic"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </summary>
+            <div class="answer">
+              No. All speech recognition, TTS, and DOM analysis runs on-device in the browser using
+              small ML models we ship in the SDK. The only thing that leaves the page is anonymous
+              aggregate usage telemetry, which you can disable with one flag.
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary data-n="02">
+              <span>Is this a substitute for proper a11y in my own code?</span>
+              <svg
+                class="ic"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </summary>
+            <div class="answer">
+              No — and we wouldn't pretend otherwise. <span data-brand-name>Sensa</span> fills the
+              gap between "we tried" and "we shipped", and the dashboard flags the issues only a
+              human can fix. Most teams use both: ship <span data-brand-name>Sensa</span> on day
+              one, then chip away at the underlying audit over the next quarter.
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary data-n="03">
+              <span>Will it slow down my site?</span>
+              <svg
+                class="ic"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </summary>
+            <div class="answer">
+              12 KB gzipped on first paint. Heavier modules (voice models, ASL avatar) download only
+              when a user explicitly opens that feature. The median measured LCP impact is +18 ms.
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary data-n="04">
+              <span>How is voice shopping different from a regular chatbot?</span>
+              <svg
+                class="ic"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </summary>
+            <div class="answer">
+              <span data-brand-name>Sensa</span> operates the page itself — it scrolls, opens menus,
+              fills fields, and clicks buttons, narrating each step. The user remains in control:
+              every irreversible action (add to cart, submit payment) waits on a spoken "yes." No
+              headless agent, no hidden purchases.
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary data-n="05">
+              <span>What about languages other than English?</span>
+              <svg
+                class="ic"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </summary>
+            <div class="answer">
+              38 languages for read-aloud and live captions. 14 for voice control. Sign language is
+              currently English-only ASL with BSL in beta; we expect to add LSF and DGS in Q4.
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== CTA BANNER ====== -->
+    <section class="cta-wrap">
+      <div class="container">
+        <div class="cta-banner">
+          <div class="small-eye"><span>/ begin /</span></div>
+          <h2>The next chapter of the web<br /><em>is&nbsp;everyone's.</em></h2>
+          <p>
+            Install <span data-brand-name>Sensa</span> today. Watch your most loyal users finally
+            show up.
+          </p>
+          <div class="cta-row">
+            <a href="#" class="btn btn-dark">Open the dashboard</a>
+            <a href="#" class="btn btn-on-cream">Talk to sales&nbsp;→</a>
+          </div>
+          <div class="trust">
+            <span><span class="dot-g"></span>14-day free trial</span>
+            <span>No credit card</span>
+            <span>Cancel anytime</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SUNSET STRIPE ====== -->
+    <div class="sunset-stripe"></div>
+
+    <!-- ====== FOOTER ====== -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-top">
+          <div class="name">
+            <svg viewBox="0 0 28 28" fill="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="sensa-mark-foot" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#D7531F" />
+                  <stop offset=".55" stop-color="#DF7F26" />
+                  <stop offset="1" stop-color="#E6B532" />
+                </linearGradient>
+              </defs>
+              <circle cx="14" cy="14" r="13" fill="url(#sensa-mark-foot)" />
+              <circle cx="14" cy="14" r="7.5" fill="none" stroke="#F2E7BF" stroke-width="1.5" />
+              <circle cx="14" cy="14" r="2.5" fill="#F2E7BF" />
+            </svg>
+            <span data-brand-name>Sensa</span>
+          </div>
+          <div class="tagline">
+            Accessibility for the open web —<br />
+            for the 1.3 billion people<br />
+            the web forgot.
+          </div>
+        </div>
+
+        <div class="footer-grid">
+          <div class="brand-block">
+            <h6>The Project</h6>
+            <p>
+              A single script tag that turns any website into a place where every person can read,
+              navigate, and shop on their own terms.
+            </p>
+          </div>
+          <div>
+            <h6>Platform</h6>
+            <ul>
+              <li><a href="#">Toolbar</a></li>
+              <li><a href="#">Voice</a></li>
+              <li><a href="#">Captions</a></li>
+              <li><a href="#">Shopping</a></li>
+              <li><a href="#">Dashboard</a></li>
+            </ul>
+          </div>
+          <div>
+            <h6>Developers</h6>
+            <ul>
+              <li><a href="#">Docs</a></li>
+              <li><a href="#">SDK reference</a></li>
+              <li><a href="#">Changelog</a></li>
+              <li><a href="#">Status</a></li>
+              <li><a href="#">GitHub</a></li>
+            </ul>
+          </div>
+          <div>
+            <h6>Company</h6>
+            <ul>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Manifesto</a></li>
+              <li><a href="#">Customers</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Press</a></li>
+            </ul>
+          </div>
+          <div>
+            <h6>Legal</h6>
+            <ul>
+              <li><a href="#">Privacy</a></li>
+              <li><a href="#">Terms</a></li>
+              <li><a href="#">DPA</a></li>
+              <li><a href="#">Security</a></li>
+              <li><a href="#">VPAT</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div class="legal">
+            © 2026 <span data-brand-name>Sensa</span> Labs · Made for the open&nbsp;web
+          </div>
+          <div style="display: flex; align-items: center; gap: 18px">
+            <span class="lang">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20" />
+              </svg>
+              English (US)
+            </span>
+            <div class="socials">
+              <a href="#" aria-label="GitHub"
+                ><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 .5C5.6.5.5 5.6.5 12c0 5.1 3.3 9.4 7.9 11 .6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2.9-.3 2-.4 3-.4s2.1.1 3 .4c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.6 7.9-5.9 7.9-11C23.5 5.6 18.4.5 12 .5Z"
+                  /></svg
+              ></a>
+              <a href="#" aria-label="X"
+                ><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z"
+                  /></svg
+              ></a>
+              <a href="#" aria-label="LinkedIn"
+                ><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M4.98 3.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM3 9h4v12H3V9Zm7 0h3.7v1.7h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 6V21h-4v-5.4c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9V21h-4V9Z"
+                  /></svg
+              ></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ====== TWEAK DEFAULTS ====== -->
+    <script>
+      window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/ {
+        brandName: "Sensa",
+        showStripe: true,
+        dense: false,
+        primary: "#C8442A",
+        heroHeadline: "The web, made reachable for everyone.",
+        showAnnotations: true,
+      } /*EDITMODE-END*/;
+    </script>
+
+    <script type="text/babel" src="demo.jsx"></script>
+    <script type="text/babel" src="tweaks-panel.jsx"></script>
+    <script type="text/babel" src="app.jsx"></script>
+  </body>
+</html>

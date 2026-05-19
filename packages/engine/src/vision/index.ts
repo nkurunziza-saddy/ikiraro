@@ -33,5 +33,6 @@ export { IkiraroTemporalSmoother } from "./implementations/temporal-smoother";
 export { IkiraroSurgicalClassifier, DEFAULT_CLASSIFIER_CONFIG } from "./classifier";
 export { LinguisticBuffer } from "./linguistic-buffer";
 export { WordBuffer } from "./word-buffer";
+export { SignDetectionPipeline } from "./pipeline";
 export { FingerspellStrategy } from "./linguistic/fingerspell-strategy";
 export { LexemeStrategy } from "./linguistic/lexeme-strategy";

@@ -51,13 +51,23 @@ export class VisionPlugin implements IkiraroPlugin {
       });
     };
 
-    const handleWordCommitted = (word: VisionEventMap["word-committed"]) => {
+    const handleWordCommitted = (token: VisionEventMap["word-committed"]) => {
       const now = Date.now();
+      const value =
+        token.type === "fingerspell"
+          ? token.text
+          : token.type === "lexeme"
+            ? token.lexemeId
+            : token.type === "number"
+              ? token.value
+              : token.type === "pointing"
+                ? token.target
+                : "";
       ctx.emit({
         type: "input:token",
         payload: {
           id: `vision-commit-${now}`,
-          value: word,
+          value,
           type: "sign",
           source: this.name,
           timestamp: now,

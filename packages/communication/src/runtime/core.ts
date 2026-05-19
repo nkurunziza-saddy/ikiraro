@@ -7,6 +7,7 @@ import type {
   EventRegistry,
   PluginTeardown,
 } from "./types";
+import { EventBus } from "./event-bus";
 
 /**
  * The IkiraroRuntime is the "Nucleus" of the system.
@@ -19,7 +20,7 @@ export class IkiraroRuntime {
     plugins: {} as IkiraroState["plugins"],
   };
 
-  private handlers: Map<string, Set<(event: IkiraroEvent<any>) => void>> = new Map();
+  private bus = new EventBus();
   private plugins: IkiraroPlugin[] = [];
   private pluginDisposers: Array<() => void | Promise<void>> = [];
   private started = false;
@@ -90,13 +91,11 @@ export class IkiraroRuntime {
   }
 
   /**
-   * Dispatches an event to the internal bus.
+   * Dispatches an event: updates core state, runs plugin reducers, then emits on the bus.
    */
   public dispatch<K extends keyof EventRegistry>(event: IkiraroEvent<K>) {
-    // 1. Update core state
     this.updateInternalState(event);
 
-    // 2. Run plugin reducers for local state updates
     const pluginStates = this.state.plugins as unknown as Record<string, unknown>;
     for (const plugin of this.plugins) {
       if (plugin.reducer && pluginStates[plugin.name] !== undefined) {
@@ -104,35 +103,19 @@ export class IkiraroRuntime {
       }
     }
 
-    // 3. Notify subscribers
-    const typeHandlers = this.handlers.get(event.type as string);
-    typeHandlers?.forEach((h) => h(event));
-
-    const wildcardHandlers = this.handlers.get("*");
-    wildcardHandlers?.forEach((h) => h(event));
+    this.bus.emit(event);
   }
 
   public subscribe<K extends keyof EventRegistry>(
     type: K,
     handler: (event: IkiraroEvent<K>) => void,
   ) {
-    const typeStr = type as string;
-    const set = this.handlers.get(typeStr) ?? new Set();
-    set.add(handler as any);
-    this.handlers.set(typeStr, set);
-    return () => {
-      this.handlers.get(typeStr)?.delete(handler as any);
-    };
+    return this.bus.on(type, handler);
   }
 
   /** Subscribe to every event on the bus. Use sparingly — prefer typed subscriptions. */
   public subscribeAll(handler: (event: IkiraroEvent<any>) => void) {
-    const set = this.handlers.get("*") ?? new Set();
-    set.add(handler);
-    this.handlers.set("*", set);
-    return () => {
-      this.handlers.get("*")?.delete(handler);
-    };
+    return this.bus.onAll(handler);
   }
 
   private updateInternalState(event: IkiraroEvent<any>) {

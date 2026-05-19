@@ -1,12 +1,10 @@
 export * from "./asl-hand-svg";
+export * from "./avatar-viewer";
 export * from "./audio-visualizer";
 export * from "./hand-overlay";
 export * from "./loader";
 export * from "./pipeline-view";
-export * from "./playback-controls";
-export * from "./sign-model-procedural";
 export * from "./sign-model-gltf";
-export * from "./sign-player-3d";
 export * from "./tts-controls";
 
 export * from "./ui/accordion";

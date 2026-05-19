@@ -1,6 +1,7 @@
 export * from "./runtime/factory";
 export * from "./runtime/types";
 export * from "./runtime/core";
+export { EventBus } from "./runtime/event-bus";
 export * from "./runtime/token-fusion-policy";
 export * from "./runtime/translation-planner";
 export * from "./runtime/plugins/session";
