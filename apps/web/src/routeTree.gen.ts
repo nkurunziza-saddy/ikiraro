@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SdkRouteImport } from './routes/sdk'
 import { Route as DemoRouteImport } from './routes/demo'
-import { Route as CommunicationRouteImport } from './routes/communication'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SdkIndexRouteImport } from './routes/sdk/index'
 import { Route as SdkVisionRouteImport } from './routes/sdk/vision'
@@ -29,11 +28,6 @@ const SdkRoute = SdkRouteImport.update({
 const DemoRoute = DemoRouteImport.update({
   id: '/demo',
   path: '/demo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CommunicationRoute = CommunicationRouteImport.update({
-  id: '/communication',
-  path: '/communication',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -79,7 +73,6 @@ const SdkComponentsRoute = SdkComponentsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/communication': typeof CommunicationRoute
   '/demo': typeof DemoRoute
   '/sdk': typeof SdkRouteWithChildren
   '/sdk/components': typeof SdkComponentsRoute
@@ -92,7 +85,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/communication': typeof CommunicationRoute
   '/demo': typeof DemoRoute
   '/sdk/components': typeof SdkComponentsRoute
   '/sdk/events': typeof SdkEventsRoute
@@ -105,7 +97,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/communication': typeof CommunicationRoute
   '/demo': typeof DemoRoute
   '/sdk': typeof SdkRouteWithChildren
   '/sdk/components': typeof SdkComponentsRoute
@@ -120,7 +111,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/communication'
     | '/demo'
     | '/sdk'
     | '/sdk/components'
@@ -133,7 +123,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/communication'
     | '/demo'
     | '/sdk/components'
     | '/sdk/events'
@@ -145,7 +134,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/communication'
     | '/demo'
     | '/sdk'
     | '/sdk/components'
@@ -159,7 +147,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CommunicationRoute: typeof CommunicationRoute
   DemoRoute: typeof DemoRoute
   SdkRoute: typeof SdkRouteWithChildren
 }
@@ -178,13 +165,6 @@ declare module '@tanstack/react-router' {
       path: '/demo'
       fullPath: '/demo'
       preLoaderRoute: typeof DemoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/communication': {
-      id: '/communication'
-      path: '/communication'
-      fullPath: '/communication'
-      preLoaderRoute: typeof CommunicationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -270,7 +250,6 @@ const SdkRouteWithChildren = SdkRoute._addFileChildren(SdkRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CommunicationRoute: CommunicationRoute,
   DemoRoute: DemoRoute,
   SdkRoute: SdkRouteWithChildren,
 }

@@ -63,7 +63,7 @@ export function OverviewPipeline() {
     <section className="py-24 border-b border-border">
       <div className="mx-auto max-w-7xl px-6 md:px-10">
         <SectionHead
-          num="03 / Inside Ikiraro"
+          num="Inside Ikiraro"
           headline={
             <>
               Five stages.{" "}

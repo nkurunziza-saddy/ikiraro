@@ -173,7 +173,7 @@ export function CodeBlock({ code, label }: { code: string; label?: string }) {
   const isPlain = !label || PLAIN_LABELS.has(label);
 
   return (
-    <div className="bg-foreground border border-background/10 rounded overflow-hidden text-[13px] font-mono">
+    <div className="bg-foreground border border-background/10 rounded overflow-hidden text-[13px]">
       {label && (
         <div className="border-b border-background/10 flex items-center justify-between px-4 py-2.5">
           <div className="flex items-center gap-2">
@@ -236,8 +236,8 @@ export function RefRow({ name, type, desc }: { name: string; type?: string; desc
   const gridClass = has3 ? "grid-cols-[1.4fr_1.4fr_2fr]" : "grid-cols-[1.5fr_3fr]";
   return (
     <div className={`grid ${gridClass} gap-4 px-5 py-3.5 text-[13px]`}>
-      <code className="text-foreground font-mono font-medium text-[12px]">{name}</code>
-      {has3 && <code className="text-muted-foreground font-mono text-[12px]">{type}</code>}
+      <code className="text-foreground font-medium text-[13px]">{name}</code>
+      {has3 && <code className="text-muted-foreground text-[13px]">{type}</code>}
       <span className="text-muted-foreground leading-relaxed">{desc}</span>
     </div>
   );
@@ -258,7 +258,7 @@ export function EventTable({ children }: { children: React.ReactNode }) {
 export function EventRow({ name, desc }: { name: string; desc: string }) {
   return (
     <div className="grid grid-cols-[1.8fr_3fr] gap-4 px-5 py-3.5 text-[13px]">
-      <code className="text-foreground font-mono font-medium text-[12px]">{name}</code>
+      <code className="text-foreground font-medium text-[13px]">{name}</code>
       <span className="text-muted-foreground leading-relaxed">{desc}</span>
     </div>
   );

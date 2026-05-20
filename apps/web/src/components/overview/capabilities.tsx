@@ -36,7 +36,7 @@ export function OverviewCapabilities() {
     <section className="py-24 border-b border-border">
       <div className="mx-auto max-w-7xl px-6 md:px-10">
         <SectionHead
-          num="02 / Capabilities"
+          num="Capabilities"
           headline={
             <>
               Speak, type, sign, or spell.{" "}

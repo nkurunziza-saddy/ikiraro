@@ -59,7 +59,8 @@
 
 :root {
   /* Refined geometry — Professional Product feel */
-  --radius: 0.25rem; /* 4px base */
+  --radius: 0.25rem;
+  /* 4px base */
 
   /* Shadows — extremely subtle */
   --sh-1: 0 1px 2px rgba(0, 0, 0, 0.02);
@@ -101,37 +102,37 @@
   --sidebar-ring: #111111;
 }
 
-/* =================== Voice bar pulse =================== */
 @keyframes voice-pulse {
   0%,
   100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.4;
     transform: scale(0.7);
   }
 }
 
-/* =================== Waveform bar animation =================== */
 @keyframes viz-rise {
   0%,
   100% {
     height: 20%;
   }
+
   50% {
     height: 85%;
   }
 }
 
-/* =================== Live dot pulse =================== */
 @keyframes live-pulse {
   0%,
   100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.35;
     transform: scale(0.8);

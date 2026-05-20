@@ -92,9 +92,9 @@ export function AvatarViewer({ envelope, modelUrl, className }: AvatarViewerProp
       <directionalLight position={[-2.8, 1.4, 1.8]} intensity={0.55} color="#e2ecff" />
       <directionalLight position={[0.4, 2.6, -3.5]} intensity={0.85} color="#ffd9b8" />
 
-      <Environment preset="apartment" background={false} />
-
       <Suspense fallback={null}>
+        <Environment preset="apartment" background={false} />
+
         <SignModelGLTF
           url={modelUrl}
           pose={pose}

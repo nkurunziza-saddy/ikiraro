@@ -126,7 +126,7 @@ function ComponentsPage() {
       <section className="space-y-4">
         <SectionHead id="audio-visualizer" label="AudioVisualizer" />
         <p className="text-muted-foreground text-[13px] leading-relaxed">
-          An animated bar chart driven by a real-time audio level (0–1). Designed to be fed directly
+          An animated bar chart driven by a real-time audio level (0-1). Designed to be fed directly
           from <code className="font-mono text-foreground">snapshot.speechLevel</code>.
         </p>
         <CodeBlock code={SNIPPET_AUDIO_VIZ} label="AudioVisualizer" />
@@ -134,7 +134,7 @@ function ComponentsPage() {
           <RefTableHead cols={["Prop", "Type", "Description"]} />
           <RefRow
             name="level"
-            type="number (0–1)"
+            type="number (0-1)"
             desc="Current audio amplitude. Feed snapshot.speechLevel directly."
           />
           <RefRow name="count" type="number?" desc="Number of bars to render. Default 20." />
@@ -152,7 +152,7 @@ function ComponentsPage() {
         <CodeBlock code={SNIPPET_ASL_HAND} label="AslHandSvg" />
         <RefTable>
           <RefTableHead cols={["Prop", "Type", "Description"]} />
-          <RefRow name="letter" type="string (A–Z)" desc="The ASL letter to illustrate." />
+          <RefRow name="letter" type="string (A-Z)" desc="The ASL letter to illustrate." />
           <RefRow name="size" type="number?" desc="Width and height in pixels. Default 24." />
           <RefRow
             name="className"

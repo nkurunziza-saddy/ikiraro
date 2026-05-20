@@ -4,7 +4,7 @@ const nav = [
   {
     head: "Product",
     links: [
-      { label: "Communicate", href: "/communication" as const },
+      { label: "Overview", href: "/" as const },
       { label: "Interactive Demo", href: "/demo" as const },
       { label: "Documentation", href: "/sdk" as const },
     ],

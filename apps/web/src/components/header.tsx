@@ -4,7 +4,6 @@ import { Button } from "@ikiraro/components/ui/button";
 export default function Header() {
   const links = [
     { to: "/", label: "Product" },
-    { to: "/communication", label: "Communicate" },
     { to: "/demo", label: "Interactive" },
     { to: "/sdk", label: "Documentation" },
   ] as const;

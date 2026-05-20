@@ -26,9 +26,11 @@ function formatTimestamp(value: string): string {
 function Metric({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <p className="font-mono text-stone text-[10px] tracking-[0.3px]">{label}</p>
-      <p className="text-ink text-[14px] font-medium leading-snug">{value}</p>
-      {sub && <p className="text-steel text-[11px]">{sub}</p>}
+      <p className="text-muted-foreground text-[11px] font-semibold tracking-[0.05em] uppercase">
+        {label}
+      </p>
+      <p className="text-foreground text-[14px] font-medium leading-snug">{value}</p>
+      {sub && <p className="text-muted-foreground text-[11px]">{sub}</p>}
     </div>
   );
 }
@@ -38,8 +40,8 @@ export function ConversationThread({ entries }: { entries: ConversationEntry[] }
 
   if (entries.length === 0) {
     return (
-      <div className="border-rule rounded-[3px] px-6 py-14 text-center border-dashed border">
-        <p className="font-mono text-stone text-[11px] tracking-[0.3px]">
+      <div className="border-border rounded-[3px] px-6 py-14 text-center border-dashed border">
+        <p className="text-muted-foreground text-[11px] font-semibold tracking-[0.05em] uppercase">
           No translations yet — compose and commit to populate history.
         </p>
       </div>
@@ -49,23 +51,23 @@ export function ConversationThread({ entries }: { entries: ConversationEntry[] }
   return (
     <div className="flex flex-col gap-0">
       {reversedEntries.map((entry) => (
-        <div key={entry.id} className="border-rule-soft py-10 border-b">
+        <div key={entry.id} className="border-border py-10 border-b">
           {/* Entry header */}
           <div className="mb-7 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Badge
                 variant="outline"
-                className="bg-paper-soft text-stone border-rule-soft font-mono rounded-[2px] h-auto px-2 py-0.5 text-[10px] font-medium"
+                className="bg-secondary text-muted-foreground border-border rounded-[2px] h-auto px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.05em]"
               >
                 {entry.mode}
               </Badge>
               <Badge
                 variant="outline"
-                className="bg-paper-soft text-stone border-rule-soft font-mono rounded-[2px] h-auto px-2 py-0.5 text-[10px] font-medium"
+                className="bg-secondary text-muted-foreground border-border rounded-[2px] h-auto px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.05em]"
               >
                 {entry.track}
               </Badge>
-              <span className="font-mono text-stone ml-1 text-[11px]">
+              <span className="text-muted-foreground ml-1 text-[11px] font-semibold tracking-[0.05em] uppercase">
                 {formatTimestamp(entry.createdAt)}
               </span>
             </div>
@@ -73,7 +75,7 @@ export function ConversationThread({ entries }: { entries: ConversationEntry[] }
             {entry.intakeModel && (
               <Badge
                 variant="outline"
-                className="text-primary border-rule-soft font-mono rounded-[2px] h-auto px-2 py-0.5 text-[10px]"
+                className="text-foreground border-border rounded-[2px] h-auto px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.05em]"
               >
                 {entry.intakeModel}
               </Badge>
@@ -98,8 +100,8 @@ export function ConversationThread({ entries }: { entries: ConversationEntry[] }
 
           {/* Planner note */}
           {entry.note && (
-            <div className="border-rule mb-5 border-l-2 pl-5">
-              <p className="text-steel text-[13px] leading-relaxed italic">{entry.note}</p>
+            <div className="border-border mb-5 border-l-2 pl-5">
+              <p className="text-muted-foreground text-[13px] leading-relaxed">{entry.note}</p>
             </div>
           )}
 
