@@ -28,8 +28,7 @@
     "cdn:build": "tsup"
   },
   "dependencies": {
-    "effect": "catalog:",
-    "zod": "catalog:"
+    "effect": "catalog:"
   },
   "devDependencies": {
     "@ikiraro/config": "workspace:*",

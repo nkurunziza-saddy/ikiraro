@@ -1,9 +1,9 @@
-import { Effect, Layer } from "effect";
+import { Effect, Layer, Schema } from "effect";
 import {
   GlossService,
   GLOSS_REGISTRY_KEYS,
-  GlossOutputSchema,
-  GroqChatResponseSchema,
+  GLOSS_OUTPUT_SCHEMA,
+  GROQ_CHAT_RESPONSE_SCHEMA,
 } from "@ikiraro/engine/planning";
 import type { SemanticIntent } from "@ikiraro/engine/types";
 import { Groq } from "./client";
@@ -106,10 +106,8 @@ export const GlossGroqLive = Layer.effect(
           );
 
           const groqResponse = yield* _(
-            Effect.try({
-              try: () => GroqChatResponseSchema.parse(rawJson),
-              catch: () => new Error("Invalid Groq response format"),
-            }),
+            Schema.decodeUnknown(GROQ_CHAT_RESPONSE_SCHEMA)(rawJson),
+            Effect.mapError(() => new Error("Invalid Groq response format")),
           );
 
           const content = groqResponse.choices[0]?.message.content;
@@ -117,9 +115,11 @@ export const GlossGroqLive = Layer.effect(
 
           const glossResult = yield* _(
             Effect.try({
-              try: () => GlossOutputSchema.parse(JSON.parse(content)),
+              try: () => JSON.parse(content) as unknown,
               catch: () => new Error("Invalid gloss format returned by model"),
             }),
+            Effect.flatMap(Schema.decodeUnknown(GLOSS_OUTPUT_SCHEMA)),
+            Effect.mapError(() => new Error("Invalid gloss format returned by model")),
           );
 
           return {

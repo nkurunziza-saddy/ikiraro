@@ -19,11 +19,8 @@ const external = [
   "clsx",
   "tailwind-merge",
   "cmdk",
-  "lucide-react",
   "vaul",
   "@base-ui/react",
-  "@hugeicons/react",
-  "@hugeicons/core-free-icons",
 ];
 
 const workerBundlePlugin = {

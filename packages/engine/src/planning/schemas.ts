@@ -1,10 +1,4 @@
-import { z } from "zod";
 import { Schema } from "effect";
-
-export const GlossOutputSchema = z.object({
-  gloss: z.string().min(1),
-  confidence: z.number().min(0).max(1),
-});
 
 export const GLOSS_OUTPUT_SCHEMA = Schema.Struct({
   gloss: Schema.String.pipe(Schema.minLength(1)),
@@ -13,24 +7,22 @@ export const GLOSS_OUTPUT_SCHEMA = Schema.Struct({
   ),
 });
 
-export const GroqChatResponseSchema = z.object({
-  model: z.string(),
-  choices: z
-    .array(
-      z.object({
-        message: z.object({
-          content: z.string(),
-        }),
+export const GROQ_CHAT_RESPONSE_SCHEMA = Schema.Struct({
+  model: Schema.String,
+  choices: Schema.Array(
+    Schema.Struct({
+      message: Schema.Struct({
+        content: Schema.String,
       }),
-    )
-    .min(1),
-  usage: z
-    .object({
-      prompt_tokens: z.number().optional(),
-      total_tokens: z.number().optional(),
-    })
-    .optional(),
+    }),
+  ).pipe(Schema.minItems(1)),
+  usage: Schema.optional(
+    Schema.Struct({
+      prompt_tokens: Schema.optional(Schema.Number),
+      total_tokens: Schema.optional(Schema.Number),
+    }),
+  ),
 });
 
-export type GlossOutput = z.infer<typeof GlossOutputSchema>;
-export type GroqChatResponse = z.infer<typeof GroqChatResponseSchema>;
+export type GlossOutput = Schema.Schema.Type<typeof GLOSS_OUTPUT_SCHEMA>;
+export type GroqChatResponse = Schema.Schema.Type<typeof GROQ_CHAT_RESPONSE_SCHEMA>;
