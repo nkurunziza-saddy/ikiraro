@@ -9,18 +9,7 @@ const external = [
   "@react-three/fiber",
   "@react-three/drei",
   "effect",
-  "@effect/platform",
-  "@effect/platform-browser",
   "@mediapipe/tasks-vision", // optional peer — never bundle the WASM binary
-  // UI libraries that ship their own bundles
-  "sonner",
-  "next-themes",
-  "class-variance-authority",
-  "clsx",
-  "tailwind-merge",
-  "cmdk",
-  "vaul",
-  "@base-ui/react",
 ];
 
 const workerBundlePlugin = {

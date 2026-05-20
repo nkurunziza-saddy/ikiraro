@@ -1,10 +1,6 @@
 import { Effect, Layer, Schema } from "effect";
-import {
-  GlossService,
-  GLOSS_REGISTRY_KEYS,
-  GLOSS_OUTPUT_SCHEMA,
-  GROQ_CHAT_RESPONSE_SCHEMA,
-} from "@ikiraro/engine/planning";
+import { GlossService, GLOSS_REGISTRY_KEYS } from "@ikiraro/engine/planning";
+import { GLOSS_OUTPUT_SCHEMA, GROQ_CHAT_RESPONSE_SCHEMA } from "./schemas";
 import type { SemanticIntent } from "@ikiraro/engine/types";
 import { Groq } from "./client";
 

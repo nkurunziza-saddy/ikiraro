@@ -36,21 +36,16 @@
     "check-types": "tsc --noEmit",
     "dev": "tsup --watch"
   },
-  "dependencies": {
-    "@effect/platform": "^0.69.0",
-    "@effect/platform-browser": "^0.69.0",
-    "@react-three/drei": "^10.0.0",
-    "@react-three/fiber": "^9.0.4"
-  },
   "devDependencies": {
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "tsup": "^8.5.0",
-    "typescript": "^6.0.3",
-    "vite": "^8.0.12"
+    "typescript": "^6.0.3"
   },
   "peerDependencies": {
     "@mediapipe/tasks-vision": "0.10.35",
+    "@react-three/drei": ">=9.0.0",
+    "@react-three/fiber": ">=9.0.0",
     "effect": ">=3.0.0",
     "react": ">=18",
     "react-dom": ">=18",
@@ -58,6 +53,12 @@
   },
   "peerDependenciesMeta": {
     "@mediapipe/tasks-vision": {
+      "optional": true
+    },
+    "@react-three/drei": {
+      "optional": true
+    },
+    "@react-three/fiber": {
       "optional": true
     }
   }

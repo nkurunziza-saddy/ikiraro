@@ -39,6 +39,3 @@ export { RendererDirector } from "./renderer-director";
 export type { SignCanvas, RendererState, PlaybackOptions, HandPose } from "./renderer-types";
 export { coarticulationBlend } from "./coarticulation";
 export type { CoarticulationMode, MotionType, ArmTarget } from "../types";
-
-export { GLOSS_OUTPUT_SCHEMA, GROQ_CHAT_RESPONSE_SCHEMA } from "./schemas";
-export type { GlossOutput, GroqChatResponse } from "./schemas";
