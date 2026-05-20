@@ -88,6 +88,14 @@ export type MotionType =
   | "none"
   | "shake"
   | "arc"
+  | "salute"
+  | "forward-push"
+  | "outward-sweep"
+  | "pull-back"
+  | "chest-pat"
+  | "two-hand-tap"
+  | "music-sweep"
+  | "wrist-twist"
   | "tap"
   | "circle"
   | "z-trace"
@@ -107,6 +115,13 @@ export type ArmTarget = {
   rForeZ?: number;
   rForeY?: number;
   rHandX?: number;
+  lArmX?: number;
+  lArmZ?: number;
+  lArmY?: number;
+  lForeX?: number;
+  lForeZ?: number;
+  lForeY?: number;
+  lHandX?: number;
 };
 
 export type FrameItem = {
@@ -278,6 +293,8 @@ export interface HandshapeDefinition {
 export interface ClassifierConfig {
   windowSize: number;
   rawScoreThreshold: number;
+  minCandidateScore: number;
+  scoreGapThreshold: number;
   lockThreshold: number;
   unlockThreshold: number;
   motionVelocityThreshold: number;

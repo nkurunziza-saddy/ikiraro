@@ -14,6 +14,8 @@ import type {
 export const DEFAULT_CLASSIFIER_CONFIG: ClassifierConfig = {
   windowSize: 9,
   rawScoreThreshold: 0.68,
+  minCandidateScore: 0.55,
+  scoreGapThreshold: 0.05,
   lockThreshold: 3,
   unlockThreshold: 3,
   motionVelocityThreshold: 0.15,
@@ -26,6 +28,9 @@ export const DEFAULT_CLASSIFIER_CONFIG: ClassifierConfig = {
  */
 export class IkiraroSurgicalClassifier {
   private config: VisionPipelineConfig;
+  private smoothedSpeed = 0;
+  private isMotionActive = false;
+  private hasMotionSample = false;
 
   constructor(config?: Partial<VisionPipelineConfig>) {
     // Default surgical configuration
@@ -58,7 +63,7 @@ export class IkiraroSurgicalClassifier {
     const speed = Math.sqrt(
       vector.velocity.x ** 2 + vector.velocity.y ** 2 + vector.velocity.z ** 2,
     );
-    vector.isMoving = speed > this.config.motionVelocityThreshold;
+    vector.isMoving = this.updateMotionState(speed);
 
     // 4. Match
     const candidates = this.config.matcher.match(vector);
@@ -83,5 +88,21 @@ export class IkiraroSurgicalClassifier {
     this.config.temporal.reset();
     this.config.gesture.reset();
     this.config.transition.reset();
+    this.smoothedSpeed = 0;
+    this.isMotionActive = false;
+    this.hasMotionSample = false;
+  }
+
+  private updateMotionState(speed: number): boolean {
+    this.smoothedSpeed = this.hasMotionSample ? this.smoothedSpeed * 0.65 + speed * 0.35 : speed;
+    this.hasMotionSample = true;
+
+    const onThreshold = this.config.motionVelocityThreshold;
+    const offThreshold = onThreshold * 0.65;
+    this.isMotionActive = this.isMotionActive
+      ? this.smoothedSpeed > offThreshold
+      : this.smoothedSpeed > onThreshold;
+
+    return this.isMotionActive;
   }
 }

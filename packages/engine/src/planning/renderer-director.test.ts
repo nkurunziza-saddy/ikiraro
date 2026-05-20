@@ -49,12 +49,12 @@ describe("RendererDirector", () => {
     // Clear initial reset calls
     (mockCanvas.setPose as any).mockClear();
 
-    // Seek to 180ms (90% through frame A)
+    // Seek to 90% through frame A.
     // Default blend window for "blend" is 0.2 (last 20% of frame)
-    // At 180ms into a 200ms frame, progress is 0.9.
+    // At 90% progress, the blend is halfway through the cosine window.
     // 0.9 > (1 - 0.2) = 0.8, so it should be blending.
 
-    director.seek(180);
+    director.seek(queue[0]!.duration * 0.9);
 
     // blendFactor = (0.9 - 0.8) / 0.2 = 0.1 / 0.2 = 0.5
     // It should call setPose with a 50/50 mix of A and B
