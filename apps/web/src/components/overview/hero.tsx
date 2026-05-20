@@ -24,13 +24,13 @@ export function OverviewHero({ avatarRef }: OverviewHeroProps) {
 
           <div className="flex items-center gap-4 mb-14">
             <Button
-              render={<Link to="/demo" />}
+              render={<Link to="/playground" />}
               className="bg-foreground text-background rounded-md h-10 px-6 text-[13px] font-bold transition-all hover:opacity-90"
             >
-              Get Started
+              Try it now
             </Button>
             <Button
-              render={<Link to="/sdk" />}
+              render={<Link to="/docs" />}
               variant="outline"
               className="text-foreground border-border hover:bg-secondary rounded-md h-10 px-6 text-[13px] font-semibold transition-all"
             >

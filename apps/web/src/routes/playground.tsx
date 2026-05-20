@@ -13,7 +13,7 @@ import {
 import { useIkiraro, useHandTracking } from "@ikiraro/communication";
 import { Toolbar, type ToolbarItem } from "@/components/ui/toolbar";
 
-export const Route = createFileRoute("/demo")({
+export const Route = createFileRoute("/playground")({
   component: DemoPage,
 });
 

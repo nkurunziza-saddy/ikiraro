@@ -9,25 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SdkRouteImport } from './routes/sdk'
-import { Route as DemoRouteImport } from './routes/demo'
+import { Route as PlaygroundRouteImport } from './routes/playground'
+import { Route as DocsRouteImport } from './routes/docs'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SdkIndexRouteImport } from './routes/sdk/index'
-import { Route as SdkVisionRouteImport } from './routes/sdk/vision'
-import { Route as SdkTypesRouteImport } from './routes/sdk/types'
-import { Route as SdkRuntimeRouteImport } from './routes/sdk/runtime'
-import { Route as SdkHooksRouteImport } from './routes/sdk/hooks'
-import { Route as SdkEventsRouteImport } from './routes/sdk/events'
-import { Route as SdkComponentsRouteImport } from './routes/sdk/components'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as DocsVisionRouteImport } from './routes/docs/vision'
+import { Route as DocsTypesRouteImport } from './routes/docs/types'
+import { Route as DocsRuntimeRouteImport } from './routes/docs/runtime'
+import { Route as DocsHooksRouteImport } from './routes/docs/hooks'
+import { Route as DocsEventsRouteImport } from './routes/docs/events'
+import { Route as DocsComponentsRouteImport } from './routes/docs/components'
 
-const SdkRoute = SdkRouteImport.update({
-  id: '/sdk',
-  path: '/sdk',
+const PlaygroundRoute = PlaygroundRouteImport.update({
+  id: '/playground',
+  path: '/playground',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoRoute = DemoRouteImport.update({
-  id: '/demo',
-  path: '/demo',
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -35,136 +35,136 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SdkIndexRoute = SdkIndexRouteImport.update({
+const DocsIndexRoute = DocsIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => SdkRoute,
+  getParentRoute: () => DocsRoute,
 } as any)
-const SdkVisionRoute = SdkVisionRouteImport.update({
+const DocsVisionRoute = DocsVisionRouteImport.update({
   id: '/vision',
   path: '/vision',
-  getParentRoute: () => SdkRoute,
+  getParentRoute: () => DocsRoute,
 } as any)
-const SdkTypesRoute = SdkTypesRouteImport.update({
+const DocsTypesRoute = DocsTypesRouteImport.update({
   id: '/types',
   path: '/types',
-  getParentRoute: () => SdkRoute,
+  getParentRoute: () => DocsRoute,
 } as any)
-const SdkRuntimeRoute = SdkRuntimeRouteImport.update({
+const DocsRuntimeRoute = DocsRuntimeRouteImport.update({
   id: '/runtime',
   path: '/runtime',
-  getParentRoute: () => SdkRoute,
+  getParentRoute: () => DocsRoute,
 } as any)
-const SdkHooksRoute = SdkHooksRouteImport.update({
+const DocsHooksRoute = DocsHooksRouteImport.update({
   id: '/hooks',
   path: '/hooks',
-  getParentRoute: () => SdkRoute,
+  getParentRoute: () => DocsRoute,
 } as any)
-const SdkEventsRoute = SdkEventsRouteImport.update({
+const DocsEventsRoute = DocsEventsRouteImport.update({
   id: '/events',
   path: '/events',
-  getParentRoute: () => SdkRoute,
+  getParentRoute: () => DocsRoute,
 } as any)
-const SdkComponentsRoute = SdkComponentsRouteImport.update({
+const DocsComponentsRoute = DocsComponentsRouteImport.update({
   id: '/components',
   path: '/components',
-  getParentRoute: () => SdkRoute,
+  getParentRoute: () => DocsRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/demo': typeof DemoRoute
-  '/sdk': typeof SdkRouteWithChildren
-  '/sdk/components': typeof SdkComponentsRoute
-  '/sdk/events': typeof SdkEventsRoute
-  '/sdk/hooks': typeof SdkHooksRoute
-  '/sdk/runtime': typeof SdkRuntimeRoute
-  '/sdk/types': typeof SdkTypesRoute
-  '/sdk/vision': typeof SdkVisionRoute
-  '/sdk/': typeof SdkIndexRoute
+  '/docs': typeof DocsRouteWithChildren
+  '/playground': typeof PlaygroundRoute
+  '/docs/components': typeof DocsComponentsRoute
+  '/docs/events': typeof DocsEventsRoute
+  '/docs/hooks': typeof DocsHooksRoute
+  '/docs/runtime': typeof DocsRuntimeRoute
+  '/docs/types': typeof DocsTypesRoute
+  '/docs/vision': typeof DocsVisionRoute
+  '/docs/': typeof DocsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/demo': typeof DemoRoute
-  '/sdk/components': typeof SdkComponentsRoute
-  '/sdk/events': typeof SdkEventsRoute
-  '/sdk/hooks': typeof SdkHooksRoute
-  '/sdk/runtime': typeof SdkRuntimeRoute
-  '/sdk/types': typeof SdkTypesRoute
-  '/sdk/vision': typeof SdkVisionRoute
-  '/sdk': typeof SdkIndexRoute
+  '/playground': typeof PlaygroundRoute
+  '/docs/components': typeof DocsComponentsRoute
+  '/docs/events': typeof DocsEventsRoute
+  '/docs/hooks': typeof DocsHooksRoute
+  '/docs/runtime': typeof DocsRuntimeRoute
+  '/docs/types': typeof DocsTypesRoute
+  '/docs/vision': typeof DocsVisionRoute
+  '/docs': typeof DocsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/demo': typeof DemoRoute
-  '/sdk': typeof SdkRouteWithChildren
-  '/sdk/components': typeof SdkComponentsRoute
-  '/sdk/events': typeof SdkEventsRoute
-  '/sdk/hooks': typeof SdkHooksRoute
-  '/sdk/runtime': typeof SdkRuntimeRoute
-  '/sdk/types': typeof SdkTypesRoute
-  '/sdk/vision': typeof SdkVisionRoute
-  '/sdk/': typeof SdkIndexRoute
+  '/docs': typeof DocsRouteWithChildren
+  '/playground': typeof PlaygroundRoute
+  '/docs/components': typeof DocsComponentsRoute
+  '/docs/events': typeof DocsEventsRoute
+  '/docs/hooks': typeof DocsHooksRoute
+  '/docs/runtime': typeof DocsRuntimeRoute
+  '/docs/types': typeof DocsTypesRoute
+  '/docs/vision': typeof DocsVisionRoute
+  '/docs/': typeof DocsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/demo'
-    | '/sdk'
-    | '/sdk/components'
-    | '/sdk/events'
-    | '/sdk/hooks'
-    | '/sdk/runtime'
-    | '/sdk/types'
-    | '/sdk/vision'
-    | '/sdk/'
+    | '/docs'
+    | '/playground'
+    | '/docs/components'
+    | '/docs/events'
+    | '/docs/hooks'
+    | '/docs/runtime'
+    | '/docs/types'
+    | '/docs/vision'
+    | '/docs/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/demo'
-    | '/sdk/components'
-    | '/sdk/events'
-    | '/sdk/hooks'
-    | '/sdk/runtime'
-    | '/sdk/types'
-    | '/sdk/vision'
-    | '/sdk'
+    | '/playground'
+    | '/docs/components'
+    | '/docs/events'
+    | '/docs/hooks'
+    | '/docs/runtime'
+    | '/docs/types'
+    | '/docs/vision'
+    | '/docs'
   id:
     | '__root__'
     | '/'
-    | '/demo'
-    | '/sdk'
-    | '/sdk/components'
-    | '/sdk/events'
-    | '/sdk/hooks'
-    | '/sdk/runtime'
-    | '/sdk/types'
-    | '/sdk/vision'
-    | '/sdk/'
+    | '/docs'
+    | '/playground'
+    | '/docs/components'
+    | '/docs/events'
+    | '/docs/hooks'
+    | '/docs/runtime'
+    | '/docs/types'
+    | '/docs/vision'
+    | '/docs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DemoRoute: typeof DemoRoute
-  SdkRoute: typeof SdkRouteWithChildren
+  DocsRoute: typeof DocsRouteWithChildren
+  PlaygroundRoute: typeof PlaygroundRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sdk': {
-      id: '/sdk'
-      path: '/sdk'
-      fullPath: '/sdk'
-      preLoaderRoute: typeof SdkRouteImport
+    '/playground': {
+      id: '/playground'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo': {
-      id: '/demo'
-      path: '/demo'
-      fullPath: '/demo'
-      preLoaderRoute: typeof DemoRouteImport
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -174,84 +174,84 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sdk/': {
-      id: '/sdk/'
+    '/docs/': {
+      id: '/docs/'
       path: '/'
-      fullPath: '/sdk/'
-      preLoaderRoute: typeof SdkIndexRouteImport
-      parentRoute: typeof SdkRoute
+      fullPath: '/docs/'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof DocsRoute
     }
-    '/sdk/vision': {
-      id: '/sdk/vision'
+    '/docs/vision': {
+      id: '/docs/vision'
       path: '/vision'
-      fullPath: '/sdk/vision'
-      preLoaderRoute: typeof SdkVisionRouteImport
-      parentRoute: typeof SdkRoute
+      fullPath: '/docs/vision'
+      preLoaderRoute: typeof DocsVisionRouteImport
+      parentRoute: typeof DocsRoute
     }
-    '/sdk/types': {
-      id: '/sdk/types'
+    '/docs/types': {
+      id: '/docs/types'
       path: '/types'
-      fullPath: '/sdk/types'
-      preLoaderRoute: typeof SdkTypesRouteImport
-      parentRoute: typeof SdkRoute
+      fullPath: '/docs/types'
+      preLoaderRoute: typeof DocsTypesRouteImport
+      parentRoute: typeof DocsRoute
     }
-    '/sdk/runtime': {
-      id: '/sdk/runtime'
+    '/docs/runtime': {
+      id: '/docs/runtime'
       path: '/runtime'
-      fullPath: '/sdk/runtime'
-      preLoaderRoute: typeof SdkRuntimeRouteImport
-      parentRoute: typeof SdkRoute
+      fullPath: '/docs/runtime'
+      preLoaderRoute: typeof DocsRuntimeRouteImport
+      parentRoute: typeof DocsRoute
     }
-    '/sdk/hooks': {
-      id: '/sdk/hooks'
+    '/docs/hooks': {
+      id: '/docs/hooks'
       path: '/hooks'
-      fullPath: '/sdk/hooks'
-      preLoaderRoute: typeof SdkHooksRouteImport
-      parentRoute: typeof SdkRoute
+      fullPath: '/docs/hooks'
+      preLoaderRoute: typeof DocsHooksRouteImport
+      parentRoute: typeof DocsRoute
     }
-    '/sdk/events': {
-      id: '/sdk/events'
+    '/docs/events': {
+      id: '/docs/events'
       path: '/events'
-      fullPath: '/sdk/events'
-      preLoaderRoute: typeof SdkEventsRouteImport
-      parentRoute: typeof SdkRoute
+      fullPath: '/docs/events'
+      preLoaderRoute: typeof DocsEventsRouteImport
+      parentRoute: typeof DocsRoute
     }
-    '/sdk/components': {
-      id: '/sdk/components'
+    '/docs/components': {
+      id: '/docs/components'
       path: '/components'
-      fullPath: '/sdk/components'
-      preLoaderRoute: typeof SdkComponentsRouteImport
-      parentRoute: typeof SdkRoute
+      fullPath: '/docs/components'
+      preLoaderRoute: typeof DocsComponentsRouteImport
+      parentRoute: typeof DocsRoute
     }
   }
 }
 
-interface SdkRouteChildren {
-  SdkComponentsRoute: typeof SdkComponentsRoute
-  SdkEventsRoute: typeof SdkEventsRoute
-  SdkHooksRoute: typeof SdkHooksRoute
-  SdkRuntimeRoute: typeof SdkRuntimeRoute
-  SdkTypesRoute: typeof SdkTypesRoute
-  SdkVisionRoute: typeof SdkVisionRoute
-  SdkIndexRoute: typeof SdkIndexRoute
+interface DocsRouteChildren {
+  DocsComponentsRoute: typeof DocsComponentsRoute
+  DocsEventsRoute: typeof DocsEventsRoute
+  DocsHooksRoute: typeof DocsHooksRoute
+  DocsRuntimeRoute: typeof DocsRuntimeRoute
+  DocsTypesRoute: typeof DocsTypesRoute
+  DocsVisionRoute: typeof DocsVisionRoute
+  DocsIndexRoute: typeof DocsIndexRoute
 }
 
-const SdkRouteChildren: SdkRouteChildren = {
-  SdkComponentsRoute: SdkComponentsRoute,
-  SdkEventsRoute: SdkEventsRoute,
-  SdkHooksRoute: SdkHooksRoute,
-  SdkRuntimeRoute: SdkRuntimeRoute,
-  SdkTypesRoute: SdkTypesRoute,
-  SdkVisionRoute: SdkVisionRoute,
-  SdkIndexRoute: SdkIndexRoute,
+const DocsRouteChildren: DocsRouteChildren = {
+  DocsComponentsRoute: DocsComponentsRoute,
+  DocsEventsRoute: DocsEventsRoute,
+  DocsHooksRoute: DocsHooksRoute,
+  DocsRuntimeRoute: DocsRuntimeRoute,
+  DocsTypesRoute: DocsTypesRoute,
+  DocsVisionRoute: DocsVisionRoute,
+  DocsIndexRoute: DocsIndexRoute,
 }
 
-const SdkRouteWithChildren = SdkRoute._addFileChildren(SdkRouteChildren)
+const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DemoRoute: DemoRoute,
-  SdkRoute: SdkRouteWithChildren,
+  DocsRoute: DocsRouteWithChildren,
+  PlaygroundRoute: PlaygroundRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

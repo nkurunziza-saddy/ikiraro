@@ -9,7 +9,7 @@ import {
   Callout,
 } from "@/components/docs/primitives";
 
-export const Route = createFileRoute("/sdk/vision")({
+export const Route = createFileRoute("/docs/vision")({
   component: VisionPage,
 });
 

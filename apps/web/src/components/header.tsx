@@ -4,8 +4,8 @@ import { Button } from "@ikiraro/components/ui/button";
 export default function Header() {
   const links = [
     { to: "/", label: "Product" },
-    { to: "/demo", label: "Interactive" },
-    { to: "/sdk", label: "Documentation" },
+    { to: "/playground", label: "Playground" },
+    { to: "/docs", label: "Documentation" },
   ] as const;
 
   return (
@@ -37,7 +37,7 @@ export default function Header() {
 
         <div className="flex items-center gap-4">
           <Button
-            render={<Link to="/demo" />}
+            render={<Link to="/playground" />}
             className="bg-foreground text-background rounded-md h-8 px-4 text-[12px] font-bold transition-all hover:opacity-90"
           >
             Launch

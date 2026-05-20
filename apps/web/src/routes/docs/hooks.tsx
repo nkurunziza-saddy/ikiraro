@@ -9,7 +9,7 @@ import {
   Callout,
 } from "@/components/docs/primitives";
 
-export const Route = createFileRoute("/sdk/hooks")({
+export const Route = createFileRoute("/docs/hooks")({
   component: HooksPage,
 });
 

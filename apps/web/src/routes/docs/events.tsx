@@ -8,7 +8,7 @@ import {
   Callout,
 } from "@/components/docs/primitives";
 
-export const Route = createFileRoute("/sdk/events")({
+export const Route = createFileRoute("/docs/events")({
   component: EventsPage,
 });
 

@@ -9,7 +9,7 @@ import {
   Callout,
 } from "@/components/docs/primitives";
 
-export const Route = createFileRoute("/sdk/runtime")({
+export const Route = createFileRoute("/docs/runtime")({
   component: RuntimePage,
 });
 

@@ -5,24 +5,24 @@ const nav = [
     head: "Product",
     links: [
       { label: "Overview", href: "/" as const },
-      { label: "Interactive Demo", href: "/demo" as const },
-      { label: "Documentation", href: "/sdk" as const },
+      { label: "Playground", href: "/playground" as const },
+      { label: "Documentation", href: "/docs" as const },
     ],
   },
   {
-    head: "SDK",
+    head: "Documentation",
     links: [
-      { label: "@ikiraro/communication", href: "/sdk/runtime" as const },
-      { label: "@ikiraro/engine", href: "/sdk/types" as const },
-      { label: "@ikiraro/components", href: "/sdk/components" as const },
+      { label: "@ikiraro/communication", href: "/docs/runtime" as const },
+      { label: "@ikiraro/engine", href: "/docs/types" as const },
+      { label: "@ikiraro/components", href: "/docs/components" as const },
     ],
   },
   {
     head: "Resources",
     links: [
-      { label: "Architecture", href: "/sdk/types" as const },
-      { label: "Event reference", href: "/sdk/events" as const },
-      { label: "Hook API", href: "/sdk/hooks" as const },
+      { label: "Architecture", href: "/docs/types" as const },
+      { label: "Event reference", href: "/docs/events" as const },
+      { label: "Hook API", href: "/docs/hooks" as const },
     ],
   },
 ];

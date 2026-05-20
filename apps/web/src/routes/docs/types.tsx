@@ -8,7 +8,7 @@ import {
   RefRow,
 } from "@/components/docs/primitives";
 
-export const Route = createFileRoute("/sdk/types")({
+export const Route = createFileRoute("/docs/types")({
   component: TypesPage,
 });
 

@@ -1,31 +1,31 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/sdk")({
+export const Route = createFileRoute("/docs")({
   component: SdkLayout,
 });
 
 const NAV = [
   {
     group: "Getting Started",
-    items: [{ label: "Overview", to: "/sdk" as const, exact: true }],
+    items: [{ label: "Overview", to: "/docs" as const, exact: true }],
   },
   {
     group: "API Reference",
     items: [
-      { label: "useIkiraro", to: "/sdk/hooks" as const, exact: false },
-      { label: "useHandTracking", to: "/sdk/vision" as const, exact: false },
+      { label: "useIkiraro", to: "/docs/hooks" as const, exact: false },
+      { label: "useHandTracking", to: "/docs/vision" as const, exact: false },
     ],
   },
   {
     group: "Components",
-    items: [{ label: "UI Components", to: "/sdk/components" as const, exact: false }],
+    items: [{ label: "UI Components", to: "/docs/components" as const, exact: false }],
   },
   {
     group: "Advanced",
     items: [
-      { label: "Runtime API", to: "/sdk/runtime" as const, exact: false },
-      { label: "Event Reference", to: "/sdk/events" as const, exact: false },
-      { label: "Key Types", to: "/sdk/types" as const, exact: false },
+      { label: "Runtime API", to: "/docs/runtime" as const, exact: false },
+      { label: "Event Reference", to: "/docs/events" as const, exact: false },
+      { label: "Key Types", to: "/docs/types" as const, exact: false },
     ],
   },
 ];

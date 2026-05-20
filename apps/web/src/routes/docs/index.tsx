@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CodeBlock, PageTitle, Callout } from "@/components/docs/primitives";
 
-export const Route = createFileRoute("/sdk/")({
+export const Route = createFileRoute("/docs/")({
   component: SdkOverviewPage,
 });
 
@@ -144,26 +144,26 @@ function SdkOverviewPage() {
           {[
             {
               label: "useIkiraro hook",
-              to: "/sdk/hooks",
+              to: "/docs/hooks",
               desc: "Full API reference for the primary hook",
             },
-            { label: "useHandTracking", to: "/sdk/vision", desc: "Camera-based sign recognition" },
+            { label: "useHandTracking", to: "/docs/vision", desc: "Camera-based sign recognition" },
             {
               label: "UI Components",
-              to: "/sdk/components",
+              to: "/docs/components",
               desc: "AvatarViewer, AudioVisualizer, AslHandSvg",
             },
             {
               label: "Runtime API",
-              to: "/sdk/runtime",
+              to: "/docs/runtime",
               desc: "Direct runtime control and plugins",
             },
             {
               label: "Event Reference",
-              to: "/sdk/events",
+              to: "/docs/events",
               desc: "All 34 events in the EventBus registry",
             },
-            { label: "Key Types", to: "/sdk/types", desc: "TypeScript types and architecture" },
+            { label: "Key Types", to: "/docs/types", desc: "TypeScript types and architecture" },
           ].map(({ label, to, desc }) => (
             <Link
               key={to}
