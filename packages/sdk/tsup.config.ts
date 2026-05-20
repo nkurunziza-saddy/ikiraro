@@ -13,7 +13,6 @@ const external = [
   "@effect/platform-browser",
   "@mediapipe/tasks-vision", // optional peer — never bundle the WASM binary
   // UI libraries that ship their own bundles
-  "framer-motion",
   "sonner",
   "next-themes",
   "class-variance-authority",

@@ -43,7 +43,6 @@
     "@hugeicons/react": "^1.1.6",
     "@react-three/drei": "^10.0.0",
     "@react-three/fiber": "^9.0.4",
-    "framer-motion": "^12.4.7",
     "lucide-react": "^0.479.0",
     "zod": "^4.4.3"
   },
