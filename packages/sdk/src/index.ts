@@ -1,19 +1,14 @@
-// ─── Ikiraro SDK ────────────────────────────────────────────────────────────────
-// Main entry point. Re-exports the communication SDK (runtime, hooks,
-// translate API), key rendering components, and the core planning primitives
-// consumers need to build translation pipelines without an API key.
-//
-// For the full component library: @ikiraro/sdk/components
-// For engine internals (advanced): @ikiraro/sdk/engine
+// Ikiraro SDK
+// Main entry point re-exporting runtime, hooks, components, and core planning.
 
-// Communication SDK — IkiraroSDK, IkiraroRuntime, useIkiraro, useHandTracking, plugins
-export * from "@ikiraro/communication";
+// Runtime SDK
+export * from "@ikiraro/runtime";
 
 // Core rendering components
-export { AvatarViewer, SignModelGLTF, WebSpeechProvider } from "@ikiraro/components";
-export type { SpeakOptions } from "@ikiraro/components";
+export { AvatarViewer, SignModelGLTF, WebSpeechProvider } from "@ikiraro/renderer";
+export type { SpeakOptions } from "@ikiraro/renderer";
 
-// Planning primitives — deterministic pipeline, pose library, renderer
+// Planning primitives
 export {
   buildPlanFromGloss,
   buildPlanFromUnits,

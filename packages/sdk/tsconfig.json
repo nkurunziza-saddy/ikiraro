@@ -9,11 +9,10 @@
     "outDir": "dist",
     "ignoreDeprecations": "6.0",
     "paths": {
-      "@/*": ["../components/src/*"],
-      "@ikiraro/communication": ["../communication/src/index.ts"],
-      "@ikiraro/communication/*": ["../communication/src/*"],
-      "@ikiraro/components": ["../components/src/index.ts"],
-      "@ikiraro/components/*": ["../components/src/*"],
+      "@ikiraro/runtime": ["../runtime/src/index.ts"],
+      "@ikiraro/runtime/*": ["../runtime/src/*"],
+      "@ikiraro/renderer": ["../renderer/src/index.ts"],
+      "@ikiraro/renderer/*": ["../renderer/src/*"],
       "@ikiraro/engine": ["../engine/src/types.ts"],
       "@ikiraro/engine/*": ["../engine/src/*"]
     }

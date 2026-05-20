@@ -47,7 +47,7 @@ const unsub = runtime.subscribeAll((event) => {
 // Clean up
 unsub();`;
 
-const SNIPPET_PLUGIN = `import type { IkiraroPlugin } from "@ikiraro/communication";
+const SNIPPET_PLUGIN = `import type { IkiraroPlugin } from "@ikiraro/runtime";
 
 const analyticsPlugin: IkiraroPlugin = {
   id: "analytics",
@@ -92,17 +92,6 @@ const SNIPPET_BUILT_IN_PLUGINS = `// The runtime ships with 7 built-in plugins:
 // VisionPlugin        — bridges useHandTracking events into the runtime
 // KeyboardPlugin      — dispatches keyboard shortcut events
 // InspectorPlugin     — dev-mode state diffing and performance tracing`;
-
-const SNIPPET_IKIRARO_SDK = `import { IkiraroSDK } from "@ikiraro/sdk";
-import { Effect } from "effect";
-
-// Effect-based API for one-off translations without a running runtime
-const program = IkiraroSDK.translate("Hello, world!", {
-  groqApiKey: import.meta.env.VITE_GROQ_API_KEY,
-});
-
-const envelope = await Effect.runPromise(program);
-console.log(envelope.plan.glossText); // "HELLO WORLD"`;
 
 function RuntimePage() {
   return (
@@ -216,18 +205,6 @@ function RuntimePage() {
           <code className="font-mono text-foreground">runtime.subscribe</code> with{" "}
           <code className="font-mono text-foreground">subscribeAll</code> instead.
         </Callout>
-      </section>
-
-      {/* Effect API */}
-      <section className="space-y-4">
-        <SectionHead id="effect-api" label="IkiraroSDK (Effect API)" />
-        <p className="text-muted-foreground text-[13px] leading-relaxed">
-          For one-off translations without a persistent runtime, use the{" "}
-          <code className="font-mono text-foreground">IkiraroSDK</code> Effect pipeline directly. It
-          creates a runtime, runs one translation, returns the envelope, and cleans up — all in a
-          single composable <code className="font-mono text-foreground">Effect</code>.
-        </p>
-        <CodeBlock code={SNIPPET_IKIRARO_SDK} label="IkiraroSDK" />
       </section>
     </div>
   );

@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Terminal, Copy, Check } from "lucide-react";
-import { Button } from "@ikiraro/components/ui/button";
-
-// ─── Syntax highlighting ──────────────────────────────────────────────────────
+import { Button } from "@/components/ui/button";
 
 type TokenKind = "keyword" | "type" | "string" | "comment" | "number" | "op" | "plain";
 
@@ -148,7 +146,7 @@ const TOKEN_COLOR: Record<TokenKind, string> = {
 
 const PLAIN_LABELS = new Set(["terminal", ".env"]);
 
-// ─── Components ───────────────────────────────────────────────────────────────
+// Components
 
 export function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);

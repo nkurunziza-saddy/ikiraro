@@ -79,7 +79,7 @@ const SNIPPET_RUNTIME_SNAPSHOT = `interface RuntimeSnapshot {
 
 const SNIPPET_IMPORTS = `// All types are available from:
 import type { TranslationEnvelope, SignPlan, FrameItem } from "@ikiraro/engine/types";
-import type { RuntimeSnapshot } from "@ikiraro/communication";
+import type { RuntimeSnapshot } from "@ikiraro/runtime";
 
 // Or transitively via the SDK entry point:
 import type { TranslationEnvelope } from "@ikiraro/sdk";`;
@@ -89,7 +89,7 @@ function TypesPage() {
     <div className="space-y-12">
       <PageTitle
         title="Key Types"
-        subtitle="All types are exported from @ikiraro/engine/types and @ikiraro/communication. They're also available transitively from the SDK entry point."
+        subtitle="All types are exported from @ikiraro/engine/types and @ikiraro/runtime. They're also available transitively from the SDK entry point."
       />
 
       {/* Imports */}
@@ -222,13 +222,13 @@ function TypesPage() {
               desc: "Re-exports selected stable APIs. This is what you install. Has no implementation of its own.",
             },
             {
-              pkg: "@ikiraro/communication",
+              pkg: "@ikiraro/runtime",
               role: "Runtime & hooks",
               dir: "inward",
               desc: "IkiraroRuntime, EventBus, 7 plugins, createIkiraro factory, useIkiraro and useHandTracking React hooks, Groq AI services.",
             },
             {
-              pkg: "@ikiraro/components",
+              pkg: "@ikiraro/renderer",
               role: "UI library",
               dir: "inward",
               desc: "AvatarViewer (R3F), AudioVisualizer, AslHandSvg, Button, HandOverlay. Depends on @ikiraro/engine for types.",

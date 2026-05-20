@@ -1,8 +1,7 @@
 import { Context, Effect } from "effect";
 import type { SpeechIntake, SttModel, SemanticIntent } from "../types";
 
-// ─── STT Service ─────────────────────────────────────────────────────────────
-
+// STT Service
 export interface SttService {
   readonly transcribe: (
     audio: File,
@@ -13,8 +12,7 @@ export interface SttService {
 
 export const SttService = Context.GenericTag<SttService>("@ikiraro/engine/SttService");
 
-// ─── Gloss Service ────────────────────────────────────────────────────────────
-
+// Gloss Service
 export interface GlossService {
   readonly generate: (text: string, model?: string) => Effect.Effect<SemanticIntent, Error>;
 }

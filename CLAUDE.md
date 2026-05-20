@@ -31,8 +31,8 @@ This file provides context about the project for AI assistants.
 ## Core SDK Packages
 
 - `@ikiraro/engine` - The pure math, vision, and planning logic.
-- `@ikiraro/communication` - The high-level `IkiraroSDK` Effect layer and `IkiraroRuntime` orchestrator.
-- `@ikiraro/components` - The React UI component library for the SDK.
+- `@ikiraro/runtime` - The `IkiraroRuntime` orchestrator, EventBus, plugins, React hooks, and Groq AI services.
+- `@ikiraro/renderer` - The R3F 3D rendering layer (AvatarViewer, AudioVisualizer, AslHandSvg).
 
 ## Maintenance Notes
 

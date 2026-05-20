@@ -1,7 +1,7 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import { Toaster } from "@ikiraro/components";
+import { Toaster } from "@/components/ui/sonner";
 
 import Header from "../components/header";
 import appCss from "../index.css?url";

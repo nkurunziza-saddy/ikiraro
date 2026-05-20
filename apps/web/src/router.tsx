@@ -1,6 +1,6 @@
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 
-import { Loader } from "@ikiraro/components";
+import { Loader } from "@ikiraro/renderer";
 import "./index.css";
 import { routeTree } from "./routeTree.gen";
 

@@ -4,7 +4,7 @@ export type GlossRegistryEntry = {
 };
 
 export const GLOSS_REGISTRY: Record<string, GlossRegistryEntry> = {
-  // ─── Core vocabulary ─────────────────────────────────────────────────────
+  // Core vocabulary
   AGAIN: { label: "Again", durationMs: 720 }, // arc
   BAD: { label: "Bad", durationMs: 700 }, // arc
   BATHROOM: { label: "Bathroom", durationMs: 900 }, // shake

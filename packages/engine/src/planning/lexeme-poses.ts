@@ -35,7 +35,7 @@ const Y = ASL_HAND_POSES.Y!;
 const FIVE = ASL_HAND_POSES["5"]!;
 
 export const LEXEME_POSES: Record<string, LexemePose> = {
-  // ─── Original registry ────────────────────────────────────────────────────
+  // Original registry
   AGAIN: { handshape: A, motion: "arc" },
   BATHROOM: { handshape: T, motion: "shake" },
   DOCTOR: { handshape: M, armTarget: LOW, motion: "none" },

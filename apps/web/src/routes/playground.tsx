@@ -1,16 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { Mic, Type, Hand, Eye, Delete } from "lucide-react";
+import { Mic, Type, Hand, Eye, Delete, CornerDownLeft, ArrowRight } from "lucide-react";
 
 import {
   AslHandSvg,
   AudioVisualizer,
   AvatarViewer,
-  Button,
   HandOverlay,
   WebSpeechProvider,
-} from "@ikiraro/components";
-import { useIkiraro, useHandTracking } from "@ikiraro/communication";
+} from "@ikiraro/renderer";
+import { Button } from "@/components/ui/button";
+import { useIkiraro, useHandTracking } from "@ikiraro/runtime";
 import { Toolbar, type ToolbarItem } from "@/components/ui/toolbar";
 
 export const Route = createFileRoute("/playground")({
@@ -157,7 +157,9 @@ function DemoPage() {
                     className="w-full bg-transparent outline-none text-[15px] resize-none text-foreground placeholder:text-muted-foreground/25"
                   />
                   <div className="flex items-center justify-between pt-4 border-t border-border mt-2">
-                    <span className="text-[11px] text-muted-foreground/40">↵ to translate</span>
+                    <span className="text-[11px] text-muted-foreground/40 inline-flex items-center gap-1">
+                      <CornerDownLeft size={10} /> to translate
+                    </span>
                     <Button
                       onClick={commit}
                       disabled={isWorking || !textDraft}
@@ -291,9 +293,9 @@ function DemoPage() {
                           camera.clear();
                         }
                       }}
-                      className="text-[11px] font-bold text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                      className="text-[11px] font-bold text-muted-foreground hover:text-foreground transition-colors shrink-0 inline-flex items-center gap-1"
                     >
-                      Use →
+                      Use <ArrowRight size={11} />
                     </button>
                   </div>
                 )}

@@ -59,7 +59,7 @@ export interface LinguisticBufferConfig {
   pauseThresholdMs: number;
 }
 
-// ─── Vision System ────────────────────────────────────────────────────────────
+// Vision System
 
 export type VisionStatus = "idle" | "starting" | "active" | "error";
 

@@ -76,7 +76,7 @@ function ComponentsPage() {
     <div className="space-y-12">
       <PageTitle
         title="UI Components"
-        subtitle="All components are re-exported from @ikiraro/components. They accept standard className props and use Tailwind design tokens — they adapt to your theme without configuration."
+        subtitle="All components are re-exported from @ikiraro/renderer. They accept standard className props and use Tailwind design tokens — they adapt to your theme without configuration."
       />
 
       {/* AvatarViewer */}

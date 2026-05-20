@@ -9,7 +9,7 @@ import {
   type RefObject,
 } from "react";
 import { Volume2, VolumeX } from "lucide-react";
-import { AvatarViewer, WebSpeechProvider } from "@ikiraro/components";
+import { AvatarViewer, WebSpeechProvider } from "@ikiraro/renderer";
 import { buildPlanFromUnits, createEnvelope } from "@ikiraro/engine/planning";
 import type { TranslationEnvelope } from "@ikiraro/engine/types";
 

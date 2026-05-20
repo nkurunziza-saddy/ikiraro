@@ -1,20 +1,20 @@
 ---
 name: ikiraro-sdk
-description: "Ikiraro SDK integration guide for sign language translation and 3D rendering. Use when working with @ikiraro/sdk, @ikiraro/communication, @ikiraro/engine, or @ikiraro/components packages. Triggers on: useIkiraro hook usage, useHandTracking, AvatarViewer, ASL/sign language translation, building a text/speech/vision-to-sign pipeline, runtime configuration, plugin authoring, or any task involving the Ikiraro monorepo packages."
+description: "Ikiraro SDK integration guide for sign language translation and 3D rendering. Use when working with @ikiraro/sdk, @ikiraro/runtime, @ikiraro/engine, or @ikiraro/renderer packages. Triggers on: useIkiraro hook usage, useHandTracking, AvatarViewer, ASL/sign language translation, building a text/speech/vision-to-sign pipeline, runtime configuration, plugin authoring, or any task involving the Ikiraro monorepo packages."
 metadata:
-  version: "1.0.1"
-  release_date: "2026-05-19"
+  version: "1.0.2"
+  release_date: "2026-05-20"
 ---
 
 # Ikiraro SDK
 
 Ikiraro bridges AI-driven translation (Groq), deterministic sign planning, and 3D rendering. The SDK is a facade over three packages:
 
-| Package                  | Role                                                 |
-| ------------------------ | ---------------------------------------------------- |
-| `@ikiraro/communication` | Runtime, hooks, plugins, Groq AI services            |
-| `@ikiraro/components`    | React UI — AvatarViewer, AudioVisualizer, AslHandSvg |
-| `@ikiraro/engine`        | Pure math — pose library, planners, RendererDirector |
+| Package             | Role                                                 |
+| ------------------- | ---------------------------------------------------- |
+| `@ikiraro/runtime`  | Runtime, hooks, plugins, Groq AI services            |
+| `@ikiraro/renderer` | React UI — AvatarViewer, AudioVisualizer, AslHandSvg |
+| `@ikiraro/engine`   | Pure math — pose library, planners, RendererDirector |
 
 ---
 
@@ -22,8 +22,10 @@ Ikiraro bridges AI-driven translation (Groq), deterministic sign planning, and 3
 
 ```bash
 bun add @ikiraro/sdk
-# peers
-bun add @mediapipe/tasks-vision three @react-three/fiber @react-three/drei
+# required peers
+bun add three @react-three/fiber @react-three/drei
+# optional — only needed if you use useHandTracking / camera sign input
+bun add @mediapipe/tasks-vision
 ```
 
 ```bash
@@ -108,7 +110,19 @@ translateUnits(["H", "E", "L", "L", "O"]);
 
 ---
 
-## Pattern D — Manual Runtime (outside React)
+## Pattern D — One-off translation (no runtime)
+
+```typescript
+import { translate } from "@ikiraro/sdk";
+
+// Returns Promise<TranslationEnvelope> — no runtime lifecycle needed
+const envelope = await translate("Hello world", {
+  groqApiKey: process.env.GROQ_API_KEY,
+});
+console.log(envelope.plan.glossText); // "HELLO WORLD"
+```
+
+## Pattern E — Manual Runtime (outside React)
 
 ```typescript
 import { createIkiraro } from "@ikiraro/sdk";
@@ -143,7 +157,7 @@ See [references/model_specs.md](references/model_specs.md) for bone naming conve
 | Avatar model bone specs          | [references/model_specs.md](references/model_specs.md)     |
 | All 34 runtime events            | `docs/event-system.md`                                     |
 | Input → motion data flow         | `docs/data-flow.md`                                        |
-| Plugin authoring                 | `docs/packages/communication.md`                           |
+| Plugin authoring                 | `docs/packages/runtime.md`                                 |
 
 ---
 

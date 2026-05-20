@@ -1,10 +1,10 @@
-// ─── Communication ────────────────────────────────────────────────────────────
+// Communication
 
 export type CommunicationMode = "speech" | "text" | "sign-keys" | "camera-fingerspell";
 export type TranslationTrack = "semantic" | "deterministic";
 export type PlanningStrategy = "semantic" | "deterministic";
 
-// ─── STT ─────────────────────────────────────────────────────────────────────
+// STT
 
 export const STT_MODELS = ["whisper-large-v3", "whisper-large-v3-turbo"] as const;
 export type SttModel = (typeof STT_MODELS)[number];
@@ -13,7 +13,7 @@ export function isSttModel(value: string | null | undefined): value is SttModel 
   return Boolean(value && (STT_MODELS as readonly string[]).includes(value));
 }
 
-// ─── Token primitives ─────────────────────────────────────────────────────────
+// Token primitives
 
 export type TokenStability = "draft" | "stable" | "committed";
 
@@ -66,7 +66,7 @@ export type SignClause = {
   tokens: SignToken[];
 };
 
-// ─── Sign plan ────────────────────────────────────────────────────────────────
+// Sign plan
 
 export type SignPlan = {
   sourceText: string;
@@ -82,7 +82,7 @@ export type SignPlan = {
   };
 };
 
-// ─── Renderer Queue ──────────────────────────────────────────────────────────
+// Renderer Queue
 
 export type MotionType =
   | "none"
@@ -121,7 +121,7 @@ export type FrameItem = {
   coarticulation?: CoarticulationMode;
 };
 
-// ─── Speech intake ────────────────────────────────────────────────────────────
+// Speech intake
 
 export type SpeechWordTiming = {
   word: string;
@@ -147,7 +147,7 @@ export type SpeechIntake = {
   segments: SpeechSegment[];
 };
 
-// ─── Translation context ──────────────────────────────────────────────────────
+// Translation context
 
 export type TranslationContext = {
   conversationId?: string;
@@ -155,7 +155,7 @@ export type TranslationContext = {
   locale?: string;
 };
 
-// ─── Two-layer output ─────────────────────────────────────────────────────────
+// Two-layer output
 
 export type SemanticIntent = {
   rawGloss: string;
@@ -175,7 +175,7 @@ export type TranslationEnvelope = {
   intent?: SemanticIntent;
 };
 
-// ─── Vision types ─────────────────────────────────────────────────────────────
+// Vision types
 
 export interface Point3D {
   x: number;
@@ -196,7 +196,6 @@ export interface FeatureVector {
   ringPinkySpread: number;
   palmOrientation: number;
   thumbPosition: number;
-  /** Z of thumb tip minus mean Z of finger PIPs. Negative = thumb in front (ASL S); positive = thumb behind/tucked (M, N, A, T). */
   thumbVsFingerDepth: number;
   fingerAngles: [number, number, number, number, number];
   wristAngle: number;

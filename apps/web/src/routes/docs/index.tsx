@@ -67,11 +67,11 @@ function SdkOverviewPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[
             {
-              pkg: "@ikiraro/communication",
+              pkg: "@ikiraro/runtime",
               desc: "IkiraroRuntime, EventBus, 7 plugins, useIkiraro and useHandTracking React hooks, Groq AI services.",
             },
             {
-              pkg: "@ikiraro/components",
+              pkg: "@ikiraro/renderer",
               desc: "AvatarViewer (R3F), AudioVisualizer, AslHandSvg, Button, and other Tailwind UI components.",
             },
             {

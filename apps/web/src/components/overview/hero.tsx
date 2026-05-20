@@ -1,6 +1,6 @@
 import type { RefObject } from "react";
 import { Link } from "@tanstack/react-router";
-import { Button } from "@ikiraro/components";
+import { Button } from "@/components/ui/button";
 import { HeroAvatarPane } from "./landing-avatar";
 
 interface OverviewHeroProps {

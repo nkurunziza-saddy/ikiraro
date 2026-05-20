@@ -1,7 +1,6 @@
 {
   "name": "@ikiraro/engine",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "exports": {
     ".": {
@@ -18,11 +17,15 @@
     },
     "./vision": {
       "default": "./src/vision/index.ts"
+    },
+    "./cdn": {
+      "default": "./src/cdn.ts"
     }
   },
   "scripts": {
     "check-types": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "cdn:build": "tsup"
   },
   "dependencies": {
     "effect": "catalog:",
@@ -30,6 +33,7 @@
   },
   "devDependencies": {
     "@ikiraro/config": "workspace:*",
+    "tsup": "^8.5.0",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

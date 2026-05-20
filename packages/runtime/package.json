@@ -1,0 +1,36 @@
+{
+  "name": "@ikiraro/runtime",
+  "version": "0.1.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@effect/platform": "catalog:",
+    "@effect/platform-browser": "catalog:",
+    "@ikiraro/engine": "workspace:*",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@ikiraro/config": "workspace:*",
+    "@mediapipe/tasks-vision": "0.10.35",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "react": "^19.2.6",
+    "typescript": "catalog:",
+    "vite": "^8.0.12"
+  },
+  "peerDependencies": {
+    "@mediapipe/tasks-vision": "0.10.35",
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "@mediapipe/tasks-vision": {
+      "optional": true
+    }
+  }
+}

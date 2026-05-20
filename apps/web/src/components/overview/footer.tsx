@@ -12,9 +12,9 @@ const nav = [
   {
     head: "Documentation",
     links: [
-      { label: "@ikiraro/communication", href: "/docs/runtime" as const },
+      { label: "@ikiraro/runtime", href: "/docs/runtime" as const },
       { label: "@ikiraro/engine", href: "/docs/types" as const },
-      { label: "@ikiraro/components", href: "/docs/components" as const },
+      { label: "@ikiraro/renderer", href: "/docs/components" as const },
     ],
   },
   {

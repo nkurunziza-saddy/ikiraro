@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/docs")({
   component: SdkLayout,
@@ -77,9 +78,9 @@ function SdkLayout() {
             <div className="mt-8 pt-6 border-t border-border">
               <Link
                 to="/"
-                className="text-[11px] text-muted-foreground/60 hover:text-foreground transition-colors"
+                className="text-[11px] text-muted-foreground/60 hover:text-foreground transition-colors inline-flex items-center gap-1"
               >
-                ← Home
+                <ArrowLeft size={11} /> Home
               </Link>
             </div>
           </aside>
