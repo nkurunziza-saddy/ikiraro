@@ -1,5 +1,11 @@
 # @ikiraro/engine
 
+## 0.1.2
+
+### Patch Changes
+
+- 5a0b721: Reduced dependencies
+
 ## 0.1.1
 
 ### Patch Changes

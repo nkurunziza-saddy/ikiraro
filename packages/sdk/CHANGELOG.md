@@ -1,5 +1,11 @@
 # @ikiraro/sdk
 
+## 0.3.5
+
+### Patch Changes
+
+- 5a0b721: Reduced dependencies
+
 ## 0.3.4
 
 ### Patch Changes
