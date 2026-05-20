@@ -32,11 +32,9 @@
     "dev:web": "turbo -F web dev",
     "test": "turbo run test",
     "check": "oxlint && oxfmt --write",
-    "release:sdk:version:patch": "bun scripts/bump-sdk-version.mjs patch && bun install",
-    "release:sdk:version:minor": "bun scripts/bump-sdk-version.mjs minor && bun install",
-    "release:sdk:version:major": "bun scripts/bump-sdk-version.mjs major && bun install",
-    "release:sdk:verify": "bun run build && bun run check-types && bun run test && cd packages/sdk && bun pm pack --dry-run",
-    "release:sdk:publish": "bun run release:sdk:verify && cd packages/sdk && npm publish --access public",
+    "changeset": "changeset",
+    "version": "changeset version && bun install",
+    "release": "bun run build && bun run check-types && bun run test && changeset publish",
     "prepare": "husky"
   },
   "dependencies": {
@@ -44,6 +42,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@ikiraro/config": "workspace:*",
     "@types/node": "catalog:",
     "husky": "^9.1.7",
