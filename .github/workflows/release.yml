@@ -27,12 +27,6 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Setup Node (for npm registry auth)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
-
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
@@ -46,4 +40,4 @@ jobs:
           commit: "chore: release version"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: "true"
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
