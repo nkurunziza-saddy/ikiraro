@@ -163,7 +163,7 @@ export function computeMotionDelta(motion: MotionType, progress: number): Motion
 
     // Numbers 6-9: small readable wrist rotation.
     case "wrist-twist": {
-      const e = heldStrokeProgress(p, 0.24, 0.62);
+      const e = peakEnvelope(p, 0.24, 0.62);
       return delta({ rForeYDelta: e * 0.5 });
     }
 
@@ -193,40 +193,42 @@ export function computeMotionDelta(motion: MotionType, progress: number): Motion
 
     // Z-trace
     case "z-trace": {
-      const q = boundedStrokeProgress(p, 0.16, 0.9);
-      let armZ: number;
-      let armX: number;
+      const q = boundedStrokeProgress(p, 0.1, 0.85);
+      const e = peakEnvelope(q, 0.1, 0.9);
+      let handZ: number;
+      let handX: number;
       if (q < 0.33) {
         const t = q / 0.33;
-        armZ = t * 0.55;
-        armX = 0;
+        handZ = t * 0.45;
+        handX = 0;
       } else if (q < 0.66) {
         const t = (q - 0.33) / 0.33;
-        armZ = 0.55 - t * 1.1;
-        armX = t * 0.22;
+        handZ = 0.45 - t * 0.9;
+        handX = t * 0.18;
       } else {
         const t = (q - 0.66) / 0.34;
-        armZ = -0.55 + t * 0.55;
-        armX = 0.22 - t * 0.1;
+        handZ = -0.45 + t * 0.45;
+        handX = 0.18 - t * 0.18;
       }
-      return delta({ rArmXDelta: armX, rArmZDelta: armZ });
+      return delta({ rHandXDelta: handX * e, rHandZDelta: handZ * e });
     }
 
     // J-trace
     case "j-trace": {
-      const q = boundedStrokeProgress(p, 0.16, 0.9);
-      let armX: number;
-      let armZ: number;
-      if (q < 0.55) {
-        const t = q / 0.55;
-        armX = t * 0.52;
-        armZ = 0;
+      const q = boundedStrokeProgress(p, 0.16, 0.88);
+      const e = peakEnvelope(q, 0.2, 0.8);
+      let handX: number;
+      let foreY: number;
+      if (q < 0.5) {
+        const t = q / 0.5;
+        handX = t * 0.35;
+        foreY = t * 0.1;
       } else {
-        const t = (q - 0.55) / 0.45;
-        armX = 0.52;
-        armZ = -(t * 0.44);
+        const t = (q - 0.5) / 0.5;
+        handX = 0.35 - t * 0.15;
+        foreY = 0.1 + t * 0.5;
       }
-      return delta({ rArmXDelta: armX, rArmZDelta: armZ });
+      return delta({ rHandXDelta: handX * e, rForeYDelta: foreY * e });
     }
 
     // G: push toward viewer
@@ -237,7 +239,7 @@ export function computeMotionDelta(motion: MotionType, progress: number): Motion
 
     // H: lateral slide
     case "h-slide": {
-      const e = heldStrokeProgress(p, 0.2, 0.76);
+      const e = peakEnvelope(p, 0.2, 0.76);
       return delta({ rArmZDelta: e * 0.38 });
     }
 
@@ -245,15 +247,15 @@ export function computeMotionDelta(motion: MotionType, progress: number): Motion
     case "d-arc": {
       const theta = boundedStrokeProgress(p, 0.18, 0.86) * Math.PI * 2;
       return delta({
-        rArmXDelta: Math.sin(theta) * -0.16,
-        rArmZDelta: (1 - Math.cos(theta)) * 0.16,
+        rHandXDelta: Math.sin(theta) * -0.22,
+        rHandZDelta: (1 - Math.cos(theta)) * 0.22,
       });
     }
 
     // N: two-finger tap down once.
     case "n-dip": {
       const e = peakEnvelope(boundedStrokeProgress(p, 0.18, 0.82), 0.28, 0.72);
-      return delta({ rArmXDelta: e * 0.28 });
+      return delta({ rHandXDelta: e * 0.35 });
     }
 
     // K: two-finger push toward the viewer.
