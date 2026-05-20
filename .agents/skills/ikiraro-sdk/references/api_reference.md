@@ -147,6 +147,7 @@ async function createIkiraro(config: IkiraroDefaultConfig): Promise<IkiraroRunti
 
 interface IkiraroDefaultConfig {
   sdk: { groqApiKey: string; groqBaseUrl?: string };
+  baseUrl?: string;
   vision?: { processor: HandProcessor };
 }
 ```

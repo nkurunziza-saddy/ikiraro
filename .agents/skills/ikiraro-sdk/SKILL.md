@@ -2,7 +2,7 @@
 name: ikiraro-sdk
 description: "Ikiraro SDK integration guide for sign language translation and 3D rendering. Use when working with @ikiraro/sdk, @ikiraro/runtime, @ikiraro/engine, or @ikiraro/renderer packages. Triggers on: useIkiraro hook usage, useHandTracking, AvatarViewer, ASL/sign language translation, building a text/speech/vision-to-sign pipeline, runtime configuration, plugin authoring, or any task involving the Ikiraro monorepo packages."
 metadata:
-  version: "1.0.2"
+  version: "1.0.3"
   release_date: "2026-05-20"
 ---
 
@@ -23,7 +23,7 @@ Ikiraro bridges AI-driven translation (Groq), deterministic sign planning, and 3
 ```bash
 bun add @ikiraro/sdk
 # required peers
-bun add three @react-three/fiber @react-three/drei
+bun add effect three @react-three/fiber @react-three/drei
 # optional — only needed if you use useHandTracking / camera sign input
 bun add @mediapipe/tasks-vision
 ```
