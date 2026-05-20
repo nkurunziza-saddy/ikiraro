@@ -59,7 +59,7 @@ export default defineConfig({
     index: "src/index.ts",
     components: "src/components.ts",
     engine: "src/engine.ts",
-    "hand-landmarker.worker": "../communication/src/workers/hand-landmarker.worker.ts",
+    "hand-landmarker.worker": "../runtime/src/workers/hand-landmarker.worker.ts",
   },
   format: ["esm"],
   dts: {
