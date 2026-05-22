@@ -1,211 +1,105 @@
-import { SectionHead } from "./section-head";
-
+"use client";
+import { useState } from "react";
+import { PixelBackground } from "@/components/ui/pixel";
+import { Matrix, wave, loader, pulse, digits } from "@/components/ui/matrix";
 export function OverviewCapabilities() {
-  const capabilities = [
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const features = [
     {
-      tag: "S / Speech",
-      headline: "Hear every word.",
-      body: "Microphone → Groq Whisper STT → normalized gloss → SignPlan. Under 50 ms median round-trip.",
-      items: ["Whisper large-v3 / turbo", "Groq-accelerated inference", "Custom vocabulary hints"],
-      viz: "wave",
+      label: "Input Parsing",
+      name: "Voice to Sign",
+      description: "Direct speech transcription routed to local Groq inference in under 50ms.",
+      matrixFrames: wave,
+      color: "hsla(24, 75%, 60%, 1)",
+      pixelPattern: "edges" as const,
     },
     {
-      tag: "T / Text",
-      headline: "Type it, sign it.",
-      body: "Typed hearing-side text is normalized into an ASL-aligned gloss sequence with clause segmentation.",
-      items: ["Gloss normalization", "Clause & timing metadata", "Planner note per output"],
-      viz: "text",
+      label: "Semantic Engine",
+      name: "Text Normalization",
+      description:
+        "Handles anaphora resolution and syntax conversion into ASL gloss automatically.",
+      matrixFrames: loader,
+      color: "hsla(199, 75%, 60%, 1)",
+      pixelPattern: "random" as const,
     },
     {
-      tag: "V / Vision",
-      headline: "Hands on camera.",
-      body: "MediaPipe hand landmarks → 6-stage surgical classifier → LinguisticBuffer → SignToken. No server.",
-      items: ["WebGPU / WASM worker", "96-letter fingerprint lookup", "Real-time disambiguation"],
-      viz: "vision",
+      label: "Vision Pipeline",
+      name: "Zero-Server Vision",
+      description:
+        "MediaPipe hand tracking executed entirely in WebAssembly, ensuring total privacy.",
+      matrixFrames: pulse,
+      color: "hsla(158, 55%, 55%, 1)",
+      pixelPattern: "cursor" as const,
     },
     {
-      tag: "M / Manual",
-      headline: "Direct gloss entry.",
-      body: "Compose any gloss or fingerspelled sequence by hand. Useful for demos, QA, and high-precision tasks.",
-      items: ["Full ASL alphabet (A–Z)", "Sign boundary markers", "Backspace & clear"],
-      viz: "keyboard",
+      label: "Kinematics",
+      name: "3D Coarticulation",
+      description: "The Sensa engine calculates complex blending between gestures natively.",
+      matrixFrames: digits,
+      color: "hsla(263, 60%, 65%, 1)",
+      pixelPattern: "random" as const,
     },
   ];
-
   return (
-    <section className="py-24 border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 md:px-10">
-        <SectionHead
-          num="Capabilities"
-          headline={
-            <>
-              Speak, type, sign, or spell.{" "}
-              <span className="text-muted-foreground font-normal">Without barriers.</span>
-            </>
-          }
-          lede="Ikiraro covers all four ways a person can produce language. On-device vision, Groq STT, and a local-first gloss planner in one SDK."
-        />
+    <section className="relative w-full bg-background py-[120px] md:py-[160px] border-b border-border">
+      <div className="bento-container">
+        <div className="max-w-[700px] mb-20">
+          <h2 className="text-title mb-6">Intelligent inputs.</h2>
+          <p className="text-subhero">
+            Sensa intercepts all forms of human communication through a strict, typed API and
+            normalizes it for the renderer.
+          </p>
+        </div>
 
-        <div className="border-border mt-0 grid border-l border-t md:grid-cols-2 lg:grid-cols-4">
-          {capabilities.map(({ tag, headline, body, items, viz }) => (
-            <div
-              key={tag}
-              className="bg-background border-border group flex flex-col p-7 transition-colors duration-200 border-b border-r hover:bg-secondary"
-            >
-              {/* Head */}
-              <div className="mb-5 flex items-center justify-between">
-                <span className="text-muted-foreground text-[11px] tracking-[0.5px]">
-                  <strong className="text-foreground font-medium">{tag[0]}</strong>
-                  {tag.slice(1)}
-                </span>
-                <div className="bg-secondary border-border text-foreground group-hover:bg-background flex size-8 items-center justify-center rounded-full border transition-colors">
-                  {viz === "wave" && <WaveIcon />}
-                  {viz === "text" && <TextIcon />}
-                  {viz === "vision" && <VisionIcon />}
-                  {viz === "keyboard" && <KeyboardIcon />}
-                </div>
-              </div>
-
-              <h3 className="mb-2 text-[20px] font-semibold leading-snug tracking-tight">
-                {headline}
-              </h3>
-              <p className="text-muted-foreground mb-5 text-[14px] leading-relaxed">{body}</p>
-
-              {/* Mini visualization */}
-              <div className="border-border bg-secondary rounded-sm group-hover:bg-background mb-5 flex h-14 items-end gap-[2px] overflow-hidden border p-2 transition-colors">
-                {viz === "wave" && <WaveViz />}
-                {viz === "text" && <TextViz />}
-                {viz === "vision" && <VisionViz />}
-                {viz === "keyboard" && <KeyboardViz />}
-              </div>
-
-              {/* Feature list */}
-              <ul className="border-border mt-auto flex flex-col gap-2.5 border-t pt-4">
-                {items.map((item) => (
-                  <li
-                    key={item}
-                    className="text-muted-foreground flex items-center gap-2.5 text-[13px]"
+        <div className="w-full bento-grid sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((feature, i) => {
+            const isActive = hoveredIndex === i;
+            return (
+              <div
+                key={i}
+                onMouseEnter={() => setHoveredIndex(i)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                className="bento-cell bento-cell-hover p-8 lg:p-10 flex flex-col justify-between min-h-[320px] cursor-pointer relative overflow-hidden group"
+              >
+                <PixelBackground
+                  className="absolute inset-0 z-0 opacity-0 group-hover:opacity-40 transition-opacity duration-700"
+                  pattern={feature.pixelPattern}
+                  gap={2}
+                  size={8}
+                  speed={0.5}
+                  darkColors={feature.color}
+                />
+                <div className="mb-6 flex flex-col relative z-10 pointer-events-none">
+                  <span
+                    className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] mb-4 block transition-colors duration-300"
+                    style={{ color: isActive ? feature.color : undefined }}
                   >
-                    <span className="bg-foreground h-1 w-1 shrink-0 rounded-full" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+                    {feature.label}
+                  </span>
+                  <h3 className="text-[18px] font-semibold text-foreground tracking-tight mb-8">
+                    {feature.name}
+                  </h3>
+
+                  <div className="h-[60px] w-full flex items-center mb-6 opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+                    <Matrix
+                      rows={7}
+                      cols={7}
+                      frames={feature.matrixFrames}
+                      size={4}
+                      gap={2}
+                      fps={10}
+                      palette={{ on: feature.color, off: "var(--bento-border)" }}
+                    />
+                  </div>
+                </div>
+                <p className="text-[14px] text-secondary-foreground leading-relaxed border-t border-border pt-6 mt-auto relative z-10 pointer-events-none">
+                  {feature.description}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
   );
 }
-
-const WaveIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-  >
-    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19" />
-    <path d="M19 12a7 7 0 0 0-3-5.8M16 8.2a3.5 3.5 0 0 1 0 7.6" />
-  </svg>
-);
-
-const TextIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-  >
-    <path d="M4 6h16M4 12h10M4 18h12" />
-  </svg>
-);
-
-const VisionIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-  >
-    <circle cx="11" cy="11" r="7" />
-    <path d="m20 20-3.5-3.5" />
-  </svg>
-);
-
-const KeyboardIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-  >
-    <rect x="2" y="7" width="20" height="14" rx="2" />
-    <path d="M6 11h.01M10 11h.01M14 11h.01M18 11h.01M8 15h8" />
-  </svg>
-);
-
-const WaveViz = () => (
-  <>
-    {Array.from({ length: 20 }, (_, i) => (
-      <span
-        key={i}
-        className="bg-foreground flex-1 rounded-[1px] animate-[viz-rise_var(--dur)_ease-in-out_var(--del)_infinite]"
-        style={{
-          ["--dur" as any]: `${1.2 + (i % 4) * 0.2}s`,
-          ["--del" as any]: `${(i * 0.06).toFixed(2)}s`,
-          minHeight: "10%",
-          maxHeight: "90%",
-          opacity: 0.6,
-        }}
-      />
-    ))}
-  </>
-);
-
-const TextViz = () => (
-  <div className="flex h-full w-full flex-col justify-center gap-1">
-    {["HELLO ██████ ██", "HOW ████ YOU", "SIGN █████"].map((line) => (
-      <div key={line} className="text-foreground font-mono text-[10px] opacity-50">
-        {line}
-      </div>
-    ))}
-  </div>
-);
-
-const VisionViz = () => (
-  <div className="flex w-full items-center justify-center gap-2">
-    {["A", "S", "L"].map((l) => (
-      <span
-        key={l}
-        className="bg-background border-border text-foreground flex size-7 items-center justify-center rounded-sm border font-mono text-[16px] font-semibold"
-      >
-        {l}
-      </span>
-    ))}
-  </div>
-);
-
-const KeyboardViz = () => (
-  <div className="grid w-full grid-cols-10 items-center gap-[3px]">
-    {Array.from({ length: 26 }, (_, i) => (
-      <span
-        key={i}
-        className={`flex h-[10px] items-center justify-center rounded-[1px] border border-border font-mono text-[7px] ${
-          i % 5 === 2 ? "bg-foreground text-background" : "bg-background text-transparent"
-        }`}
-      >
-        {String.fromCharCode(65 + i)}
-      </span>
-    ))}
-  </div>
-);

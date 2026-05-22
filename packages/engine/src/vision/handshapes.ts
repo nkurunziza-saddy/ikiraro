@@ -1,16 +1,13 @@
 import type { FeatureVector } from "./types";
 import type { HandshapeDefinition } from "./types";
-
 function avgCurl(v: FeatureVector): number {
   return (v.fingerCurls[1] + v.fingerCurls[2] + v.fingerCurls[3] + v.fingerCurls[4]) / 4;
 }
-
 export const ASL_ALPHABET: HandshapeDefinition[] = [
   {
     name: "A",
     fingerprint: "10000",
     disambiguate: (v) => {
-      // A has thumb to the side. thumbVsFingerDepth should be positive/neutral.
       return v.thumbVsFingerDepth > -0.01 ? 0.9 : 0.4;
     },
   },
@@ -33,7 +30,6 @@ export const ASL_ALPHABET: HandshapeDefinition[] = [
     fingerprint: "00000",
     disambiguate: (v) => {
       const c = avgCurl(v);
-      // E is very curled, thumb is tucked.
       return c > 0.4 && c <= 0.6 ? 0.85 : 0.25;
     },
   },
@@ -65,7 +61,6 @@ export const ASL_ALPHABET: HandshapeDefinition[] = [
     name: "M",
     fingerprint: "00000",
     disambiguate: (v) => {
-      // M has thumb tucked under 3 fingers.
       return v.palmOrientation > 0.5 && avgCurl(v) > 0.5 && v.thumbVsFingerDepth > 0.02 ? 0.8 : 0.2;
     },
   },
@@ -73,7 +68,6 @@ export const ASL_ALPHABET: HandshapeDefinition[] = [
     name: "N",
     fingerprint: "00000",
     disambiguate: (v) => {
-      // N has thumb tucked under 2 fingers.
       return v.palmOrientation > 0.5 && avgCurl(v) > 0.4 && v.thumbVsFingerDepth > 0.01
         ? 0.75
         : 0.2;
@@ -103,7 +97,6 @@ export const ASL_ALPHABET: HandshapeDefinition[] = [
     name: "S",
     fingerprint: "00000",
     disambiguate: (v) => {
-      // S is a fist, thumb is in FRONT.
       return avgCurl(v) > 0.55 && v.thumbVsFingerDepth < -0.01 ? 0.95 : 0.2;
     },
   },
@@ -111,7 +104,6 @@ export const ASL_ALPHABET: HandshapeDefinition[] = [
     name: "T",
     fingerprint: "10000",
     disambiguate: (v) => {
-      // T has thumb between index and middle.
       return avgCurl(v) > 0.5 && v.thumbVsFingerDepth > 0 && v.thumbVsFingerDepth < 0.02
         ? 0.8
         : 0.2;

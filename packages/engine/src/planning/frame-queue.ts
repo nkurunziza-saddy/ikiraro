@@ -1,7 +1,6 @@
 import type { SignPlan, FrameItem, MotionType, ArmTarget } from "@ikiraro/engine/types";
 import { resolveLexemePose } from "./lexeme-poses";
 
-// ASL fingerspell letters that require a distinct motion path to be legible.
 const LETTER_MOTIONS: Partial<Record<string, MotionType>> = {
   J: "j-trace",
   Z: "z-trace",
@@ -11,16 +10,13 @@ const LETTER_MOTIONS: Partial<Record<string, MotionType>> = {
   N: "n-dip",
   K: "k-push",
 };
-
 const NUMBER_MOTIONS: Partial<Record<string, MotionType>> = {
   "6": "wrist-twist",
   "7": "wrist-twist",
   "8": "wrist-twist",
   "9": "wrist-twist",
 };
-
 const NUMBER_ARM_TARGET: ArmTarget = { rArmX: 0.74, rArmZ: -0.5, rForeZ: -1.44, rForeY: 0.46 };
-
 const MOTION_DURATION_FLOORS: Partial<Record<MotionType, number>> = {
   salute: 1100,
   "forward-push": 980,
@@ -42,39 +38,31 @@ const MOTION_DURATION_FLOORS: Partial<Record<MotionType, number>> = {
   "n-dip": 680,
   "k-push": 720,
 };
-
 function durationForMotion(durationMs: number, motion: MotionType): number {
   return Math.max(durationMs, MOTION_DURATION_FLOORS[motion] ?? 0);
 }
-
 function resolvePointingTarget(target: string): { armTarget: ArmTarget; motion: MotionType } {
   const key = target.toUpperCase();
-
   if (key === "SELF") {
     return {
       armTarget: { rArmX: 0.78, rArmZ: -0.38, rForeZ: -1.26, rForeY: 0.22, rHandX: -0.38 },
       motion: "chest-pat",
     };
   }
-
   if (key === "THAT") {
     return {
       armTarget: { rArmX: 0.66, rArmZ: -0.18, rForeZ: -1.28, rForeY: 0.16, rHandX: -0.1 },
       motion: "outward-sweep",
     };
   }
-
   return {
     armTarget: { rArmX: 0.68, rArmZ: -0.72, rForeZ: -1.24, rForeY: 0.14, rHandX: -0.08 },
     motion: "forward-push",
   };
 }
-
 export function buildFrameQueue(plan: SignPlan | null): FrameItem[] {
   if (!plan) return [];
-
   const queue: FrameItem[] = [];
-
   for (const clause of plan.clauses) {
     for (const token of clause.tokens) {
       if (token.type === "pause") {
@@ -107,7 +95,6 @@ export function buildFrameQueue(plan: SignPlan | null): FrameItem[] {
         for (let i = 0; i < letters.length; i++) {
           const letter = letters[i]!;
           const motion = LETTER_MOTIONS[letter] ?? "none";
-          // Give motion letters a bit more time so the stroke reads clearly.
           const duration = motion !== "none" ? durationForMotion(perLetter, motion) : perLetter;
           queue.push({
             type: "fingerspell",
@@ -153,6 +140,5 @@ export function buildFrameQueue(plan: SignPlan | null): FrameItem[] {
       }
     }
   }
-
   return queue;
 }

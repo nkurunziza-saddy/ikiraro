@@ -8,7 +8,16 @@
     "sdk",
     "sign-language"
   ],
+  "homepage": "https://github.com/nkurunziza-saddy/ikiraro#readme",
+  "bugs": {
+    "url": "https://github.com/nkurunziza-saddy/ikiraro/issues"
+  },
   "license": "MIT",
+  "author": "Saddy Nkurunziza <nkurunziza-saddy>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nkurunziza-saddy/ikiraro.git"
+  },
   "files": [
     "dist",
     "README.md"

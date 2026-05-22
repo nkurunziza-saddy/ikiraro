@@ -18,7 +18,6 @@ function CornerArrow({ size, className }: { size: number; className?: string }) 
     </svg>
   );
 }
-
 /**
  * Anatomically-informed ASL fingerspelling hand.
  *
@@ -64,13 +63,10 @@ const HAND_PATHS: Record<string, string> = {
   // I — Pinky up, rest curled
   I: "M30,112 C24,112 20,108 20,98 L20,72 C20,62 24,56 30,54 L30,52 C30,52 34,50 34,54 L34,56 C36,56 40,56 44,58 L44,62 C48,60 52,60 54,62 L54,72 L54,98 C54,108 50,112 46,112 Z M54,62 L58,16 C58,10 62,8 66,8 C70,8 72,10 72,16 L68,62 Z M20,66 L14,60 C10,54 10,46 16,44 L22,52 Z",
 
-  // J — Like I but with motion curve indicator
   J: "M30,112 C24,112 20,108 20,98 L20,72 C20,62 24,56 30,54 L34,56 C36,56 40,56 44,58 L44,62 C48,60 52,60 54,62 L54,72 L54,98 C54,108 50,112 46,112 Z M54,62 L58,16 C58,10 62,8 66,8 C70,8 72,10 72,16 L68,62 Z M20,66 L14,60 C10,54 10,46 16,44 L22,52 Z M72,20 C76,22 80,28 82,36 C84,44 82,52 78,56",
 
-  // K — Index+middle up spread, thumb between
   K: "M30,112 C24,112 20,108 20,98 L20,72 C20,62 24,56 30,54 L30,52 C30,52 34,50 34,54 L34,56 C40,56 46,58 48,64 L48,72 L48,98 C48,108 44,112 40,112 Z M26,54 L20,10 C20,4 24,2 28,2 C32,2 34,4 34,10 L36,40 Z M36,48 L46,8 C46,2 50,0 54,0 C58,0 60,2 60,8 L52,48 Z M20,60 L16,50 C14,44 18,40 22,42 L26,52 Z",
 
-  // L — Thumb out, index up, L shape
   L: "M36,112 C30,112 26,108 26,98 L26,72 C26,62 30,56 36,54 L36,52 C36,52 40,50 40,54 L40,56 C44,56 48,58 50,62 L50,68 C54,66 58,66 60,68 L60,72 L60,98 C60,108 56,112 52,112 Z M32,54 L34,10 C34,4 38,2 42,2 C46,2 48,4 48,10 L46,54 Z M26,68 L4,56 C-2,52 -4,44 2,40 C6,38 12,40 16,46 L26,58 Z",
 
   // M — Thumb under three fingers, fist shape
@@ -118,7 +114,6 @@ const HAND_PATHS: Record<string, string> = {
 
 // Motion-required letters get a subtle indicator
 const MOTION_LETTERS = new Set(["J", "Z"]);
-
 export function AslHandSvg({
   letter,
   motion = "none",
@@ -135,11 +130,8 @@ export function AslHandSvg({
   animate?: boolean;
 }) {
   const normalizedLetter = letter.toUpperCase().charAt(0);
-
   const path = useMemo(() => HAND_PATHS[normalizedLetter] || HAND_PATHS.A, [normalizedLetter]);
-
   const hasMotion = MOTION_LETTERS.has(normalizedLetter);
-
   return (
     <div
       className={`relative inline-flex items-center justify-center transition-transform duration-300 ${
@@ -153,7 +145,6 @@ export function AslHandSvg({
         role="img"
         aria-label={`ASL letter ${normalizedLetter}`}
       >
-        {/* Main hand silhouette - solid theme color */}
         <path
           d={path}
           fill="currentColor"
@@ -163,7 +154,6 @@ export function AslHandSvg({
           }}
         />
 
-        {/* Motion indicator arc for J/Z */}
         {hasMotion && (
           <g>
             <path
@@ -180,7 +170,7 @@ export function AslHandSvg({
                 animation: animate ? "motionPulse 2s ease-in-out infinite" : undefined,
               }}
             />
-            {/* Arrow tip */}
+
             <circle
               cx={normalizedLetter === "J" ? 76 : 76}
               cy={normalizedLetter === "J" ? 52 : 24}
@@ -192,7 +182,6 @@ export function AslHandSvg({
         )}
       </svg>
 
-      {/* Letter label */}
       {showLabel && (
         <div className="absolute -bottom-1 flex w-full justify-center">
           <span
@@ -209,7 +198,6 @@ export function AslHandSvg({
           </span>
         </div>
       )}
-
       <style>{`
         @keyframes motionPulse {
           0%, 100% { opacity: 0.4; }

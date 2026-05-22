@@ -1,26 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CodeBlock, PageTitle, Callout } from "@/components/docs/primitives";
-
 export const Route = createFileRoute("/docs/")({
   component: SdkOverviewPage,
 });
-
 const SNIPPET_INSTALL = `# npm
 npm install @ikiraro/sdk
-
 # bun
 bun add @ikiraro/sdk`;
-
 const SNIPPET_ENV = `# .env
 VITE_GROQ_API_KEY=gsk_...`;
-
-const SNIPPET_QUICK_START = `import { useIkiraro, AvatarViewer } from "@ikiraro/sdk";
-
+const SNIPPET_QUICK_START = `import { useIkiraro } from "@/lib/ikiraro";
+import { AvatarViewer } from "@ikiraro/sdk";
 function App() {
-  const { snapshot, translate, isReady } = useIkiraro({
-    sdk: { groqApiKey: import.meta.env.VITE_GROQ_API_KEY },
-  });
-
+  const { snapshot, translate, isReady } = useIkiraro();
   return (
     <>
       <AvatarViewer
@@ -41,16 +33,12 @@ function App() {
     </>
   );
 }`;
-
 const SNIPPET_SUBPATHS = `// Main entry — hooks, components, types
 import { useIkiraro, AvatarViewer } from "@ikiraro/sdk";
-
 // Component subpath
 import { AvatarViewer } from "@ikiraro/sdk/components";
-
 // Engine primitives subpath
 import { buildPlanFromGloss } from "@ikiraro/sdk/engine";`;
-
 function SdkOverviewPage() {
   return (
     <div className="space-y-12">
@@ -59,7 +47,6 @@ function SdkOverviewPage() {
         subtitle="A facade package that aggregates the runtime, rendering, and engine into a single versioned entry point. Install once, drop in the hook — text and speech translate to ASL automatically through a 3D avatar or your own canvas."
       />
 
-      {/* What's included */}
       <section className="space-y-4">
         <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.14em]">
           What's included
@@ -79,14 +66,18 @@ function SdkOverviewPage() {
               desc: "Pure math, pose library, vision classifier, sign planners, RendererDirector. No React, no I/O.",
             },
           ].map(({ pkg, desc }) => (
-            <div key={pkg} className="border border-border rounded p-4 space-y-1.5">
-              <code className="text-foreground font-mono text-[11px] font-semibold">{pkg}</code>
-              <p className="text-muted-foreground text-[12px] leading-relaxed">{desc}</p>
+            <div
+              key={pkg}
+              className="border border-border bg-card rounded-xl p-5 space-y-2 hover:border-border/80 transition-colors"
+            >
+              <code className="text-foreground font-mono text-[13px] font-semibold bg-secondary/50 px-2 py-1 rounded-md">
+                {pkg}
+              </code>
+              <p className="text-muted-foreground text-[14px] leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
       </section>
-
       {/* Installation */}
       <section className="space-y-4">
         <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.14em]">
@@ -112,7 +103,6 @@ function SdkOverviewPage() {
           fingerspelling still works deterministically, but LLM gloss generation is disabled.
         </Callout>
       </section>
-
       {/* Quick Start */}
       <section className="space-y-4">
         <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.14em]">
@@ -121,12 +111,11 @@ function SdkOverviewPage() {
         <p className="text-muted-foreground text-[13px] leading-relaxed">
           Call <code className="font-mono text-foreground">useIkiraro</code>, pass the envelope to{" "}
           <code className="font-mono text-foreground">AvatarViewer</code>, provide an input that
-          calls <code className="font-mono text-foreground">translate</code>. The hook manages the
-          full runtime lifecycle — create, subscribe, and cleanup happen automatically.
+          calls <code className="font-mono text-foreground">translate</code>. The global client
+          manages the full runtime lifecycle automatically using reference counting.
         </p>
         <CodeBlock code={SNIPPET_QUICK_START} label="App.tsx" />
       </section>
-
       {/* Subpaths */}
       <section className="space-y-4">
         <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.14em]">
@@ -134,7 +123,6 @@ function SdkOverviewPage() {
         </p>
         <CodeBlock code={SNIPPET_SUBPATHS} label="imports" />
       </section>
-
       {/* Next steps nav */}
       <section className="pt-4 border-t border-border">
         <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.14em] mb-4">
@@ -168,12 +156,10 @@ function SdkOverviewPage() {
             <Link
               key={to}
               to={to}
-              className="border border-border rounded p-3 hover:border-foreground/30 transition-colors group"
+              className="border border-border bg-card rounded-xl p-5 hover:bg-secondary/50 transition-colors group flex flex-col gap-1"
             >
-              <p className="text-foreground text-[12px] font-medium group-hover:underline">
-                {label}
-              </p>
-              <p className="text-muted-foreground text-[11px] mt-0.5 leading-relaxed">{desc}</p>
+              <p className="text-foreground text-[14px] font-semibold">{label}</p>
+              <p className="text-muted-foreground text-[13px] leading-relaxed">{desc}</p>
             </Link>
           ))}
         </div>

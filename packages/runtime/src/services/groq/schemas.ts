@@ -1,12 +1,10 @@
 import { Schema } from "effect";
-
 export const GLOSS_OUTPUT_SCHEMA = Schema.Struct({
   gloss: Schema.String.pipe(Schema.minLength(1)),
   confidence: Schema.optional(Schema.Number.pipe(Schema.between(0, 1))).pipe(
     Schema.withDefaults({ constructor: () => 1, decoding: () => 1 }),
   ),
 });
-
 export const GROQ_CHAT_RESPONSE_SCHEMA = Schema.Struct({
   model: Schema.String,
   choices: Schema.Array(
@@ -23,6 +21,5 @@ export const GROQ_CHAT_RESPONSE_SCHEMA = Schema.Struct({
     }),
   ),
 });
-
 export type GlossOutput = Schema.Schema.Type<typeof GLOSS_OUTPUT_SCHEMA>;
 export type GroqChatResponse = Schema.Schema.Type<typeof GROQ_CHAT_RESPONSE_SCHEMA>;

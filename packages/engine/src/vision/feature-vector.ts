@@ -8,7 +8,6 @@ import {
 } from "../math";
 import type { FeatureVector, HandLandmarks } from "./types";
 import { ASL_DEFAULTS } from "./asl-defaults";
-
 function isFingerExtended(
   landmarks: HandLandmarks,
   tipIndex: number,
@@ -20,12 +19,10 @@ function isFingerExtended(
   const dipAngle = getAngle(landmarks[pipIndex]!, landmarks[dipIndex]!, landmarks[tipIndex]!);
   return pipAngle > ASL_DEFAULTS.pipExtensionAngle && dipAngle > ASL_DEFAULTS.dipExtensionAngle;
 }
-
 function isThumbExtended(landmarks: HandLandmarks): boolean {
   const ipAngle = getAngle(landmarks[2]!, landmarks[3]!, landmarks[4]!);
   return ipAngle > ASL_DEFAULTS.thumbExtensionAngle;
 }
-
 function getFingerCurl(
   landmarks: HandLandmarks,
   tipIndex: number,
@@ -41,7 +38,6 @@ function getFingerCurl(
   if (boneLength <= 0) return 0;
   return Math.max(0, Math.min(1, 1 - getDistance(tip, mcp) / boneLength));
 }
-
 const EMPTY_VECTOR: FeatureVector = {
   isValid: false,
   fingerStates: [false, false, false, false, false],
@@ -61,7 +57,6 @@ const EMPTY_VECTOR: FeatureVector = {
   velocity: { x: 0, y: 0, z: 0 },
   isMoving: false,
 };
-
 /**
  * Extract a feature vector from hand landmarks.
  *
@@ -77,7 +72,6 @@ export function extractFeatureVector(
   imageLandmarks?: HandLandmarks,
 ): FeatureVector {
   if (landmarks.length < 21) return EMPTY_VECTOR;
-
   const fingerStates: [boolean, boolean, boolean, boolean, boolean] = [
     isThumbExtended(landmarks),
     isFingerExtended(landmarks, 8, 7, 6, 5),
@@ -85,7 +79,6 @@ export function extractFeatureVector(
     isFingerExtended(landmarks, 16, 15, 14, 13),
     isFingerExtended(landmarks, 20, 19, 18, 17),
   ];
-
   const fingerCurls: [number, number, number, number, number] = [
     getFingerCurl(landmarks, 4, 3, 2, 1),
     getFingerCurl(landmarks, 8, 7, 6, 5),
@@ -93,29 +86,21 @@ export function extractFeatureVector(
     getFingerCurl(landmarks, 16, 15, 14, 13),
     getFingerCurl(landmarks, 20, 19, 18, 17),
   ];
-
   const palmSize = getDistance(landmarks[5]!, landmarks[17]!);
   const normPalm = palmSize > 0 ? palmSize : 1;
-
   const thumbToIndexDist = getDistance(landmarks[4]!, landmarks[8]!) / normPalm;
   const thumbToMiddleDist = getDistance(landmarks[4]!, landmarks[12]!) / normPalm;
   const thumbToPinkyDist = getDistance(landmarks[4]!, landmarks[20]!) / normPalm;
   const indexMiddleSpread = getDistance(landmarks[8]!, landmarks[12]!) / normPalm;
   const ringPinkySpread = getDistance(landmarks[16]!, landmarks[20]!) / normPalm;
-
   const v05 = subtract(landmarks[5]!, landmarks[0]!);
   const v017 = subtract(landmarks[17]!, landmarks[0]!);
   const palmNormal = normalizeVector(crossProduct(v05, v017));
   const palmOrientation = Math.abs(dotProduct(palmNormal, { x: 0, y: 0, z: 1 }));
-
   const thumbPosition = landmarks[4]!.y < landmarks[5]!.y ? 1 : 0;
 
-  // Depth of thumb tip relative to finger PIP joints.
-  // Negative = thumb tip is in front (closer to camera) → ASL S.
-  // Positive = thumb tip is behind/alongside fingers → A, M, N, T.
   const fingerPipZ = (landmarks[6]!.z + landmarks[10]!.z + landmarks[14]!.z + landmarks[18]!.z) / 4;
   const thumbVsFingerDepth = landmarks[4]!.z - fingerPipZ;
-
   const fingerAngles: [number, number, number, number, number] = [
     getAngle(landmarks[2]!, landmarks[3]!, landmarks[4]!),
     getAngle(landmarks[5]!, landmarks[6]!, landmarks[7]!),
@@ -123,17 +108,13 @@ export function extractFeatureVector(
     getAngle(landmarks[13]!, landmarks[14]!, landmarks[15]!),
     getAngle(landmarks[17]!, landmarks[18]!, landmarks[19]!),
   ];
-
   const wristAngle = getAngle(landmarks[9]!, landmarks[0]!, {
     x: landmarks[0]!.x,
     y: landmarks[0]!.y - 1,
     z: landmarks[0]!.z,
   });
-
   const fingerprint = fingerStates.map((s) => (s ? "1" : "0")).join("");
 
-  // Spatial zone uses image-space Y (0 = top, 1 = bottom). Fall back to structural landmarks
-  // if image landmarks aren't provided — spatialZone is informational and unused in disambiguation.
   const zoneLandmarks = imageLandmarks ?? landmarks;
   const centerX = zoneLandmarks[9]!.x;
   const centerY = zoneLandmarks[9]!.y;
@@ -142,7 +123,6 @@ export function extractFeatureVector(
   else if (centerY < 0.4) spatialZone = "face";
   else if (centerY < 0.55 && centerX > 0.4 && centerX < 0.6) spatialZone = "chin";
   else if (centerY > 0.6) spatialZone = "chest";
-
   return {
     isValid: true,
     fingerStates,

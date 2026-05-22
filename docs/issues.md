@@ -148,7 +148,7 @@ const rawSign = match && match.score >= this.config.rawScoreThreshold ? match.na
 Only the top candidate is ever considered, and then it's binarized (pass/fail the
 `rawScoreThreshold`). A frame where A scores 0.72 and S scores 0.70 gets the same
 treatment as A scoring 0.98 with no competition. The history window accumulates
-sign *names*, not scores — so the confidence output is vote frequency, not signal
+sign _names_, not scores — so the confidence output is vote frequency, not signal
 strength. This makes M/N/S/T confusion especially bad because their scores are
 genuinely close and the winner flips frame-to-frame.
 
@@ -208,6 +208,7 @@ when confidence is genuinely low rather than always locking to the plurality win
 ### 13. Many lexeme poses share identical motion + handshape combinations
 
 From `lexeme-poses.ts`:
+
 - HELLO, LEARN both: `{ handshape: B, armTarget: FOREHEAD, motion: "arc" }`
 - GOOD, BAD both: `{ handshape: B, armTarget: CHIN, motion: "arc" }`
 - THANK-YOU: `{ handshape: B, armTarget: CHIN, motion: "arc" }` — same as GOOD/BAD

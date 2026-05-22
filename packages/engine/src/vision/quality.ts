@@ -1,6 +1,5 @@
 import { getDistance } from "../math";
 import type { HandLandmarks } from "./types";
-
 const FINGER_SEGMENTS: Array<[number, number]> = [
   [1, 2],
   [2, 3],
@@ -18,7 +17,6 @@ const FINGER_SEGMENTS: Array<[number, number]> = [
   [18, 19],
   [19, 20],
 ] as const;
-
 export interface HandBounds {
   minX: number;
   minY: number;
@@ -30,7 +28,6 @@ export interface HandBounds {
   centerX: number;
   centerY: number;
 }
-
 export interface HandGeometryQuality {
   isValid: boolean;
   score: number;
@@ -42,20 +39,17 @@ export interface HandGeometryQuality {
   palmTriangleRatio: number;
   minSegmentRatio: number;
 }
-
 function getBounds(landmarks: HandLandmarks): HandBounds {
   let minX = Number.POSITIVE_INFINITY;
   let minY = Number.POSITIVE_INFINITY;
   let maxX = Number.NEGATIVE_INFINITY;
   let maxY = Number.NEGATIVE_INFINITY;
-
   for (const point of landmarks) {
     minX = Math.min(minX, point.x);
     minY = Math.min(minY, point.y);
     maxX = Math.max(maxX, point.x);
     maxY = Math.max(maxY, point.y);
   }
-
   const width = maxX - minX;
   const height = maxY - minY;
   return {
@@ -70,7 +64,6 @@ function getBounds(landmarks: HandLandmarks): HandBounds {
     centerY: minY + height / 2,
   };
 }
-
 function getTriangleArea2D(
   a: HandLandmarks[number],
   b: HandLandmarks[number],
@@ -78,7 +71,6 @@ function getTriangleArea2D(
 ): number {
   return Math.abs(a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y)) / 2;
 }
-
 const EMPTY_BOUNDS: HandBounds = {
   minX: 0,
   minY: 0,
@@ -90,7 +82,6 @@ const EMPTY_BOUNDS: HandBounds = {
   centerX: 0,
   centerY: 0,
 };
-
 export function evaluateHandGeometry(landmarks: HandLandmarks): HandGeometryQuality {
   if (landmarks.length < 21) {
     return {
@@ -105,7 +96,6 @@ export function evaluateHandGeometry(landmarks: HandLandmarks): HandGeometryQual
       minSegmentRatio: 0,
     };
   }
-
   const bounds = getBounds(landmarks);
   const palmWidth = getDistance(landmarks[5]!, landmarks[17]!);
   const middleFingerLength =
@@ -121,7 +111,6 @@ export function evaluateHandGeometry(landmarks: HandLandmarks): HandGeometryQual
   const minSegmentRatio = Math.min(
     ...FINGER_SEGMENTS.map(([s, e]) => getDistance(landmarks[s]!, landmarks[e]!) / normPalm),
   );
-
   const checks: Array<[string, boolean]> = [
     [
       "landmarks-outside-frame",
@@ -134,10 +123,8 @@ export function evaluateHandGeometry(landmarks: HandLandmarks): HandGeometryQual
     ["palm-shape-out-of-range", palmTriangleRatio >= 0.01 && palmTriangleRatio <= 1.6],
     ["finger-segments-collapsed", minSegmentRatio >= 0.015],
   ];
-
   const reasons = checks.filter(([, passed]) => !passed).map(([reason]) => reason);
   const score = (checks.length - reasons.length) / checks.length;
-
   return {
     isValid: score >= 0.5,
     score,

@@ -1,11 +1,9 @@
 import type { CoarticulationMode } from "../types";
-
 const BLEND_WINDOWS: Record<CoarticulationMode, number> = {
   blend: 0.2,
   snap: 0.05,
   none: 0,
 };
-
 /**
  * Returns a [0,1] sine-eased blend weight toward the next frame, or null when
  * no blending should occur (end of queue, "none" mode, or too early in the frame).

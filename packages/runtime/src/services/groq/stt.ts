@@ -2,19 +2,15 @@ import { Effect, Layer } from "effect";
 import { SttService } from "@ikiraro/engine/planning";
 import { Groq } from "./client";
 import type { SttModel } from "@ikiraro/engine/types";
-
 const DEFAULT_GROQ_STT_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
-
 export const SttGroqLive = Layer.effect(
   SttService,
   Effect.gen(function* (_) {
     const groq = yield* _(Groq);
-
     return {
       transcribe: (audio: File, model: SttModel, prompt?: string) =>
         Effect.gen(function* (_) {
           const url = groq.baseUrl ? `${groq.baseUrl}/audio/transcriptions` : DEFAULT_GROQ_STT_URL;
-
           const formData = new FormData();
           formData.append("file", audio);
           formData.append("model", model);
@@ -23,11 +19,9 @@ export const SttGroqLive = Layer.effect(
           formData.append("response_format", "verbose_json");
           formData.append("timestamp_granularities[]", "word");
           formData.append("timestamp_granularities[]", "segment");
-
           if (prompt) {
             formData.append("prompt", prompt);
           }
-
           const response = yield* _(
             Effect.tryPromise({
               try: () =>
@@ -39,7 +33,6 @@ export const SttGroqLive = Layer.effect(
               catch: (e) => (e instanceof Error ? e : new Error(String(e))),
             }),
           );
-
           if (!response.ok) {
             const errorText = yield* _(
               Effect.tryPromise({
@@ -51,14 +44,12 @@ export const SttGroqLive = Layer.effect(
               Effect.fail(new Error(errorText || `Groq STT returned ${response.status}`)),
             );
           }
-
           const payload = yield* _(
             Effect.tryPromise({
               try: () => response.json(),
               catch: (e) => (e instanceof Error ? e : new Error(String(e))),
             }),
           );
-
           return {
             model,
             text: payload.text?.trim() ?? "",

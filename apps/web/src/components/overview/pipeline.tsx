@@ -1,150 +1,354 @@
-import { SectionHead } from "./section-head";
-
-export function OverviewPipeline() {
-  const stages = [
-    {
-      num: "01",
-      name: "Input",
-      desc: "Voice via mic, typed text, or hand landmarks from the camera — Ikiraro accepts all three simultaneously.",
-      lat: "Capture",
-      ms: "~5 ms",
-      icon: <path d="M9 3h6v11a3 3 0 0 1-6 0V3zM19 11a7 7 0 0 1-14 0M12 18v3" />,
-    },
-    {
-      num: "02",
-      name: "Classify",
-      desc: "The surgical classifier runs a 6-stage pipeline on MediaPipe landmarks: gating, fingerprint lookup, confidence scoring.",
-      lat: "Vision",
-      ms: "~12 ms",
-      icon: (
-        <>
-          <polyline points="16 18 22 12 16 6" />
-          <polyline points="8 6 2 12 8 18" />
-        </>
-      ),
-    },
-    {
-      num: "03",
-      name: "Plan",
-      desc: "Groq Llama produces a normalized ASL gloss with clause boundaries, timing, and coarticulation blending.",
-      lat: "Inference",
-      ms: "~38 ms",
-      icon: (
-        <>
-          <circle cx="12" cy="12" r="3" />
-          <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4" />
-        </>
-      ),
-    },
-    {
-      num: "04",
-      name: "Render",
-      desc: "RendererDirector advances through FrameItem[] with coarticulation blending between each sign.",
-      lat: "Frame",
-      ms: "~3 ms",
-      icon: <path d="M12 2 4 7v6c0 4.5 3 8 8 9 5-1 8-4.5 8-9V7l-8-5z" />,
-    },
-    {
-      num: "05",
-      name: "Output",
-      desc: "The 3D hand animation plays synchronized to the SignPlan. TTS optionally reads the gloss text aloud.",
-      lat: "Synthesis",
-      ms: "~14 ms",
-      icon: (
-        <>
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19" />
-          <path d="M19 12a7 7 0 0 0-3-5.8" />
-        </>
-      ),
-    },
-  ];
-
+"use client";
+import { useRef, useState } from "react";
+import { AnimatedBeam } from "@/components/ui/animated-beam";
+const AudioColor = "hsla(24, 75%, 60%, 1)";
+const VisionColor = "hsla(158, 55%, 55%, 1)";
+const TextColor = "hsla(199, 75%, 60%, 1)";
+const EngineColor = "hsla(263, 60%, 65%, 1)";
+function AudioIcon() {
   return (
-    <section className="py-24 border-b border-border">
-      <div className="mx-auto max-w-7xl px-6 md:px-10">
-        <SectionHead
-          num="Inside Ikiraro"
-          headline={
-            <>
-              Five stages.{" "}
-              <span className="text-muted-foreground font-normal">Under the hood.</span>
-            </>
-          }
-          lede="Everything on the vision path runs in a Web Worker, with zero round-trips. Speech uses Groq's API for sub-50 ms transcription. No screen content ever leaves unless you explicitly configure it."
-        />
-
-        <div className="mt-14 grid grid-cols-1 gap-7 md:grid-cols-3 lg:grid-cols-5">
-          {stages.map((card, i) => (
-            <div
-              key={card.num}
-              className="border-border relative flex flex-col rounded border p-5 transition-all duration-200 hover:border-foreground/30 hover:-translate-y-px"
-            >
-              <div className="mb-5 flex items-center justify-between">
-                <span className="text-muted-foreground text-[10.5px] tracking-[0.6px]">
-                  {card.num}
-                </span>
-                <div className="bg-secondary border-border text-foreground flex size-7 items-center justify-center rounded-full border">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    {card.icon}
-                  </svg>
-                </div>
-              </div>
-
-              <div className="text-foreground mb-2.5 text-[12px] font-semibold uppercase tracking-[1.6px]">
-                {card.name}
-              </div>
-
-              <p className="text-muted-foreground mb-auto text-[13px] leading-relaxed">
-                {card.desc}
-              </p>
-
-              <div className="border-border mt-4 flex items-center justify-between border-t pt-3.5 font-mono text-[11px]">
-                <span className="text-muted-foreground uppercase text-[10px] tracking-[0.4px]">
-                  {card.lat}
-                </span>
-                <span className="text-foreground flex items-center gap-1.5 font-medium">
-                  <span
-                    className="bg-foreground animate-[live-pulse_1.4s_ease-in-out_infinite] h-1.5 w-1.5 rounded-full"
-                    style={{ animationDelay: `${i * 0.2}s` }}
-                  />
-                  {card.ms}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Pipeline summary */}
-        <div className="bg-foreground text-background mt-10 flex flex-wrap items-center justify-between gap-6 rounded px-7 py-5">
-          <div className="text-background/80 text-[14px]">
-            <strong className="font-semibold text-background">72 ms</strong>, median. Every step
-            on-device or Groq-accelerated. Zero round-trips for vision.
-          </div>
-          <div className="flex gap-8 text-[12px]">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <rect x="9" y="2" width="6" height="10" rx="3" fill="currentColor" fillOpacity="0.1" />
+      <path d="M5 10v2a7 7 0 0 0 14 0v-2" />
+      <line x1="12" y1="19" x2="12" y2="22" />
+      <line x1="8" y1="22" x2="16" y2="22" />
+    </svg>
+  );
+}
+function VisionIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <rect x="3" y="5" width="18" height="14" rx="2" fill="currentColor" fillOpacity="0.1" />
+      <circle cx="12" cy="12" r="3" />
+      <line x1="3" y1="12" x2="6" y2="12" />
+      <line x1="18" y1="12" x2="21" y2="12" />
+    </svg>
+  );
+}
+function TextIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <polyline points="4 7 10 12 4 17" />
+      <line x1="12" y1="17" x2="20" y2="17" />
+      <rect x="2" y="3" width="20" height="18" rx="2" fill="currentColor" fillOpacity="0.05" />
+    </svg>
+  );
+}
+function EngineIcon() {
+  return (
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <rect x="4" y="4" width="16" height="16" rx="2" fill="currentColor" fillOpacity="0.1" />
+      <rect x="8" y="8" width="8" height="8" rx="1" />
+      <line x1="12" y1="2" x2="12" y2="4" />
+      <line x1="12" y1="20" x2="12" y2="22" />
+      <line x1="2" y1="12" x2="4" y2="12" />
+      <line x1="20" y1="12" x2="22" y2="12" />
+    </svg>
+  );
+}
+function OutputIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <path
+        d="M2 12C2 12 7 5 12 5C17 5 22 12 22 12C22 12 17 19 12 19C7 19 2 12 2 12Z"
+        fill="currentColor"
+        fillOpacity="0.1"
+      />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+export function OverviewPipeline() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const div1Ref = useRef<HTMLDivElement>(null);
+  const div2Ref = useRef<HTMLDivElement>(null);
+  const div3Ref = useRef<HTMLDivElement>(null);
+  const div4Ref = useRef<HTMLDivElement>(null);
+  const div5Ref = useRef<HTMLDivElement>(null);
+  const [activeNode, setActiveNode] = useState<number | null>(null);
+  const getBeamOpacity = (nodeId: number) => {
+    if (activeNode === null) return 0.25;
+    return activeNode === nodeId || activeNode === 4 || activeNode === 5 ? 0.8 : 0.05;
+  };
+  const getBeamColor = (nodeId: number, defaultColor: string) => {
+    if (activeNode === null) return "rgba(255,255,255,0.15)";
+    return activeNode === nodeId || activeNode === 4 || activeNode === 5
+      ? defaultColor
+      : "rgba(255,255,255,0.05)";
+  };
+  return (
+    <section className="relative w-full bg-background py-[120px] md:py-[200px] border-b border-border">
+      <div className="bento-container grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-24 relative z-10">
+        <div className="md:col-span-5 md:col-start-2">
+          <h2 className="text-title mb-6">Unified Synthesis Pipeline.</h2>
+          <p className="text-subhero mb-12">
+            Raw audio, text feeds, and vision matrices are collected simultaneously, parsed by our
+            lightweight inference network, and compiled into a unified joint stream.
+          </p>
+          <div className="grid grid-cols-1 bento-grid">
             {[
-              { lbl: "SDK weight", val: "38 kb" },
-              { lbl: "Vision worker", val: "WASM" },
-              { lbl: "Server calls", val: "0*" },
-            ].map(({ lbl, val }) => (
-              <div key={lbl} className="flex flex-col gap-1">
-                <span className="text-[10px] uppercase tracking-[0.5px] text-background/40">
-                  {lbl}
-                </span>
-                <span className="text-background/70 text-[16px] font-medium">{val}</span>
+              {
+                stage: "01",
+                title: "Multimodal Normalization",
+                desc: "All inputs are converted into a standardized tensor format before routing.",
+              },
+              {
+                stage: "02",
+                title: "Kinematic Semantic Parsing",
+                desc: "The core engine resolves intent and maps it to the 3D bone hierarchy.",
+              },
+            ].map((s, i) => (
+              <div
+                key={i}
+                className="flex flex-col gap-2 p-8 bento-cell bento-cell-hover cursor-pointer relative group"
+              >
+                <div className="text-[10px] font-mono text-secondary-foreground font-bold uppercase tracking-widest group-hover:text-foreground transition-colors duration-300">
+                  Stage {s.stage}
+                </div>
+                <div className="text-[16px] font-semibold text-foreground">{s.title}</div>
+                <p className="text-[14px] text-secondary-foreground mt-2">{s.desc}</p>
               </div>
             ))}
           </div>
         </div>
-        <p className="text-muted-foreground mt-3 font-mono text-[11px]">
-          * Speech mode sends audio to Groq. Vision and text/manual modes are fully local.
-        </p>
+
+        <div className="md:col-span-6">
+          <div
+            ref={containerRef}
+            className="relative w-full aspect-square md:aspect-auto md:h-[650px] flex items-center justify-center border border-border bg-background overflow-hidden"
+          >
+            <div className="absolute inset-0 blueprint-grid opacity-[0.2]"></div>
+
+            <div className="flex flex-col gap-16 z-20 mr-auto ml-16 lg:ml-24">
+              <div
+                ref={div1Ref}
+                onMouseEnter={() => setActiveNode(1)}
+                onMouseLeave={() => setActiveNode(null)}
+                className="w-14 h-14 border bg-card flex items-center justify-center relative cursor-pointer transition-colors duration-300 group"
+                style={{ borderColor: activeNode === 1 ? AudioColor : "var(--bento-border)" }}
+              >
+                <div
+                  className="absolute inset-0 transition-opacity duration-300"
+                  style={{ backgroundColor: AudioColor, opacity: activeNode === 1 ? 0.1 : 0 }}
+                />
+                <div
+                  style={{ color: activeNode === 1 ? AudioColor : "var(--muted-foreground)" }}
+                  className="transition-colors duration-300 relative z-10"
+                >
+                  <AudioIcon />
+                </div>
+                <span
+                  className="absolute -left-28 w-24 text-right text-[10px] font-mono uppercase tracking-wider transition-colors duration-300"
+                  style={{
+                    color: activeNode === 1 ? "var(--foreground)" : "var(--muted-foreground)",
+                  }}
+                >
+                  Audio Feed
+                </span>
+              </div>
+
+              <div
+                ref={div2Ref}
+                onMouseEnter={() => setActiveNode(2)}
+                onMouseLeave={() => setActiveNode(null)}
+                className="w-14 h-14 border bg-card flex items-center justify-center relative cursor-pointer transition-colors duration-300 group"
+                style={{ borderColor: activeNode === 2 ? VisionColor : "var(--bento-border)" }}
+              >
+                <div
+                  className="absolute inset-0 transition-opacity duration-300"
+                  style={{ backgroundColor: VisionColor, opacity: activeNode === 2 ? 0.1 : 0 }}
+                />
+                <div
+                  style={{ color: activeNode === 2 ? VisionColor : "var(--muted-foreground)" }}
+                  className="transition-colors duration-300 relative z-10"
+                >
+                  <VisionIcon />
+                </div>
+                <span
+                  className="absolute -left-28 w-24 text-right text-[10px] font-mono uppercase tracking-wider transition-colors duration-300"
+                  style={{
+                    color: activeNode === 2 ? "var(--foreground)" : "var(--muted-foreground)",
+                  }}
+                >
+                  Vision Feed
+                </span>
+              </div>
+
+              <div
+                ref={div3Ref}
+                onMouseEnter={() => setActiveNode(3)}
+                onMouseLeave={() => setActiveNode(null)}
+                className="w-14 h-14 border bg-card flex items-center justify-center relative cursor-pointer transition-colors duration-300 group"
+                style={{ borderColor: activeNode === 3 ? TextColor : "var(--bento-border)" }}
+              >
+                <div
+                  className="absolute inset-0 transition-opacity duration-300"
+                  style={{ backgroundColor: TextColor, opacity: activeNode === 3 ? 0.1 : 0 }}
+                />
+                <div
+                  style={{ color: activeNode === 3 ? TextColor : "var(--muted-foreground)" }}
+                  className="transition-colors duration-300 relative z-10"
+                >
+                  <TextIcon />
+                </div>
+                <span
+                  className="absolute -left-28 w-24 text-right text-[10px] font-mono uppercase tracking-wider transition-colors duration-300"
+                  style={{
+                    color: activeNode === 3 ? "var(--foreground)" : "var(--muted-foreground)",
+                  }}
+                >
+                  Text Feed
+                </span>
+              </div>
+            </div>
+
+            <div
+              ref={div4Ref}
+              onMouseEnter={() => setActiveNode(4)}
+              onMouseLeave={() => setActiveNode(null)}
+              className="z-20 w-44 h-44 border bg-card flex flex-col items-center justify-center gap-6 relative cursor-pointer transition-colors duration-300 group"
+              style={{ borderColor: activeNode === 4 ? EngineColor : "var(--bento-border)" }}
+            >
+              <div
+                className="absolute inset-0 transition-opacity duration-300"
+                style={{ backgroundColor: EngineColor, opacity: activeNode === 4 ? 0.05 : 0 }}
+              />
+              <div className="relative flex items-center justify-center">
+                <div
+                  className="w-16 h-16 rounded-full border border-border animate-spin [animation-duration:8s] absolute"
+                  style={{ borderTopColor: EngineColor, borderRightColor: EngineColor }}
+                />
+                <div
+                  style={{ color: activeNode === 4 ? EngineColor : "var(--muted-foreground)" }}
+                  className="transition-colors duration-300 relative z-10"
+                >
+                  <EngineIcon />
+                </div>
+              </div>
+              <span
+                className="text-[10px] font-mono uppercase tracking-[0.2em] transition-colors duration-300"
+                style={{
+                  color: activeNode === 4 ? "var(--foreground)" : "var(--muted-foreground)",
+                }}
+              >
+                Inference Engine
+              </span>
+            </div>
+
+            <div
+              ref={div5Ref}
+              onMouseEnter={() => setActiveNode(5)}
+              onMouseLeave={() => setActiveNode(null)}
+              className="z-20 w-28 h-28 border bg-card ml-auto mr-16 lg:mr-24 flex flex-col items-center justify-center relative cursor-pointer transition-colors duration-300 group"
+              style={{ borderColor: activeNode === 5 ? EngineColor : "var(--bento-border)" }}
+            >
+              <div
+                className="absolute inset-0 transition-opacity duration-300"
+                style={{ backgroundColor: EngineColor, opacity: activeNode === 5 ? 0.1 : 0 }}
+              />
+              <div
+                style={{ color: activeNode === 5 ? EngineColor : "var(--muted-foreground)" }}
+                className="transition-colors duration-300 mb-3 relative z-10"
+              >
+                <OutputIcon />
+              </div>
+              <span
+                className="absolute -right-28 w-24 text-[10px] font-mono uppercase tracking-wider transition-colors duration-300"
+                style={{
+                  color: activeNode === 5 ? "var(--foreground)" : "var(--muted-foreground)",
+                }}
+              >
+                Live Output
+              </span>
+            </div>
+
+            <AnimatedBeam
+              containerRef={containerRef}
+              fromRef={div1Ref}
+              toRef={div4Ref}
+              curvature={-40}
+              pathWidth={1.5}
+              pathColor={getBeamColor(1, AudioColor)}
+              pathOpacity={getBeamOpacity(1)}
+              gradientStartColor="#ffffff"
+              gradientStopColor={AudioColor}
+              duration={3}
+              delay={0}
+            />
+            <AnimatedBeam
+              containerRef={containerRef}
+              fromRef={div2Ref}
+              toRef={div4Ref}
+              pathWidth={1.5}
+              pathColor={getBeamColor(2, VisionColor)}
+              pathOpacity={getBeamOpacity(2)}
+              gradientStartColor="#ffffff"
+              gradientStopColor={VisionColor}
+              duration={3}
+              delay={1}
+            />
+            <AnimatedBeam
+              containerRef={containerRef}
+              fromRef={div3Ref}
+              toRef={div4Ref}
+              curvature={40}
+              pathWidth={1.5}
+              pathColor={getBeamColor(3, TextColor)}
+              pathOpacity={getBeamOpacity(3)}
+              gradientStartColor="#ffffff"
+              gradientStopColor={TextColor}
+              duration={3}
+              delay={2}
+            />
+            <AnimatedBeam
+              containerRef={containerRef}
+              fromRef={div4Ref}
+              toRef={div5Ref}
+              pathWidth={2}
+              pathColor={getBeamColor(5, EngineColor)}
+              pathOpacity={getBeamOpacity(5)}
+              gradientStartColor={EngineColor}
+              gradientStopColor="#ffffff"
+              duration={2}
+              delay={0.5}
+            />
+          </div>
+        </div>
       </div>
     </section>
   );

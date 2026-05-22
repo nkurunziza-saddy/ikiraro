@@ -8,13 +8,10 @@ import {
   RefRow,
   Callout,
 } from "@/components/docs/primitives";
-
 export const Route = createFileRoute("/docs/vision")({
   component: VisionPage,
 });
-
 const SNIPPET_BASIC = `import { useHandTracking } from "@ikiraro/sdk";
-
 function CameraView() {
   const {
     videoRef,       // callback ref — attach directly to <video>
@@ -29,7 +26,6 @@ function CameraView() {
     clear,          // reset sentence buffer
     manualCorrect,  // override classifier (for training UIs)
   } = useHandTracking();
-
   return (
     <div>
       <video
@@ -46,11 +42,9 @@ function CameraView() {
     </div>
   );
 }`;
-
 const SNIPPET_USE_IN_DEMO = `// Typical pattern: camera panel feeds into text translate
 const camera = useHandTracking();
-const { translate } = useIkiraro({ sdk: { groqApiKey: "..." } });
-
+const { translate } = useIkiraro();
 // When the user confirms the detected sentence:
 function commitSentence() {
   const text = camera.tracking.sentenceText;
@@ -59,7 +53,6 @@ function commitSentence() {
     camera.clear();   // reset linguistic buffer
   }
 }`;
-
 const SNIPPET_PIPELINE = `// 6-stage surgical vision pipeline (happens inside the worker):
 //
 // Frame
@@ -71,7 +64,6 @@ const SNIPPET_PIPELINE = `// 6-stage surgical vision pipeline (happens inside th
 //   → TemporalSmoother (window=9, lockThreshold=3)
 //   → LinguisticBuffer (FingerspellStrategy + LexemeStrategy)
 //   → CameraTrackingState`;
-
 function VisionPage() {
   return (
     <div className="space-y-12">
@@ -80,11 +72,9 @@ function VisionPage() {
         subtitle="A separate hook that boots a MediaPipe Web Worker and drives a 6-stage surgical classifier. The worker initializes on mount and tears down on unmount. No connection to the main Ikiraro runtime — integrate by passing tracking.sentenceText to translate()."
       />
 
-      {/* Basic usage */}
       <section className="space-y-4">
         <SectionHead id="usage" label="Usage" />
         <CodeBlock code={SNIPPET_BASIC} label="useHandTracking" />
-
         <Callout>
           <strong className="text-foreground">Video ref rule:</strong> Always attach{" "}
           <code className="font-mono text-foreground">videoRef</code> directly to the{" "}
@@ -96,7 +86,6 @@ function VisionPage() {
         </Callout>
       </section>
 
-      {/* Returns */}
       <section className="space-y-4">
         <SectionHead id="returns" label="Returns" />
         <RefTable>
@@ -151,7 +140,6 @@ function VisionPage() {
         </RefTable>
       </section>
 
-      {/* CameraTrackingState */}
       <section className="space-y-4">
         <SectionHead id="tracking-state" label="CameraTrackingState" />
         <p className="text-muted-foreground text-[13px] leading-relaxed">
@@ -191,7 +179,6 @@ function VisionPage() {
           />
         </RefTable>
       </section>
-
       {/* Integration with runtime */}
       <section className="space-y-4">
         <SectionHead id="integration" label="Integrating with useIkiraro" />
@@ -203,7 +190,6 @@ function VisionPage() {
         </p>
         <CodeBlock code={SNIPPET_USE_IN_DEMO} label="integration pattern" />
       </section>
-
       {/* Pipeline internals */}
       <section className="space-y-4">
         <SectionHead id="pipeline" label="Pipeline internals" />

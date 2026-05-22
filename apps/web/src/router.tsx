@@ -1,9 +1,7 @@
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
-
 import { Loader } from "@ikiraro/renderer";
 import "./index.css";
 import { routeTree } from "./routeTree.gen";
-
 export const getRouter = () => {
   const router = createTanStackRouter({
     routeTree,
@@ -16,7 +14,6 @@ export const getRouter = () => {
   });
   return router;
 };
-
 declare module "@tanstack/react-router" {
   interface Register {
     router: ReturnType<typeof getRouter>;

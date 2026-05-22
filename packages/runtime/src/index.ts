@@ -1,22 +1,44 @@
-export * from "./runtime/factory";
-export * from "./runtime/types";
-export * from "./runtime/core";
-export { EventBus } from "./runtime/event-bus";
-export * from "./runtime/token-fusion-policy";
-export * from "./runtime/translation-planner";
-export * from "./runtime/plugins/session";
-export * from "./runtime/plugins/composition";
-export * from "./runtime/plugins/translation";
-export * from "./runtime/plugins/keyboard";
-export * from "./runtime/plugins/inspector";
-export * from "./runtime/plugins/vision";
+// Core factory
+export { createIkiraro } from "./runtime/factory";
+export type { IkiraroDefaultConfig } from "./runtime/factory";
 
-export { IkiraroSDK } from "./sdk";
-export type { IkiraroConfig } from "./sdk";
-export { translate } from "./translate";
+// Runtime class
+export { IkiraroRuntime } from "./runtime/core";
 
-export { useIkiraro } from "./react/use-ikiraro";
+// Public types
+export type {
+  RuntimeSnapshot,
+  TranslationRequest,
+  EventRegistry,
+  IkiraroEvent,
+  IkiraroPlugin,
+  PluginContext,
+  PluginTeardown,
+  IkiraroState,
+  RuntimeConfig,
+} from "./runtime/types";
+
+// Plugin state types
+export type { SessionState, SessionStatus } from "./runtime/plugins/session";
+export type { CompositionState } from "./runtime/plugins/composition";
+export type { TranslationState } from "./runtime/plugins/translation";
+export type { SpeechState } from "./runtime/plugins/speech";
+export type { InspectorState } from "./runtime/plugins/inspector";
+
+// Optional plugins (for advanced users and plugin authors)
+export { KeyboardPlugin } from "./runtime/plugins/keyboard";
+export { InspectorPlugin } from "./runtime/plugins/inspector";
+export { VisionPlugin } from "./runtime/plugins/vision";
+
+// React bindings
+export { createIkiraroClient } from "./react/client";
+export type { IkiraroReactClient } from "./react/client";
 export { useHandTracking } from "./react/use-hand-tracking";
-export { WorkerHandProcessor } from "./capture/worker-hand-processor";
-export { RendererDirector } from "@ikiraro/engine/planning";
+
+// Utilities
 export type { CaptureStatus } from "./capture/types";
+/**
+ * One-shot translation for non-React or server-side contexts.
+ * For sustained app use, prefer `createIkiraro()` which reuses the AI layer.
+ */
+export { translate } from "./translate";

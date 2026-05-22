@@ -2,7 +2,6 @@ import type { LinguisticBufferConfig, WordBufferContext, BufferState } from "./t
 import type { SignToken } from "../types";
 import { FingerspellStrategy } from "./linguistic/fingerspell-strategy";
 import { LexemeStrategy } from "./linguistic/lexeme-strategy";
-
 /**
  * The LinguisticBuffer is a 'Deep' fusion layer.
  * It transforms high-frequency sign detections into high-level SignTokens
@@ -13,14 +12,12 @@ export class LinguisticBuffer {
   private currentSign: string | null = null;
   private lastSignTime = 0;
   private config: LinguisticBufferConfig;
-
   constructor(config?: Partial<LinguisticBufferConfig>) {
     this.config = {
       strategies: config?.strategies ?? [new FingerspellStrategy(), new LexemeStrategy()],
       pauseThresholdMs: config?.pauseThresholdMs ?? 1000,
     };
   }
-
   /**
    * Updates the buffer with a new sign detection.
    *
@@ -31,10 +28,8 @@ export class LinguisticBuffer {
   update(sign: string | null, context: WordBufferContext = {}): SignToken | null {
     const now = performance.now();
 
-    // 1. Handle transitions
     if (context.isTransitioning) return null;
 
-    // 2. Handle silence/pauses
     if (!sign) {
       if (this.currentSign && now - this.lastSignTime > this.config.pauseThresholdMs) {
         return this.commitAll();
@@ -42,10 +37,8 @@ export class LinguisticBuffer {
       return null;
     }
 
-    // 3. Drive strategies
     this.currentSign = sign;
     this.lastSignTime = now;
-
     for (const strategy of this.config.strategies) {
       const token = strategy.update(sign, context);
       if (token) {
@@ -53,10 +46,8 @@ export class LinguisticBuffer {
         return token;
       }
     }
-
     return null;
   }
-
   private commitAll(): SignToken | null {
     for (const strategy of this.config.strategies) {
       if (strategy.commit) {
@@ -71,7 +62,6 @@ export class LinguisticBuffer {
     this.currentSign = null;
     return null;
   }
-
   getInProgress(): string {
     for (const strategy of this.config.strategies) {
       const v = strategy.getInProgress?.();
@@ -79,7 +69,6 @@ export class LinguisticBuffer {
     }
     return "";
   }
-
   overrideLast(sign: string): void {
     for (const strategy of this.config.strategies) {
       if (strategy.overrideLast) {
@@ -88,7 +77,6 @@ export class LinguisticBuffer {
       }
     }
   }
-
   getState(): BufferState {
     const text = this.tokens
       .map((t) => {
@@ -97,14 +85,12 @@ export class LinguisticBuffer {
         return "";
       })
       .join(" ");
-
     return {
       currentWord: this.getInProgress(),
       sentence: this.tokens.map((t) => (t.type === "lexeme" ? t.lexemeId : (t as any).text)),
       sentenceText: text,
     };
   }
-
   clear(): void {
     this.tokens = [];
     this.currentSign = null;

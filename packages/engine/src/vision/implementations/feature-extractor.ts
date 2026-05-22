@@ -1,6 +1,5 @@
 import { extractFeatureVector } from "../feature-vector";
 import type { HandLandmarks, FeatureVector, IFeatureExtractor } from "../../types";
-
 /**
  * Standard implementation of the Feature Extractor.
  * It encapsulates the logic for turning raw landmarks into a high-leverage

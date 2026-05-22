@@ -4,20 +4,30 @@ import { CompositionPlugin } from "./plugins/composition";
 import { TranslationPlugin } from "./plugins/translation";
 import { SpeechPlugin } from "./plugins/speech";
 import { VisionPlugin } from "./plugins/vision";
+import { KeyboardPlugin } from "./plugins/keyboard";
 import type { HandProcessor } from "@ikiraro/engine/vision";
 import type { IkiraroConfig } from "../sdk";
 import type { IkiraroPlugin } from "./types";
-
 export interface IkiraroDefaultConfig {
   sdk: IkiraroConfig;
   baseUrl?: string;
   vision?: {
     processor: HandProcessor;
   };
+  /**
+   * Enable the physical keyboard input adapter.
+   * Captures single-character key presses as sign tokens.
+   */
+  keyboard?: boolean;
+  /**
+   * Additional plugins to mount after the defaults.
+   * Use this to add analytics, custom input adapters, or inspector tooling.
+   */
+  plugins?: IkiraroPlugin<any>[];
 }
-
 /**
- * Factory for the Ikiraro Runtime.
+ * Creates and starts the Ikiraro Runtime with the default plugin set.
+ * This is the primary entry point for all integrations.
  */
 export async function createIkiraro(config: IkiraroDefaultConfig) {
   const key = config.sdk.groqApiKey;
@@ -29,17 +39,21 @@ export async function createIkiraro(config: IkiraroDefaultConfig) {
     );
   }
 
-  const plugins: IkiraroPlugin[] = [
+  const plugins: IkiraroPlugin<any>[] = [
     new SessionPlugin(),
     new CompositionPlugin(),
     new TranslationPlugin(),
     new SpeechPlugin(),
   ];
-
   if (config.vision) {
     plugins.push(new VisionPlugin(config.vision.processor));
   }
-
+  if (config.keyboard) {
+    plugins.push(new KeyboardPlugin());
+  }
+  if (config.plugins) {
+    plugins.push(...config.plugins);
+  }
   return articulate({
     ...config,
     plugins,

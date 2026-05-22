@@ -15,26 +15,21 @@ export type {
   HandshapeDefinition,
   ClassifierConfig,
 } from "../types";
-
 export interface WordBufferOptions {
   pauseThresholdMs: number;
   minSignDurationMs: number;
 }
-
 export interface BufferState {
   currentWord: string;
   sentence: string[];
   sentenceText: string;
 }
-
 export interface WordBufferContext {
   isTransitioning?: boolean;
   gesture?: "double-letter-slide" | "double-letter-bounce" | "none";
   confidence?: number;
 }
-
 import type { SignToken } from "../types";
-
 /**
  * Extension seam for the LinguisticBuffer.
  *
@@ -53,16 +48,12 @@ export interface ILinguisticStrategy {
   /** Replaces the last accumulated character — used for manual correction. */
   overrideLast?(sign: string): void;
 }
-
 export interface LinguisticBufferConfig {
   strategies: ILinguisticStrategy[];
   pauseThresholdMs: number;
 }
 
-// Vision System
-
 export type VisionStatus = "idle" | "starting" | "active" | "error";
-
 export interface VisionEventMap {
   "status-change": VisionStatus;
   "tracking-update": import("../types").CameraTrackingState;
@@ -74,7 +65,6 @@ export interface VisionEventMap {
   "fps-update": number;
   error: string;
 }
-
 /**
  * Seam for hand landmark processing.
  * Usually implemented by a Web Worker to keep the main thread free.

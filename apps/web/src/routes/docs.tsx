@@ -1,10 +1,8 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
-
 export const Route = createFileRoute("/docs")({
   component: SdkLayout,
 });
-
 const NAV = [
   {
     group: "Getting Started",
@@ -30,23 +28,19 @@ const NAV = [
     ],
   },
 ];
-
 function SdkLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-
   return (
-    <div className="bg-background min-h-screen">
-      <div className="max-w-6xl mx-auto px-6 py-12">
+    <div className="bg-background min-h-screen pt-[100px] md:pt-[120px]">
+      <div className="max-w-[1200px] mx-auto px-6 md:px-8 pb-12">
         <div className="flex gap-12 items-start">
-          {/* Sidebar */}
-          <aside className="hidden lg:block w-44 shrink-0 sticky top-24 self-start">
-            <div className="flex items-center gap-2 mb-6">
+          <aside className="hidden lg:block w-48 shrink-0 sticky top-32 self-start">
+            <div className="flex items-center gap-2 mb-8">
               <span className="bg-foreground text-background rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest">
                 SDK
               </span>
               <span className="text-muted-foreground text-[10px]">v0.3.2</span>
             </div>
-
             <nav className="flex flex-col gap-5">
               {NAV.map(({ group, items }) => (
                 <div key={group}>
@@ -60,10 +54,10 @@ function SdkLayout() {
                         <Link
                           key={to}
                           to={to}
-                          className={`text-[12px] py-1 px-2 rounded transition-colors ${
+                          className={`text-[13px] py-1.5 px-3 -mx-3 rounded-md transition-colors ${
                             active
                               ? "text-foreground bg-secondary font-medium"
-                              : "text-muted-foreground hover:text-foreground"
+                              : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
                           }`}
                         >
                           {label}
@@ -74,7 +68,6 @@ function SdkLayout() {
                 </div>
               ))}
             </nav>
-
             <div className="mt-8 pt-6 border-t border-border">
               <Link
                 to="/"
@@ -85,7 +78,6 @@ function SdkLayout() {
             </div>
           </aside>
 
-          {/* Page content */}
           <main className="flex-1 min-w-0">
             <Outlet />
           </main>

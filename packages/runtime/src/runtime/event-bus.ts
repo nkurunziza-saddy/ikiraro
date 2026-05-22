@@ -1,5 +1,4 @@
 import type { EventRegistry, IkiraroEvent } from "./types";
-
 /**
  * EventBus owns the typed pub/sub mechanics for the Ikiraro runtime.
  *
@@ -8,12 +7,10 @@ import type { EventRegistry, IkiraroEvent } from "./types";
  */
 export class EventBus {
   private handlers: Map<string, Set<(event: IkiraroEvent<any>) => void>> = new Map();
-
   emit<K extends keyof EventRegistry>(event: IkiraroEvent<K>): void {
     this.handlers.get(event.type as string)?.forEach((h) => h(event));
     this.handlers.get("*")?.forEach((h) => h(event));
   }
-
   on<K extends keyof EventRegistry>(
     type: K,
     handler: (event: IkiraroEvent<K>) => void,
@@ -26,7 +23,6 @@ export class EventBus {
       this.handlers.get(typeStr)?.delete(handler as any);
     };
   }
-
   onAll(handler: (event: IkiraroEvent<any>) => void): () => void {
     const set = this.handlers.get("*") ?? new Set();
     set.add(handler);

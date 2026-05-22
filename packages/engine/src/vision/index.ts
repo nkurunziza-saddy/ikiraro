@@ -18,11 +18,8 @@ export type {
   VisionEventMap,
   HandProcessor,
 } from "./types";
-
 export { ASL_DEFAULTS } from "./asl-defaults";
-
 export type { HandBounds, HandGeometryQuality } from "./quality";
-
 export { evaluateHandGeometry } from "./quality";
 export { extractFeatureVector } from "./feature-vector";
 export { LandmarkSmoother } from "./smoothing";

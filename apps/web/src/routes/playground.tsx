@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { Mic, Type, Hand, Eye, Delete, CornerDownLeft, ArrowRight } from "lucide-react";
-
+import { useDeferredValue, useEffect, useRef, useState } from "react";
+import { Mic, Type, Hand, Eye, Delete, ArrowRight, EyeOff } from "lucide-react";
 import {
   AslHandSvg,
   AudioVisualizer,
@@ -9,18 +8,14 @@ import {
   HandOverlay,
   WebSpeechProvider,
 } from "@ikiraro/renderer";
-import { Button } from "@/components/ui/button";
-import { useIkiraro, useHandTracking } from "@ikiraro/runtime";
-import { Toolbar, type ToolbarItem } from "@/components/ui/toolbar";
-
+import { useHandTracking } from "@ikiraro/runtime";
+import { useIkiraro } from "../lib/ikiraro";
 export const Route = createFileRoute("/playground")({
   component: DemoPage,
 });
-
 const tts = WebSpeechProvider.getInstance();
 const MODEL_URL = "/models/avatar.glb";
 type Mode = "text" | "speech" | "sign";
-
 function DemoPage() {
   const {
     snapshot,
@@ -29,24 +24,17 @@ function DemoPage() {
     startSpeech,
     stopSpeech,
     error: initError,
-  } = useIkiraro({
-    sdk: { groqApiKey: import.meta.env.VITE_GROQ_API_KEY },
-  });
-
+  } = useIkiraro();
   const camera = useHandTracking();
   const { start: startCamera, stop: stopCamera } = camera;
-
   const [mode, setMode] = useState<Mode>("text");
   const [textDraft, setTextDraft] = useState("");
   const [signUnits, setSignUnits] = useState<string[]>([]);
   const [visionEnabled, setVisionEnabled] = useState(false);
-
   const activeEnvelope = useDeferredValue(snapshot.lastEnvelope);
   const lastSpokenRef = useRef<string | null>(null);
-
   const isWorking = snapshot.isTranslating || snapshot.status === "recording";
   const displayError = snapshot.error ?? initError;
-
   useEffect(() => {
     if (!activeEnvelope) return;
     const text = activeEnvelope.normalizedText;
@@ -55,6 +43,13 @@ function DemoPage() {
     void tts.speak(text);
   }, [activeEnvelope]);
 
+  useEffect(() => {
+    if (visionEnabled) {
+      void startCamera();
+    } else {
+      stopCamera();
+    }
+  }, [visionEnabled, startCamera, stopCamera]);
   const commit = () => {
     if (mode === "text" && textDraft) {
       translate(textDraft);
@@ -66,83 +61,69 @@ function DemoPage() {
       stopSpeech();
     }
   };
-
-  const toolbarItems = useMemo<ToolbarItem[]>(
-    () => [
-      {
-        type: "button",
-        label: "Text",
-        icon: <Type />,
-        active: mode === "text",
-        onClick: () => setMode("text"),
-      },
-      {
-        type: "button",
-        label: "Speech",
-        icon: <Mic />,
-        active: mode === "speech",
-        onClick: () => setMode("speech"),
-      },
-      {
-        type: "button",
-        label: "Sign",
-        icon: <Hand />,
-        active: mode === "sign",
-        onClick: () => setMode("sign"),
-      },
-      { type: "divider" },
-      {
-        type: "button",
-        label: "Camera",
-        icon: <Eye />,
-        active: visionEnabled,
-        onClick: () => {
-          if (visionEnabled) {
-            stopCamera();
-            setVisionEnabled(false);
-          } else {
-            setVisionEnabled(true);
-            void startCamera();
-          }
-        },
-      },
-    ],
-    [mode, visionEnabled, startCamera, stopCamera],
-  );
-
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <main className="flex-1 max-w-[1100px] mx-auto w-full px-6 py-10 md:py-14">
+    <div className="min-h-screen bg-background flex flex-col pt-[100px] md:pt-[120px]">
+      <main className="flex-1 max-w-[1200px] mx-auto w-full px-6 md:px-8 pb-12">
+        <div className="mb-8">
+          <h1 className="text-[28px] font-semibold text-foreground tracking-tight">Playground</h1>
+          <p className="text-[15px] text-muted-foreground mt-1">
+            Interact with the translation engine in real-time.
+          </p>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* ── Left: output + input ── */}
-          <div className="lg:col-span-7 flex flex-col gap-5">
-            {/* Mode switcher */}
-            <Toolbar items={toolbarItems} aria-label="Input mode" />
-
-            {/* Translation output */}
-            <div className="min-h-[96px] flex items-start py-2">
+          <div className="lg:col-span-5 flex flex-col gap-6">
+            <div className="flex items-center gap-2">
+              {[
+                { id: "text", label: "Text", icon: Type },
+                { id: "speech", label: "Speech", icon: Mic },
+                { id: "sign", label: "Sign", icon: Hand },
+              ].map((m) => (
+                <button
+                  key={m.id}
+                  onClick={() => setMode(m.id as Mode)}
+                  className={`flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium rounded-md transition-colors ${
+                    mode === m.id
+                      ? "bg-foreground text-background"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  }`}
+                >
+                  <m.icon size={14} /> {m.label}
+                </button>
+              ))}
+              <div className="w-[1px] h-4 bg-border mx-2"></div>
+              <button
+                onClick={() => setVisionEnabled(!visionEnabled)}
+                className={`flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium rounded-md transition-colors ${
+                  visionEnabled
+                    ? "bg-primary/10 text-primary border border-primary/20"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-transparent"
+                }`}
+              >
+                {visionEnabled ? <Eye size={14} /> : <EyeOff size={14} />} Camera
+              </button>
+            </div>
+            <div className="min-h-[100px] flex flex-col justify-center py-4">
               {activeEnvelope ? (
-                <div className="space-y-2 w-full">
-                  <p className="text-[26px] font-bold text-foreground tracking-tight leading-tight">
+                <div>
+                  <p className="text-[28px] font-semibold text-foreground tracking-tight leading-tight mb-1">
                     {activeEnvelope.plan.glossText || activeEnvelope.normalizedText}
                   </p>
                   {activeEnvelope.normalizedText !== activeEnvelope.plan.glossText && (
-                    <p className="text-[14px] text-muted-foreground leading-relaxed">
+                    <p className="text-[14px] text-muted-foreground">
                       {activeEnvelope.normalizedText}
                     </p>
                   )}
                 </div>
               ) : (
-                <p className="text-[14px] text-muted-foreground/30">
-                  {isWorking ? "Translating…" : "Translation will appear here"}
+                <p className="text-[14px] text-muted-foreground">
+                  {isWorking ? "Translating..." : "Translation will appear here."}
                 </p>
               )}
+              {displayError && <p className="text-[13px] text-red-500 mt-2">{displayError}</p>}
             </div>
-
-            {/* Input area */}
-            <div className="border border-border rounded-lg overflow-hidden">
+            <div className="border border-border rounded-xl overflow-hidden bg-card">
               {mode === "text" && (
-                <div className="p-5">
+                <div className="relative">
                   <textarea
                     value={textDraft}
                     onChange={(e) => setTextDraft(e.target.value)}
@@ -152,153 +133,151 @@ function DemoPage() {
                         commit();
                       }
                     }}
-                    placeholder="Type something to sign…"
-                    rows={3}
-                    className="w-full bg-transparent outline-none text-[15px] resize-none text-foreground placeholder:text-muted-foreground/25"
+                    placeholder="Type something to sign..."
+                    className="w-full bg-transparent outline-none text-[15px] text-foreground p-5 resize-none min-h-[120px]"
                   />
-                  <div className="flex items-center justify-between pt-4 border-t border-border mt-2">
-                    <span className="text-[11px] text-muted-foreground/40 inline-flex items-center gap-1">
-                      <CornerDownLeft size={10} /> to translate
+                  <div className="flex items-center justify-between p-3 border-t border-border">
+                    <span className="text-[12px] text-muted-foreground ml-2">
+                      Press Enter to translate
                     </span>
-                    <Button
+                    <button
                       onClick={commit}
                       disabled={isWorking || !textDraft}
-                      className="px-4 h-7 bg-foreground text-background text-[11px] font-bold rounded hover:opacity-90 disabled:opacity-20 transition-all"
+                      className="px-4 py-1.5 bg-foreground text-background text-[13px] font-medium rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
                     >
                       Translate
-                    </Button>
+                    </button>
                   </div>
                 </div>
               )}
-
               {mode === "speech" && (
-                <div className="p-8 flex flex-col items-center gap-5">
+                <div className="flex flex-col items-center justify-center p-8 min-h-[180px]">
                   {snapshot.speechStatus !== "capturing" ? (
-                    <>
+                    <div className="flex flex-col items-center gap-3">
                       <button
                         onClick={() => startSpeech()}
-                        className="w-12 h-12 rounded-full border border-border flex items-center justify-center hover:border-foreground hover:bg-secondary transition-all"
+                        className="w-12 h-12 rounded-full border border-border bg-background flex items-center justify-center hover:bg-secondary transition-all text-foreground"
                       >
-                        <Mic size={18} className="text-foreground" />
+                        <Mic size={18} />
                       </button>
-                      <span className="text-[11px] text-muted-foreground/40">Click to record</span>
-                    </>
+                      <span className="text-[13px] text-muted-foreground">Click to record</span>
+                    </div>
                   ) : (
-                    <>
-                      <div className="w-12 h-12 rounded-full bg-foreground flex items-center justify-center animate-[voice-pulse_1.2s_ease-in-out_infinite]">
-                        <Mic size={18} className="text-background" />
+                    <div className="flex flex-col items-center gap-4 w-full px-4">
+                      <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center animate-pulse text-primary-foreground">
+                        <Mic size={18} />
                       </div>
-                      <AudioVisualizer level={snapshot.speechLevel} count={20} />
+                      <div className="w-full h-[30px] flex items-center justify-center">
+                        <AudioVisualizer level={snapshot.speechLevel} count={24} />
+                      </div>
                       <button
                         onClick={commit}
-                        className="text-[11px] text-muted-foreground/50 hover:text-foreground transition-colors"
+                        className="text-[13px] text-muted-foreground hover:text-foreground transition-colors"
                       >
-                        Stop recording
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
-
-              {mode === "sign" && (
-                <div className="p-5">
-                  {signUnits.length > 0 && (
-                    <div className="flex items-center gap-2 mb-4 pb-4 border-b border-border">
-                      <p className="text-[18px] text-foreground font-bold flex-1 tracking-[0.18em] uppercase">
-                        {signUnits.join("")}
-                      </p>
-                      <button
-                        onClick={() => setSignUnits((p) => p.slice(0, -1))}
-                        className="text-muted-foreground/30 hover:text-foreground transition-colors"
-                      >
-                        <Delete size={14} />
+                        Stop Recording
                       </button>
                     </div>
                   )}
-                  <div className="grid grid-cols-9 gap-1">
+                </div>
+              )}
+              {mode === "sign" && (
+                <div className="p-5">
+                  <div className="flex justify-between items-center mb-4 pb-4 border-b border-border">
+                    <span className="text-[18px] font-bold tracking-[0.1em] uppercase text-foreground">
+                      {signUnits.length > 0 ? (
+                        signUnits.join(" ")
+                      ) : (
+                        <span className="text-muted-foreground/50 tracking-normal font-medium text-[14px]">
+                          No sequence
+                        </span>
+                      )}
+                    </span>
+                    {signUnits.length > 0 && (
+                      <button
+                        onClick={() => setSignUnits((p) => p.slice(0, -1))}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        <Delete size={16} />
+                      </button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-7 gap-1">
                     {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((l) => (
                       <button
                         key={l}
                         onClick={() => setSignUnits((p) => [...p, l])}
-                        className="flex flex-col items-center gap-0.5 py-2 border border-border rounded hover:border-foreground hover:bg-secondary transition-all"
+                        className="flex flex-col items-center justify-center gap-1 py-2 bg-secondary/50 hover:bg-secondary rounded-md transition-colors"
                       >
-                        <AslHandSvg letter={l} size={16} className="text-muted-foreground/40" />
-                        <span className="text-[8px] font-bold text-muted-foreground/40 uppercase">
-                          {l}
-                        </span>
+                        <AslHandSvg letter={l} size={16} className="text-muted-foreground" />
+                        <span className="text-[10px] font-semibold text-muted-foreground">{l}</span>
                       </button>
                     ))}
                   </div>
                   {signUnits.length > 0 && (
-                    <div className="flex justify-end pt-4 border-t border-border mt-4">
-                      <Button
-                        onClick={commit}
-                        disabled={isWorking}
-                        className="px-4 h-7 bg-foreground text-background text-[11px] font-bold rounded"
-                      >
-                        Sign
-                      </Button>
-                    </div>
+                    <button
+                      onClick={commit}
+                      disabled={isWorking}
+                      className="w-full mt-4 bg-foreground text-background py-2 text-[13px] font-medium rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
+                    >
+                      Sign Sequence
+                    </button>
                   )}
                 </div>
               )}
             </div>
-
-            {displayError && (
-              <p className="text-[12px] text-muted-foreground/60 text-center">{displayError}</p>
-            )}
           </div>
-
-          {/* ── Right: avatar + camera ── */}
-          <div className="lg:col-span-5 flex flex-col gap-4">
-            <div className="aspect-[4/5] bg-foreground rounded-lg overflow-hidden relative">
+          <div className="lg:col-span-7 flex flex-col gap-4">
+            <div className="w-full aspect-[4/3] bg-secondary rounded-xl relative overflow-hidden flex items-center justify-center">
               <AvatarViewer
                 envelope={activeEnvelope}
                 modelUrl={MODEL_URL}
-                className="w-full h-full"
+                className="w-full h-full scale-[1.1] transition-transform duration-700"
               />
-              <div className="absolute top-3 right-3">
-                <div
-                  className={`w-1.5 h-1.5 rounded-full ${activeEnvelope ? "bg-background" : "bg-background/15"}`}
-                />
-              </div>
             </div>
-
             {visionEnabled && (
-              <div className="border border-border rounded-lg overflow-hidden">
-                <div className="relative aspect-video bg-foreground">
-                  <video
-                    ref={camera.videoRef}
-                    autoPlay
-                    muted
-                    playsInline
-                    className="absolute inset-0 w-full h-full object-cover scale-x-[-1] opacity-60"
-                  />
-                  <HandOverlay tracking={camera.tracking} />
-                  <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/40 rounded text-[8px] text-white/60 font-mono">
-                    {camera.fps} fps
+              <div className="w-full rounded-xl border border-border bg-card overflow-hidden">
+                <div className="flex flex-col sm:flex-row h-auto sm:h-[180px]">
+                  <div className="aspect-video bg-black relative flex-shrink-0">
+                    <video
+                      ref={camera.videoRef}
+                      autoPlay
+                      muted
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover scale-x-[-1] opacity-70"
+                    />
+                    <HandOverlay tracking={camera.tracking} />
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center p-5">
+                    <span className="text-[12px] font-medium text-muted-foreground mb-1">
+                      Detected Text
+                    </span>
+                    {camera.tracking.sentenceText || camera.tracking.currentWord ? (
+                      <div className="flex flex-col">
+                        <span className="text-[18px] font-semibold text-foreground uppercase tracking-wide">
+                          {camera.tracking.sentenceText || camera.tracking.currentWord}
+                        </span>
+                        <button
+                          onClick={() => {
+                            const text =
+                              camera.tracking.sentenceText || camera.tracking.currentWord;
+                            if (text) {
+                              setTextDraft(text);
+                              setMode("text");
+                              camera.clear();
+                            }
+                          }}
+                          className="mt-3 text-[12px] font-medium text-primary hover:opacity-80 transition-opacity inline-flex items-center gap-1 w-fit"
+                        >
+                          Use Text <ArrowRight size={12} />
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-[13px] text-muted-foreground">
+                        Waiting for signs...
+                      </span>
+                    )}
                   </div>
                 </div>
-                {(camera.tracking.sentenceText || camera.tracking.currentWord) && (
-                  <div className="px-4 py-3 flex items-center justify-between gap-4">
-                    <span className="text-[12px] font-semibold text-foreground truncate tracking-wide uppercase">
-                      {camera.tracking.sentenceText || camera.tracking.currentWord}
-                    </span>
-                    <button
-                      onClick={() => {
-                        const text = camera.tracking.sentenceText || camera.tracking.currentWord;
-                        if (text) {
-                          setTextDraft(text);
-                          setMode("text");
-                          camera.clear();
-                        }
-                      }}
-                      className="text-[11px] font-bold text-muted-foreground hover:text-foreground transition-colors shrink-0 inline-flex items-center gap-1"
-                    >
-                      Use <ArrowRight size={11} />
-                    </button>
-                  </div>
-                )}
               </div>
             )}
           </div>

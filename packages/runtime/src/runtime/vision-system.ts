@@ -1,5 +1,4 @@
 import type { HandProcessor, VisionEventMap, VisionStatus } from "@ikiraro/engine/vision";
-
 /**
  * The VisionSystem orchestrates the end-to-end hand tracking pipeline.
  * It is responsible for:
@@ -23,25 +22,20 @@ export class VisionSystem {
   private lastFpsTime = 0;
   private frameCount = 0;
   private lastVideoTime = -1;
-
   constructor(private processor: HandProcessor) {
     this.setupProcessorHandlers();
   }
-
   private setupProcessorHandlers() {
     this.processor.onResult((tracking) => {
       this.busy = false;
       this.frameCount++;
-
       const now = performance.now();
       if (now - this.lastFpsTime >= 1000) {
         this.emit("fps-update", this.frameCount);
         this.frameCount = 0;
         this.lastFpsTime = now;
       }
-
       this.emit("tracking-update", tracking);
-
       if (tracking.landmarks && tracking.landmarks.length > 0) {
         this.emit("hand-found", { landmarks: tracking.landmarks });
         if (tracking.classification?.sign) {
@@ -53,42 +47,32 @@ export class VisionSystem {
       } else {
         this.emit("hand-lost", undefined);
       }
-
       if (tracking.committedToken) {
         this.emit("word-committed", tracking.committedToken);
       }
-
       this.emit("buffer-update", {
         currentWord: tracking.currentWord,
         sentenceText: tracking.sentenceText,
       });
     });
-
     this.processor.onError((err) => {
       this.setStatus("error");
       this.emit("error", err);
     });
   }
-
   async start(videoElement: HTMLVideoElement): Promise<void> {
     if (this._status === "active" || this._status === "starting") return;
-
     this.setStatus("starting");
     this.videoEl = videoElement;
-
     try {
       await this.processor.init();
-
       if (!navigator.mediaDevices?.getUserMedia) {
         throw new Error("Camera capture is not supported in this browser.");
       }
-
       this.stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
       });
-
       this.videoEl.srcObject = this.stream;
-
       await new Promise<void>((resolve) => {
         if (this.videoEl!.readyState >= HTMLMediaElement.HAVE_METADATA) {
           resolve();
@@ -96,9 +80,7 @@ export class VisionSystem {
           this.videoEl!.onloadedmetadata = () => resolve();
         }
       });
-
       await this.videoEl.play();
-
       this.setStatus("active");
       this.lastVideoTime = -1;
       this.lastFpsTime = performance.now();
@@ -112,15 +94,12 @@ export class VisionSystem {
       throw err;
     }
   }
-
   stop(): void {
     this.setStatus("idle");
-
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
     }
-
     if (this.videoEl && "cancelVideoFrameCallback" in this.videoEl) {
       const v = this.videoEl as any;
       if (this.videoFrameCallbackId !== null) {
@@ -128,53 +107,42 @@ export class VisionSystem {
         this.videoFrameCallbackId = null;
       }
     }
-
     this.stream?.getTracks().forEach((t) => t.stop());
     this.stream = null;
     this.lastVideoTime = -1;
     this.busy = false;
-
     if (this.videoEl) {
       this.videoEl.pause();
       this.videoEl.srcObject = null;
     }
   }
-
   reset(): void {
     this.processor.reset();
   }
-
   manualCorrect(sign: string): void {
     this.processor.correct(sign);
   }
-
   get status(): VisionStatus {
     return this._status;
   }
-
   on<K extends keyof VisionEventMap>(event: K, handler: (data: VisionEventMap[K]) => void): void {
     const set = this.handlers.get(event) ?? new Set();
     set.add(handler);
     this.handlers.set(event, set);
   }
-
   off<K extends keyof VisionEventMap>(event: K, handler: (data: VisionEventMap[K]) => void): void {
     this.handlers.get(event)?.delete(handler);
   }
-
   private emit<K extends keyof VisionEventMap>(event: K, data: VisionEventMap[K]) {
     this.handlers.get(event)?.forEach((h) => h(data));
   }
-
   private setStatus(status: VisionStatus) {
     if (this._status === status) return;
     this._status = status;
     this.emit("status-change", status);
   }
-
   private queueNextFrame() {
     if (this._status !== "active") return;
-
     if (this.videoEl && "requestVideoFrameCallback" in this.videoEl) {
       const v = this.videoEl as any;
       this.videoFrameCallbackId = v.requestVideoFrameCallback((now: number) => {
@@ -188,29 +156,22 @@ export class VisionSystem {
       });
     }
   }
-
   private async captureAndSend(now: number) {
     if (this._status !== "active" || !this.videoEl) return;
-
     if (this.videoEl.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
       this.queueNextFrame();
       return;
     }
-
     if (this.videoEl.currentTime === this.lastVideoTime) {
       this.queueNextFrame();
       return;
     }
-
     this.lastVideoTime = this.videoEl.currentTime;
-
     if (this.busy) {
       this.queueNextFrame();
       return;
     }
-
     this.busy = true;
-
     try {
       const bitmap = await createImageBitmap(this.videoEl);
       if (this._status !== "active") {

@@ -2,7 +2,6 @@ import { IkiraroSurgicalClassifier } from "./classifier";
 import { LinguisticBuffer } from "./linguistic-buffer";
 import type { HandLandmarks, SignToken, ClassificationResult } from "../types";
 import type { BufferState, LinguisticBufferConfig, VisionPipelineConfig } from "./types";
-
 /**
  * SignDetectionPipeline is the deep module for the landmarks → SignToken path.
  *
@@ -14,7 +13,6 @@ export class SignDetectionPipeline {
   private classifier: IkiraroSurgicalClassifier;
   private buffer: LinguisticBuffer;
   private _lastClassification: ClassificationResult | null = null;
-
   constructor(
     classifierConfig?: Partial<VisionPipelineConfig>,
     bufferConfig?: Partial<LinguisticBufferConfig>,
@@ -22,7 +20,6 @@ export class SignDetectionPipeline {
     this.classifier = new IkiraroSurgicalClassifier(classifierConfig);
     this.buffer = new LinguisticBuffer(bufferConfig);
   }
-
   /**
    * Process a frame of hand landmarks through classify → buffer → token.
    * Returns a committed SignToken when the buffer fires, otherwise null.
@@ -35,7 +32,6 @@ export class SignDetectionPipeline {
       confidence: this._lastClassification.confidence,
     });
   }
-
   /**
    * Drive the buffer forward with no hand detected. Triggers a timeout commit
    * if the pause threshold has been exceeded.
@@ -44,22 +40,18 @@ export class SignDetectionPipeline {
     this._lastClassification = null;
     return this.buffer.update(null);
   }
-
   /** The ClassificationResult from the most recent process() call, or null after tick(). */
   get lastClassification(): ClassificationResult | null {
     return this._lastClassification;
   }
-
   /** Current buffer state — currentWord (in-progress), sentence (committed), sentenceText. */
   getBufferState(): BufferState {
     return this.buffer.getState();
   }
-
   /** Replace the last accumulated character in the active strategy (manual correction). */
   overrideLast(sign: string): void {
     this.buffer.overrideLast(sign);
   }
-
   reset(): void {
     this.classifier.reset();
     this.buffer.clear();

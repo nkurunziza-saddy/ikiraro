@@ -8,13 +8,18 @@ import {
   RefRow,
   Callout,
 } from "@/components/docs/primitives";
-
 export const Route = createFileRoute("/docs/hooks")({
   component: HooksPage,
 });
-
-const SNIPPET_BASIC = `import { useIkiraro } from "@ikiraro/sdk";
-
+const SNIPPET_SETUP = `// 1. Create the global client in a shared file (e.g., lib/ikiraro.ts)
+import { createIkiraroClient } from "@ikiraro/sdk";
+export const ikiraroClient = createIkiraroClient({
+  sdk: { groqApiKey: import.meta.env.VITE_GROQ_API_KEY },
+  keyboard: true,
+});
+export const { useIkiraro, useIkiraroPlugin } = ikiraroClient;`;
+const SNIPPET_BASIC = `// 2. Consume it anywhere in your app without a Provider
+import { useIkiraro } from "@/lib/ikiraro";
 const {
   isReady,
   snapshot,
@@ -25,104 +30,110 @@ const {
   cancel,
   onTranslated,
   error,
-  runtime,  // escape hatch — prefer the helpers above
-} = useIkiraro({
-  sdk: { groqApiKey: import.meta.env.VITE_GROQ_API_KEY },
-});`;
-
-const SNIPPET_TRANSLATE = `const { translate } = useIkiraro({ sdk: { groqApiKey: "..." } });
-
+} = useIkiraro();`;
+const SNIPPET_TRANSLATE = `const { translate } = useIkiraro();
 // Translate any English sentence to ASL Gloss via Groq Llama
 translate("Hello, how are you today?");
-
-// With optional context to bias the LLM toward a domain
-translate("Where does it hurt?", { context: { domain: "medical" } });`;
-
-const SNIPPET_TRANSLATE_UNITS = `const { translateUnits } = useIkiraro({ sdk: { groqApiKey: "..." } });
-
+// With optional conversation context to bias the LLM
+translate("Where does it hurt?", {
+  context: {
+    locale: "en-US",
+    previousTurns: [{ role: "hearing", text: "Hi there" }],
+  },
+});`;
+const SNIPPET_TRANSLATE_UNITS = `const { translateUnits } = useIkiraro();
 // Fingerspell "HELLO" — deterministic, no LLM needed
 translateUnits(["H", "E", "L", "L", "O"]);
-
 // ASL lexeme codes from the pose library also work
 translateUnits(["HELLO", "WORLD"]);`;
-
-const SNIPPET_SPEECH = `const { startSpeech, stopSpeech, snapshot } = useIkiraro({ sdk: { ... } });
-
+const SNIPPET_SPEECH = `const { startSpeech, stopSpeech, snapshot } = useIkiraro();
 // Start mic recording — Groq Whisper transcribes after stopSpeech()
 startSpeech();
-
-// Drive a real-time audio meter
-console.log(snapshot.speechLevel); // 0–1 float
+// Drive a real-time audio meter while recording
+console.log(snapshot.speechLevel);  // 0–1 float
 console.log(snapshot.speechStatus); // "capturing"
-
 // Stop and fire translation automatically
 stopSpeech();
-
-// Optional: pick a specific Whisper model
-startSpeech({ sttModel: "whisper-large-v3" });`;
-
-const SNIPPET_CANCEL = `const { cancel, snapshot } = useIkiraro({ sdk: { ... } });
-
-// Abort any in-progress translation
+// Optional: pick a specific Whisper model + hint the transcript domain
+startSpeech({
+  sttModel: "whisper-large-v3",
+  prompt: "Medical terminology",
+});`;
+const SNIPPET_CANCEL = `const { cancel, snapshot } = useIkiraro();
+// Abort any in-progress capture or translation
 cancel();
-
 <button onClick={cancel} disabled={!snapshot.isTranslating}>
   Cancel
 </button>`;
-
-const SNIPPET_ON_TRANSLATED = `const { onTranslated, isReady } = useIkiraro({ sdk: { ... } });
-
+const SNIPPET_ON_TRANSLATED = `const { onTranslated, isReady } = useIkiraro();
 useEffect(() => {
   if (!isReady) return;
   const unsub = onTranslated((envelope) => {
     // Runs outside React render — safe for side effects
     console.log("Gloss:", envelope.plan.glossText);
-    myTTSEngine.speak(envelope.normalizedText);
+    myTTS.speak(envelope.normalizedText);
   });
-  return unsub; // returns the unsubscribe fn
+  return unsub;
 }, [isReady, onTranslated]);`;
-
-const SNIPPET_COMPOSITION = `const { snapshot } = useIkiraro({ sdk: { ... } });
-
-// While the user types — CompositionPlugin debounces 400 ms
-console.log(snapshot.compositionTokens); // in-flight token buffer
-console.log(snapshot.compositionText);   // joined string`;
-
+const SNIPPET_COMPOSITION = `const { snapshot } = useIkiraro();
+// CompositionPlugin debounces tokens with a 400 ms window
+console.log(snapshot.compositionTokens); // IkiraroToken[] — in-flight buffer
+console.log(snapshot.compositionText);   // joined string for live preview`;
+const SNIPPET_PLUGIN = `import { useIkiraroPlugin } from "@/lib/ikiraro";
+function MyVisionWidget() {
+  // Subscribe specifically to the vision plugin state without re-rendering on speech events
+  const visionState = useIkiraroPlugin("vision");
+  if (!visionState?.isTracking) return null;
+  return <div>Tracking Hand: {visionState.handedness}</div>;
+}`;
 function HooksPage() {
   return (
     <div className="space-y-12">
       <PageTitle
-        title="useIkiraro"
-        subtitle="The primary React hook. Creates and manages an IkiraroRuntime for the lifetime of the component. Teardown is automatic. Config is read only on mount — changes after mount are intentionally ignored."
+        title="React Bindings"
+        subtitle="Ikiraro uses a Provider-less factory pattern. You configure the client once globally, and then use its bound hooks anywhere in your app. The hardware lifecycle (WebGL, Camera) is managed automatically via reference counting."
       />
 
-      {/* Signature */}
       <section className="space-y-4">
-        <SectionHead id="signature" label="Signature" />
-        <CodeBlock code={SNIPPET_BASIC} label="useIkiraro" />
+        <SectionHead id="setup" label="Setup & Basic Usage" />
+        <CodeBlock code={SNIPPET_SETUP} label="lib/ikiraro.ts" />
+        <CodeBlock code={SNIPPET_BASIC} label="MyComponent.tsx" />
       </section>
 
-      {/* Config */}
       <section className="space-y-4">
-        <SectionHead id="config" label="Configuration" />
+        <SectionHead id="config" label="Configuration (createIkiraroClient)" />
         <RefTable>
           <RefTableHead cols={["Option", "Type", "Description"]} />
           <RefRow
             name="sdk.groqApiKey"
-            type="string?"
-            desc="Groq API key. Without it, the runtime falls back to DeterministicUnitsPlanner (no LLM)."
+            type="string"
+            desc="Groq API key. Without it, only DeterministicUnitsPlanner (translateUnits) works — LLM gloss generation is disabled."
           />
           <RefRow
-            name="plugins.composition.debounceMs"
-            type="number?"
-            desc="Token debounce window in ms. Default 400."
+            name="sdk.groqBaseUrl"
+            type="string?"
+            desc="Override the Groq API base URL. Useful for proxies or self-hosted endpoints."
+          />
+          <RefRow
+            name="vision"
+            type="{ processor: HandProcessor }?"
+            desc="Enables camera sign-language input. Pass a WorkerHandProcessor instance."
+          />
+          <RefRow
+            name="keyboard"
+            type="boolean?"
+            desc="Mount KeyboardPlugin — captures physical key presses as sign tokens. Default false."
+          />
+          <RefRow
+            name="plugins"
+            type="IkiraroPlugin[]?"
+            desc="Additional plugins appended after the defaults. Use for analytics, logging, or custom input adapters."
           />
         </RefTable>
       </section>
 
-      {/* Returns */}
       <section className="space-y-4">
-        <SectionHead id="returns" label="Returns" />
+        <SectionHead id="returns" label="useIkiraro Returns" />
         <RefTable>
           <RefTableHead cols={["Field", "Type", "Description"]} />
           <RefRow
@@ -153,7 +164,7 @@ function HooksPage() {
           <RefRow
             name="startSpeech"
             type="(options?) => void"
-            desc="Open the microphone and begin Whisper transcription."
+            desc="Open the microphone. Call stopSpeech() to transcribe and translate."
           />
           <RefRow
             name="stopSpeech"
@@ -163,28 +174,21 @@ function HooksPage() {
           <RefRow
             name="cancel"
             type="() => void"
-            desc="Abort any in-progress translation. Clears the isTranslating flag."
+            desc="Abort any in-progress capture or translation. Clears the isTranslating flag."
           />
           <RefRow
             name="onTranslated"
             type="(handler) => () => void"
             desc="Subscribe to completed translations outside React state. Returns unsubscribe fn. Must be called after isReady."
           />
-          <RefRow
-            name="runtime"
-            type="IkiraroRuntime | null"
-            desc="Escape hatch for direct EventBus and plugin access. Prefer the helpers above."
-          />
         </RefTable>
       </section>
 
-      {/* translate */}
       <section className="space-y-4">
         <SectionHead id="translate" label="translate" />
         <CodeBlock code={SNIPPET_TRANSLATE} label="translate()" />
       </section>
 
-      {/* translateUnits */}
       <section className="space-y-4">
         <SectionHead id="translate-units" label="translateUnits" />
         <p className="text-muted-foreground text-[13px] leading-relaxed">
@@ -195,27 +199,24 @@ function HooksPage() {
         <CodeBlock code={SNIPPET_TRANSLATE_UNITS} label="translateUnits()" />
       </section>
 
-      {/* Speech */}
       <section className="space-y-4">
         <SectionHead id="speech" label="startSpeech / stopSpeech" />
         <CodeBlock code={SNIPPET_SPEECH} label="speech" />
         <Callout>
           <strong className="text-foreground">startSpeech options:</strong>{" "}
           <code className="font-mono text-foreground">sttModel</code> picks the Whisper variant
-          (default <code className="font-mono text-foreground">"whisper-large-v3-turbo"</code>).{" "}
+          (default <code className="font-mono text-foreground">"whisper-large-v3"</code>).{" "}
           <code className="font-mono text-foreground">prompt</code> biases transcription toward a
-          domain. <code className="font-mono text-foreground">context</code> is forwarded to the
-          gloss generation LLM.
+          domain. <code className="font-mono text-foreground">context</code> passes conversation
+          history to the gloss generation LLM.
         </Callout>
       </section>
 
-      {/* cancel */}
       <section className="space-y-4">
         <SectionHead id="cancel" label="cancel" />
         <CodeBlock code={SNIPPET_CANCEL} label="cancel()" />
       </section>
 
-      {/* onTranslated */}
       <section className="space-y-4">
         <SectionHead id="on-translated" label="onTranslated" />
         <p className="text-muted-foreground text-[13px] leading-relaxed">
@@ -227,14 +228,11 @@ function HooksPage() {
         <CodeBlock code={SNIPPET_ON_TRANSLATED} label="onTranslated()" />
       </section>
 
-      {/* Snapshot */}
       <section className="space-y-4">
         <SectionHead id="snapshot" label="Snapshot" />
         <p className="text-muted-foreground text-[13px] leading-relaxed">
-          A flat, reactive view of the runtime state. All fields update inside React's transition
-          system via <code className="font-mono text-foreground">startTransition</code> — renders
-          are non-blocking. Subscribe to changes with{" "}
-          <code className="font-mono text-foreground">useEffect</code>.
+          A flat, reactive view of the runtime state. Subscribe to changes implicitly by calling{" "}
+          <code className="font-mono text-foreground">useIkiraro()</code>.
         </p>
         <RefTable>
           <RefTableHead cols={["Field", "Type", "Description"]} />
@@ -245,17 +243,17 @@ function HooksPage() {
           />
           <RefRow
             name="snapshot.status"
-            type='"idle" | "recording" | "translating" | …'
-            desc="High-level session status string."
+            type='"idle" | "recording" | "translating" | "finished" | "error"'
+            desc="Session lifecycle phase. Updates as the user moves through capture → translation → playback."
           />
           <RefRow
             name="snapshot.isTranslating"
             type="boolean"
-            desc="True while the LLM / renderer pipeline is running."
+            desc="True while the LLM / deterministic pipeline is running."
           />
           <RefRow
             name="snapshot.compositionTokens"
-            type="CompositionToken[]"
+            type="IkiraroToken[]"
             desc="In-flight token buffer from CompositionPlugin (400 ms debounce window)."
           />
           <RefRow
@@ -265,21 +263,32 @@ function HooksPage() {
           />
           <RefRow
             name="snapshot.speechStatus"
-            type='"idle" | "capturing" | "processing"'
+            type='"idle" | "capturing" | "processing" | "error"'
             desc="Mic capture state — use to show recording indicators and meters."
           />
           <RefRow
             name="snapshot.speechLevel"
             type="number (0–1)"
-            desc="Real-time mic amplitude — feed to AudioVisualizer."
+            desc="Real-time mic amplitude — feed directly to AudioVisualizer."
           />
           <RefRow
             name="snapshot.error"
             type="string | null"
-            desc="Last translation error. Cleared on the next successful translation."
+            desc="Last translation error message. Null until an error occurs; cleared on next successful translation."
           />
         </RefTable>
         <CodeBlock code={SNIPPET_COMPOSITION} label="compositionTokens" />
+      </section>
+
+      <section className="space-y-4">
+        <SectionHead id="use-plugin" label="useIkiraroPlugin" />
+        <p className="text-muted-foreground text-[13px] leading-relaxed">
+          Subscribe to the state of a specific plugin. This is more performant than{" "}
+          <code className="font-mono text-foreground">useIkiraro</code> if you only care about one
+          slice of state (e.g. vision or inspector), because it won't re-render your component on
+          unrelated events like speech volume changes.
+        </p>
+        <CodeBlock code={SNIPPET_PLUGIN} label="useIkiraroPlugin()" />
       </section>
     </div>
   );

@@ -2,6 +2,15 @@
   "name": "@ikiraro/runtime",
   "version": "0.1.2",
   "private": true,
+  "homepage": "https://github.com/nkurunziza-saddy/ikiraro#readme",
+  "bugs": {
+    "url": "https://github.com/nkurunziza-saddy/ikiraro/issues"
+  },
+  "author": "Saddy Nkurunziza <nkurunziza-saddy>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nkurunziza-saddy/ikiraro.git"
+  },
   "type": "module",
   "exports": {
     ".": "./src/index.ts"

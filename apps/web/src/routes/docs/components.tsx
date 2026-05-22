@@ -8,23 +8,18 @@ import {
   RefRow,
   Callout,
 } from "@/components/docs/primitives";
-
 export const Route = createFileRoute("/docs/components")({
   component: ComponentsPage,
 });
-
 const SNIPPET_AVATAR = `import { AvatarViewer } from "@ikiraro/sdk";
-
 // Full-featured — pass the envelope from useIkiraro
 <AvatarViewer
   envelope={snapshot.lastEnvelope}   // TranslationEnvelope | null
   modelUrl="/models/avatar.glb"       // path to your .glb signer model
   className="w-full h-[400px]"
 />
-
 // Null resets the avatar to rest position
 <AvatarViewer envelope={null} modelUrl="/models/avatar.glb" />`;
-
 const SNIPPET_AVATAR_BLEND = `// Blend modes are set per FrameItem in the SignPlan:
 //
 // "blend"  — smooth interpolation between poses (default for lexemes)
@@ -33,25 +28,19 @@ const SNIPPET_AVATAR_BLEND = `// Blend modes are set per FrameItem in the SignPl
 //
 // The RendererDirector inside AvatarViewer applies these automatically.
 // You don't configure this on the component — it comes from the plan.`;
-
 const SNIPPET_AUDIO_VIZ = `import { AudioVisualizer } from "@ikiraro/sdk";
-
 // Renders an animated bar chart driven by real-time mic amplitude
 <AudioVisualizer
   level={snapshot.speechLevel}  // 0–1 float from useIkiraro snapshot
   count={20}                    // number of bars (default 20)
 />
-
 // Show it only while recording
 {snapshot.speechStatus === "capturing" && (
   <AudioVisualizer level={snapshot.speechLevel} count={24} />
 )}`;
-
 const SNIPPET_ASL_HAND = `import { AslHandSvg } from "@ikiraro/sdk";
-
 // Static SVG illustration of an ASL handshape
 <AslHandSvg letter="A" size={24} className="text-foreground" />
-
 // Fingerspelling keyboard grid
 {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((l) => (
   <button key={l} onClick={() => setSignUnits((p) => [...p, l])}>
@@ -59,18 +48,14 @@ const SNIPPET_ASL_HAND = `import { AslHandSvg } from "@ikiraro/sdk";
     <span>{l}</span>
   </button>
 ))}`;
-
 const SNIPPET_WEB_SPEECH = `import { WebSpeechProvider } from "@ikiraro/sdk";
-
 // Singleton TTS — synchronized with avatar playback
 const tts = WebSpeechProvider.getInstance();
-
 // Speak when a new envelope arrives
 useEffect(() => {
   if (!envelope) return;
   tts.speak(envelope.normalizedText);
 }, [envelope]);`;
-
 function ComponentsPage() {
   return (
     <div className="space-y-12">
@@ -79,7 +64,6 @@ function ComponentsPage() {
         subtitle="All components are re-exported from @ikiraro/renderer. They accept standard className props and use Tailwind design tokens — they adapt to your theme without configuration."
       />
 
-      {/* AvatarViewer */}
       <section className="space-y-4">
         <SectionHead id="avatar-viewer" label="AvatarViewer" />
         <p className="text-muted-foreground text-[13px] leading-relaxed">
@@ -122,7 +106,6 @@ function ComponentsPage() {
         </Callout>
       </section>
 
-      {/* AudioVisualizer */}
       <section className="space-y-4">
         <SectionHead id="audio-visualizer" label="AudioVisualizer" />
         <p className="text-muted-foreground text-[13px] leading-relaxed">
@@ -141,7 +124,6 @@ function ComponentsPage() {
         </RefTable>
       </section>
 
-      {/* AslHandSvg */}
       <section className="space-y-4">
         <SectionHead id="asl-hand-svg" label="AslHandSvg" />
         <p className="text-muted-foreground text-[13px] leading-relaxed">
@@ -161,7 +143,6 @@ function ComponentsPage() {
           />
         </RefTable>
       </section>
-
       {/* WebSpeechProvider */}
       <section className="space-y-4">
         <SectionHead id="web-speech-provider" label="WebSpeechProvider" />
@@ -179,7 +160,6 @@ function ComponentsPage() {
           best voices.
         </Callout>
       </section>
-
       {/* Low-level */}
       <section className="space-y-4">
         <SectionHead id="low-level" label="Low-level components" />

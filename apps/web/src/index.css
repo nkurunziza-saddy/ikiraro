@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+
+/* Inter for the strict tech look */
 @import "@fontsource-variable/inter";
 
 @custom-variant dark (&:is(.dark *));
@@ -21,121 +23,99 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
   --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --radius-md: calc(var(--radius) * 0.85);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-xl: calc(var(--radius) * 1.35);
   --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
-  --font-heading: "Inter Variable", "Inter", system-ui, sans-serif;
+  --radius-3xl: calc(var(--radius) * 2.35);
+  --radius-4xl: calc(var(--radius) * 2.8);
 
-  /* Sensa animations */
-  --animate-voice-pulse: voice-pulse 1s ease-in-out infinite;
-
-  /* Sensa shadow tokens */
-  --shadow-sh-1: var(--sh-1);
-  --shadow-sh-2: var(--sh-2);
-  --shadow-sh-3: var(--sh-3);
-  --shadow-sh-4: var(--sh-4);
+  /* Bento Custom Colors */
+  --color-bento-border: var(--bento-border);
+  --color-bento-gap: var(--bento-gap);
+  --color-bento-bg: var(--bento-hover);
 }
 
-:root {
-  /* Refined geometry — Professional Product feel */
-  --radius: 0.25rem;
-  /* 4px base */
+@layer base {
+  :root {
+    /* Light Mode Palette */
+    --background: #ffffff;
+    --foreground: #09090b;
 
-  /* Shadows — extremely subtle */
-  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.02);
-  --sh-2: 0 2px 4px rgba(0, 0, 0, 0.02);
-  --sh-3: 0 4px 12px rgba(0, 0, 0, 0.03);
-  --sh-4: 0 8px 24px rgba(0, 0, 0, 0.04);
+    --card: #fdfdfd;
+    --card-foreground: #09090b;
 
-  /* Professional Minimal — semantic tokens */
-  --background: #ffffff;
-  --foreground: #111111;
-  --card: #ffffff;
-  --card-foreground: #111111;
-  --popover: #ffffff;
-  --popover-foreground: #111111;
-  --primary: #111111;
-  --primary-foreground: #ffffff;
-  --secondary: #f9f9f9;
-  --secondary-foreground: #111111;
-  --muted: #f9f9f9;
-  --muted-foreground: #888888;
-  --accent: #f9f9f9;
-  --accent-foreground: #111111;
-  --destructive: #111111;
-  --border: #eeeeee;
-  --input: #eeeeee;
-  --ring: #111111;
-  --chart-1: #111111;
-  --chart-2: #666666;
-  --chart-3: #999999;
-  --chart-4: #cccccc;
-  --chart-5: #eeeeee;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #111111;
-  --sidebar-primary: #111111;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f9f9f9;
-  --sidebar-accent-foreground: #111111;
-  --sidebar-border: #eeeeee;
-  --sidebar-ring: #111111;
-}
+    --primary: #ff4d29;
+    --primary-foreground: #ffffff;
 
-@keyframes voice-pulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
+    --secondary: #f4f4f5;
+    --secondary-foreground: #71717a;
+
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+
+    --accent: #f4f4f5;
+    --accent-foreground: #09090b;
+
+    --border: rgba(0, 0, 0, 0.08);
+    --input: rgba(0, 0, 0, 0.05);
+    --ring: rgba(255, 77, 41, 0.5);
+
+    --radius: 0px;
+
+    /* Bento Grid Tokens (Light) */
+    --bento-border: rgba(0, 0, 0, 0.06);
+    --bento-gap: rgba(0, 0, 0, 0.06);
+    --bento-hover: rgba(0, 0, 0, 0.02);
+
+    /* Atmospheric Glass & Depth */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --shadow-linear: 0 0 0 1px var(--border), 0 8px 32px -4px rgba(0, 0, 0, 0.1);
   }
 
-  50% {
-    opacity: 0.4;
-    transform: scale(0.7);
-  }
-}
+  .dark {
+    /* Design Engineering Palette: Deep Ink & Subtle Coral */
+    --background: #030303;
+    --foreground: #f2f2f2;
 
-@keyframes viz-rise {
-  0%,
-  100% {
-    height: 20%;
-  }
+    --card: #080808;
+    --card-foreground: #f2f2f2;
 
-  50% {
-    height: 85%;
-  }
-}
+    --primary: #ff4d29;
+    --primary-foreground: #ffffff;
 
-@keyframes live-pulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+    --secondary: #0d0d0d;
+    --secondary-foreground: #8c8c8c;
 
-  50% {
-    opacity: 0.35;
-    transform: scale(0.8);
+    --muted: #0d0d0d;
+    --muted-foreground: #666666;
+
+    --accent: #141414;
+    --accent-foreground: #f2f2f2;
+
+    --border: rgba(255, 255, 255, 0.08);
+    --input: rgba(255, 255, 255, 0.05);
+    --ring: rgba(255, 77, 41, 0.5);
+
+    /* Bento Grid Tokens (Dark) */
+    --bento-border: rgba(255, 255, 255, 0.05);
+    --bento-gap: rgba(255, 255, 255, 0.05);
+    --bento-hover: rgba(255, 255, 255, 0.015);
+
+    /* Atmospheric Glass & Depth */
+    --glass-bg: rgba(10, 10, 10, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --shadow-linear: 0 0 0 1px var(--border), 0 8px 32px -4px rgba(0, 0, 0, 0.8);
   }
 }
 
@@ -144,38 +124,97 @@
     @apply border-border outline-ring/50;
   }
 
-  html {
-    @apply bg-background font-sans;
-  }
-
+  html,
   body {
-    @apply min-h-svh bg-background text-foreground font-sans antialiased;
-    font-size: 14px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-    font-feature-settings: "kern", "liga";
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+    font-family: var(--font-sans);
+    letter-spacing: -0.015em;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-heading text-foreground;
-    letter-spacing: -0.01em;
-    font-weight: 600;
-    line-height: 1.2;
+  /* Linear-style grain texture overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.015;
+    pointer-events: none;
+    z-index: 50;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
   }
 
-  ::selection {
-    @apply bg-foreground text-background;
+  /* Design Engineering Typography */
+  .text-hero {
+    @apply font-sans font-semibold tracking-tighter text-[52px] md:text-[88px] leading-[0.95];
   }
 
-  button:not(:disabled),
-  [role="button"]:not(:disabled) {
-    cursor: pointer;
+  .text-subhero {
+    @apply font-sans font-normal text-[18px] md:text-[22px] text-secondary-foreground leading-[1.6];
+  }
+
+  .text-title {
+    @apply font-sans font-semibold tracking-tight text-[32px] md:text-[44px] leading-[1.1];
+  }
+
+  .text-metadata {
+    @apply font-mono text-[10px] md:text-[11px] uppercase tracking-[0.25em] font-bold text-primary;
+  }
+
+  /* Structural Bento Grid Utilities */
+  .bento-container {
+    @apply max-w-[1400px] mx-auto px-4 md:px-8;
+  }
+
+  .bento-grid {
+    @apply grid gap-px bg-bento-gap border border-bento-border;
+  }
+
+  .bento-cell {
+    @apply bg-background transition-colors duration-300;
+  }
+
+  .bento-cell-hover {
+    @apply hover:bg-bento-bg;
+  }
+
+  .bento-label {
+    @apply text-[10px] md:text-[11px] font-mono font-medium text-muted-foreground tracking-widest uppercase;
+  }
+
+  .bento-tag {
+    @apply inline-flex items-center gap-2 px-3 py-1 border border-border bg-secondary/50 w-fit;
+  }
+
+  /* Atmospheric Glass & Depth */
+  .glass-pane {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-linear);
+  }
+
+  .mesh-glow {
+    position: absolute;
+    filter: blur(100px);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle at center, var(--primary), transparent 70%);
+  }
+
+  .blueprint-grid {
+    background-image:
+      linear-gradient(to right, var(--bento-border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--bento-border) 1px, transparent 1px);
+    background-size: 40px 40px;
   }
 }

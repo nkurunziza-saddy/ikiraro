@@ -8,10 +8,8 @@ import {
   MultiplicationSignCircleIcon,
   Loading03Icon,
 } from "@hugeicons/core-free-icons";
-
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme();
-
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
@@ -44,5 +42,4 @@ const Toaster = ({ ...props }: ToasterProps) => {
     />
   );
 };
-
 export { Toaster };

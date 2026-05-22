@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Terminal, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 type TokenKind = "keyword" | "type" | "string" | "comment" | "number" | "op" | "plain";
-
 const KEYWORDS = new Set([
   "import",
   "export",
@@ -57,15 +55,12 @@ const KEYWORDS = new Set([
   "true",
   "false",
 ]);
-
 function tokenize(code: string): [string, TokenKind][] {
   const out: [string, TokenKind][] = [];
   let pos = 0;
-
   while (pos < code.length) {
     const ch = code[pos];
 
-    // Line comment
     if (ch === "/" && code[pos + 1] === "/") {
       const nl = code.indexOf("\n", pos);
       const end = nl === -1 ? code.length : nl;
@@ -74,7 +69,6 @@ function tokenize(code: string): [string, TokenKind][] {
       continue;
     }
 
-    // Block comment
     if (ch === "/" && code[pos + 1] === "*") {
       const end = code.indexOf("*/", pos + 2);
       const to = end === -1 ? code.length : end + 2;
@@ -83,7 +77,6 @@ function tokenize(code: string): [string, TokenKind][] {
       continue;
     }
 
-    // String or template literal
     if (ch === "`" || ch === '"' || ch === "'") {
       let j = pos + 1;
       while (j < code.length) {
@@ -102,7 +95,6 @@ function tokenize(code: string): [string, TokenKind][] {
       continue;
     }
 
-    // Number
     if (/\d/.test(ch) && (pos === 0 || !/\w/.test(code[pos - 1]))) {
       let j = pos;
       while (j < code.length && /[\d.]/.test(code[j])) j++;
@@ -111,7 +103,6 @@ function tokenize(code: string): [string, TokenKind][] {
       continue;
     }
 
-    // Identifier, keyword, or type
     if (/[a-zA-Z_$]/.test(ch)) {
       let j = pos;
       while (j < code.length && /[\w$]/.test(code[j])) j++;
@@ -126,14 +117,11 @@ function tokenize(code: string): [string, TokenKind][] {
       continue;
     }
 
-    // Operators and structural punctuation
     out.push([ch, /[=<>!|&+\-*/^~?:.;,()[\]{}@#]/.test(ch) ? "op" : "plain"]);
     pos++;
   }
-
   return out;
 }
-
 const TOKEN_COLOR: Record<TokenKind, string> = {
   keyword: "#c084fc",
   type: "#67e8f9",
@@ -143,10 +131,7 @@ const TOKEN_COLOR: Record<TokenKind, string> = {
   op: "#94a3b8",
   plain: "rgba(255,255,255,0.85)",
 };
-
 const PLAIN_LABELS = new Set(["terminal", ".env"]);
-
-// Components
 
 export function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -166,10 +151,8 @@ export function CopyButton({ text }: { text: string }) {
     </Button>
   );
 }
-
 export function CodeBlock({ code, label }: { code: string; label?: string }) {
   const isPlain = !label || PLAIN_LABELS.has(label);
-
   return (
     <div className="bg-foreground border border-background/10 rounded overflow-hidden text-[13px]">
       {label && (
@@ -197,7 +180,6 @@ export function CodeBlock({ code, label }: { code: string; label?: string }) {
     </div>
   );
 }
-
 export function SectionHead({ id, label }: { id: string; label: string }) {
   return (
     <div id={id} className="scroll-mt-24">
@@ -207,7 +189,6 @@ export function SectionHead({ id, label }: { id: string; label: string }) {
     </div>
   );
 }
-
 export function RefTable({ children }: { children: React.ReactNode }) {
   return (
     <div className="border border-border rounded divide-y divide-border overflow-hidden">
@@ -215,7 +196,6 @@ export function RefTable({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
 export function RefTableHead({ cols }: { cols: string[] }) {
   const gridClass = cols.length === 2 ? "grid-cols-[1.5fr_3fr]" : "grid-cols-[1.4fr_1.4fr_2fr]";
   return (
@@ -228,7 +208,6 @@ export function RefTableHead({ cols }: { cols: string[] }) {
     </div>
   );
 }
-
 export function RefRow({ name, type, desc }: { name: string; type?: string; desc: string }) {
   const has3 = type !== undefined;
   const gridClass = has3 ? "grid-cols-[1.4fr_1.4fr_2fr]" : "grid-cols-[1.5fr_3fr]";
@@ -240,7 +219,6 @@ export function RefRow({ name, type, desc }: { name: string; type?: string; desc
     </div>
   );
 }
-
 export function EventTable({ children }: { children: React.ReactNode }) {
   return (
     <div className="border border-border rounded divide-y divide-border overflow-hidden">
@@ -252,7 +230,6 @@ export function EventTable({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
 export function EventRow({ name, desc }: { name: string; desc: string }) {
   return (
     <div className="grid grid-cols-[1.8fr_3fr] gap-4 px-5 py-3.5 text-[13px]">
@@ -261,7 +238,6 @@ export function EventRow({ name, desc }: { name: string; desc: string }) {
     </div>
   );
 }
-
 export function Callout({ children }: { children: React.ReactNode }) {
   return (
     <div className="bg-secondary border border-border rounded p-4 text-[13px] text-muted-foreground leading-relaxed">
@@ -269,7 +245,6 @@ export function Callout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
 export function PageTitle({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="pb-8 border-b border-border mb-8">

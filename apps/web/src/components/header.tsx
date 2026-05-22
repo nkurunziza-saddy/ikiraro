@@ -1,47 +1,47 @@
 import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
-
 export default function Header() {
-  const links = [
-    { to: "/", label: "Product" },
-    { to: "/playground", label: "Playground" },
-    { to: "/docs", label: "Documentation" },
-  ] as const;
-
   return (
-    <header className="bg-background/80 border-b border-border sticky top-0 z-50 w-full backdrop-blur-md">
-      <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-6 py-3.5 md:px-10">
-        <div className="flex items-center gap-10">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="bg-foreground flex h-5 w-5 items-center justify-center rounded-sm">
-              <span className="text-background text-[10px] font-bold tracking-tighter">S</span>
-            </div>
-            <span className="text-foreground text-[14px] font-semibold tracking-tight">Sensa</span>
-          </Link>
-
-          <nav className="hidden items-center gap-6 md:flex">
-            {links.map(({ to, label }) => (
+    <header className="absolute top-0 left-0 right-0 z-50 w-full pt-[24px] px-6 md:px-12 bg-transparent">
+      <div className="mx-auto flex max-w-[1400px] items-center justify-between border-b border-border pb-[24px]">
+        <Link
+          to="/"
+          className="font-semibold tracking-tight text-[22px] text-foreground flex items-center gap-3"
+        >
+          Sensa
+        </Link>
+        <div className="flex items-center gap-[32px]">
+          <nav className="hidden md:flex items-center gap-[24px]">
+            {[
+              { label: "Playground", to: "/playground" },
+              { label: "Documentation", to: "/docs" },
+            ].map(({ label, to }) => (
               <Link
-                key={to}
+                key={label}
                 to={to}
-                className="text-muted-foreground text-[13px] font-medium transition-colors hover:text-foreground"
-                activeProps={{
-                  className: "text-foreground font-semibold",
-                }}
+                className="font-sans text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 {label}
               </Link>
             ))}
           </nav>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <Button
-            render={<Link to="/playground" />}
-            className="bg-foreground text-background rounded-md h-8 px-4 text-[12px] font-bold transition-all hover:opacity-90"
+          <Link
+            to="/playground"
+            className="flex items-center justify-center gap-2 h-[36px] px-[16px] bg-primary text-primary-foreground font-semibold text-[13px] hover:opacity-90 transition-opacity"
           >
-            Launch
-          </Button>
+            Launch Engine
+            <svg
+              className="w-3.5 h-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </Link>
         </div>
       </div>
     </header>

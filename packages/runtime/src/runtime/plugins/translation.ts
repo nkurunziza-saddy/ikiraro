@@ -2,13 +2,11 @@ import type { IkiraroPlugin, PluginContext, IkiraroEvent } from "../types";
 import type { TranslationEnvelope } from "@ikiraro/engine/types";
 import { createTranslationPlanners, type TranslationPlanner } from "../translation-planner";
 import type { TranslationRequest } from "../types";
-
 export interface TranslationState {
   lastEnvelope?: TranslationEnvelope;
   isTranslating: boolean;
   error?: string;
 }
-
 /**
  * The TranslationPlugin deepens the runtime by owning the local-first
  * translation lifecycle using Effect.
@@ -17,15 +15,12 @@ export class TranslationPlugin implements IkiraroPlugin<TranslationState> {
   name = "translation";
   initialState: TranslationState = { isTranslating: false };
   private planners: TranslationPlanner[] = [];
-
   setup(ctx: PluginContext<TranslationState>) {
     this.planners = createTranslationPlanners(ctx.config.sdk);
-
     ctx.subscribe("translation:cmd:request", async (event) => {
       await this.handleTranslationRequest(event.payload, ctx);
     });
   }
-
   reducer(state: TranslationState, event: IkiraroEvent): TranslationState {
     switch (event.type) {
       case "translation:started":
@@ -38,7 +33,6 @@ export class TranslationPlugin implements IkiraroPlugin<TranslationState> {
         return state;
     }
   }
-
   private async handleTranslationRequest(
     options: TranslationRequest,
     ctx: PluginContext<TranslationState>,
@@ -49,13 +43,11 @@ export class TranslationPlugin implements IkiraroPlugin<TranslationState> {
       timestamp: Date.now(),
       source: this.name,
     });
-
     try {
       const planner = this.planners.find((candidate) => candidate.canPlan(options));
       if (!planner) {
         throw new Error(`No translation planner is configured for mode: ${options.mode}`);
       }
-
       const envelope: TranslationEnvelope = await planner.plan(options);
       ctx.emit({
         type: "translation:finished",

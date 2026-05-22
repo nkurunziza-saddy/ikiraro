@@ -1,13 +1,10 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-
 import { Toaster } from "@/components/ui/sonner";
-
+import { GlobalErrorBoundary } from "@/components/error-boundary";
 import Header from "../components/header";
 import appCss from "../index.css?url";
-
 export interface RouterAppContext {}
-
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   head: () => ({
     meta: [
@@ -33,27 +30,34 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       },
     ],
   }),
-
   component: RootDocument,
 });
-
+import { ThemeProvider } from "@/components/theme-provider";
 function RootDocument() {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body className="overflow-x-hidden">
-        <div className="flex min-h-svh flex-col">
-          <Header />
-          <main className="flex-1">
-            <Outlet />
-          </main>
-        </div>
-        <Toaster richColors />
-
-        <TanStackRouterDevtools position="bottom-left" />
-        <Scripts />
+        <GlobalErrorBoundary>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="flex min-h-svh flex-col">
+              <Header />
+              <main className="flex-1">
+                <Outlet />
+              </main>
+            </div>
+            <Toaster richColors />
+            <TanStackRouterDevtools position="bottom-left" />
+          </ThemeProvider>
+          <Scripts />
+        </GlobalErrorBoundary>
       </body>
     </html>
   );

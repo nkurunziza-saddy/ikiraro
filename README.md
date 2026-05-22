@@ -32,12 +32,16 @@ bun run dev:web
 To use Ikiraro in a React app, initialize the runtime with your config:
 
 ```tsx
-import { useIkiraro, AvatarViewer } from "@ikiraro/sdk";
+import { createIkiraroClient, AvatarViewer } from "@ikiraro/sdk";
+
+// Initialize once globally
+export const ikiraroClient = createIkiraroClient({
+  sdk: { groqApiKey: "YOUR_KEY" },
+});
+export const { useIkiraro } = ikiraroClient;
 
 function App() {
-  const { snapshot, translate } = useIkiraro({
-    sdk: { groqApiKey: "YOUR_KEY" },
-  });
+  const { snapshot, translate } = useIkiraro();
 
   return <AvatarViewer envelope={snapshot.lastEnvelope} modelUrl="/avatar.glb" />;
 }

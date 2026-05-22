@@ -4,14 +4,12 @@ declare module "*?worker" {
   };
   export default workerConstructor;
 }
-
 interface ImportMetaEnv {
   readonly DEV: boolean;
   readonly PROD: boolean;
   readonly MODE: string;
   [key: string]: string | boolean | undefined;
 }
-
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }

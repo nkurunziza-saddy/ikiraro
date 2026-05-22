@@ -5,9 +5,7 @@ import type {
   SttModel,
   TranslationContext,
 } from "@ikiraro/engine/types";
-
 export type SessionStatus = "idle" | "recording" | "translating" | "finished" | "error";
-
 export interface SessionState {
   status: SessionStatus;
   mode?: CommunicationMode;
@@ -17,7 +15,6 @@ export interface SessionState {
   translationContext?: TranslationContext;
   prompt?: string;
 }
-
 /**
  * The SessionPlugin orchestrates the high-level communication lifecycle.
  * It coordinates between Speech, Translation, and Composition plugins.
@@ -28,23 +25,18 @@ export class SessionPlugin implements IkiraroPlugin<SessionState> {
     status: "idle",
     sttModel: "whisper-large-v3",
   };
-
   setup(ctx: PluginContext<SessionState>) {
-    // 1. Listen for session commands
     ctx.subscribe("session:cmd:start", (event) => {
       const { mode, text, units, sttModel, prompt, context } = event.payload;
       this.handleStart(ctx, mode, { text, units, sttModel, prompt, context });
     });
-
     ctx.subscribe("session:cmd:stop", () => {
       this.handleStop(ctx);
     });
-
     ctx.subscribe("session:cmd:cancel", () => {
       this.handleCancel(ctx);
     });
 
-    // 2. Listen for sub-plugin events to drive state
     ctx.subscribe("translation:started", () => {
       ctx.emit({
         type: "session:status-change",
@@ -53,7 +45,6 @@ export class SessionPlugin implements IkiraroPlugin<SessionState> {
         source: this.name,
       });
     });
-
     ctx.subscribe("translation:finished", () => {
       ctx.emit({
         type: "session:status-change",
@@ -62,7 +53,6 @@ export class SessionPlugin implements IkiraroPlugin<SessionState> {
         source: this.name,
       });
     });
-
     ctx.subscribe("translation:error", () => {
       ctx.emit({
         type: "session:status-change",
@@ -71,7 +61,6 @@ export class SessionPlugin implements IkiraroPlugin<SessionState> {
         source: this.name,
       });
     });
-
     ctx.subscribe("speech:status-change", (event) => {
       if (event.payload === "capturing") {
         ctx.emit({
@@ -83,7 +72,6 @@ export class SessionPlugin implements IkiraroPlugin<SessionState> {
       }
     });
   }
-
   reducer(state: SessionState, event: IkiraroEvent): SessionState {
     switch (event.type) {
       case "session:status-change":
@@ -107,7 +95,6 @@ export class SessionPlugin implements IkiraroPlugin<SessionState> {
         return state;
     }
   }
-
   private handleStart(
     ctx: PluginContext<SessionState>,
     mode: CommunicationMode,
@@ -142,7 +129,6 @@ export class SessionPlugin implements IkiraroPlugin<SessionState> {
       });
     }
   }
-
   private handleStop(ctx: PluginContext<SessionState>) {
     const state = ctx.getPluginState();
     if (state.status === "recording" && state.mode === "speech") {
@@ -158,7 +144,6 @@ export class SessionPlugin implements IkiraroPlugin<SessionState> {
       });
     }
   }
-
   private handleCancel(ctx: PluginContext<SessionState>) {
     const state = ctx.getPluginState();
     if (state.status === "recording") {
@@ -169,7 +154,5 @@ export class SessionPlugin implements IkiraroPlugin<SessionState> {
         source: this.name,
       });
     }
-    // We don't really have a 'cancel' for translation once it's in flight in the current Effect runtime setup,
-    // but we can reset session state.
   }
 }

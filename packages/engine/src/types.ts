@@ -1,22 +1,14 @@
-// Communication
-
 export type CommunicationMode = "speech" | "text" | "sign-keys" | "camera-fingerspell";
 export type TranslationTrack = "semantic" | "deterministic";
 export type PlanningStrategy = "semantic" | "deterministic";
 
-// STT
-
 export const STT_MODELS = ["whisper-large-v3", "whisper-large-v3-turbo"] as const;
 export type SttModel = (typeof STT_MODELS)[number];
-
 export function isSttModel(value: string | null | undefined): value is SttModel {
   return Boolean(value && (STT_MODELS as readonly string[]).includes(value));
 }
 
-// Token primitives
-
 export type TokenStability = "draft" | "stable" | "committed";
-
 /**
  * The IkiraroToken is the unified domain object for all conversational input.
  * It encapsulates value, source, and lifecycle data, enabling deep fusion.
@@ -29,10 +21,9 @@ export interface IkiraroToken {
   timestamp: number;
   confidence: number;
   stability: TokenStability;
-  correlationId?: string; // Links related tokens (e.g., a draft and its committed version)
-  metadata?: Record<string, any>;
+  correlationId?: string;
+  metadata?: Record<string, unknown>;
 }
-
 export const EMPHASIS_LEVELS = ["low", "normal", "high"] as const;
 export const FACIAL_EXPRESSIONS = [
   "neutral",
@@ -41,32 +32,25 @@ export const FACIAL_EXPRESSIONS = [
   "urgent",
   "empathetic",
 ] as const;
-
 export type EmphasisLevel = (typeof EMPHASIS_LEVELS)[number];
 export type FacialExpression = (typeof FACIAL_EXPRESSIONS)[number];
-
 export type CoarticulationMode = "blend" | "snap" | "none";
-
 export type BaseToken = {
   durationMs: number;
   emphasis: EmphasisLevel;
   facialExpression?: FacialExpression;
   coarticulationHint?: CoarticulationMode;
 };
-
 export type LexemeToken = BaseToken & { type: "lexeme"; lexemeId: string };
 export type FingerspellToken = BaseToken & { type: "fingerspell"; text: string };
 export type NumberToken = BaseToken & { type: "number"; value: string };
 export type PointingToken = BaseToken & { type: "pointing"; target: string };
 export type PauseToken = { type: "pause"; durationMs: number };
 export type SignToken = LexemeToken | FingerspellToken | NumberToken | PauseToken | PointingToken;
-
 export type SignClause = {
   intent: string;
   tokens: SignToken[];
 };
-
-// Sign plan
 
 export type SignPlan = {
   sourceText: string;
@@ -81,8 +65,6 @@ export type SignPlan = {
     notes: string[];
   };
 };
-
-// Renderer Queue
 
 export type MotionType =
   | "none"
@@ -106,7 +88,6 @@ export type MotionType =
   | "n-dip"
   | "k-push";
 
-// Per-sign dominant-arm override (deltas from the generic SIGN pose).
 export type ArmTarget = {
   rArmX?: number;
   rArmZ?: number;
@@ -123,7 +104,6 @@ export type ArmTarget = {
   lForeY?: number;
   lHandX?: number;
 };
-
 export type FrameItem = {
   type: "lexeme" | "fingerspell" | "number" | "pause" | "pointing";
   value: string;
@@ -136,22 +116,18 @@ export type FrameItem = {
   coarticulation?: CoarticulationMode;
 };
 
-// Speech intake
-
 export type SpeechWordTiming = {
   word: string;
   start: number;
   end: number;
   confidence?: number;
 };
-
 export type SpeechSegment = {
   id: number;
   start: number;
   end: number;
   text: string;
 };
-
 export type SpeechIntake = {
   model: SttModel;
   text: string;
@@ -162,15 +138,11 @@ export type SpeechIntake = {
   segments: SpeechSegment[];
 };
 
-// Translation context
-
 export type TranslationContext = {
   conversationId?: string;
   previousTurns?: Array<{ role: "hearing" | "signer"; text: string }>;
   locale?: string;
 };
-
-// Two-layer output
 
 export type SemanticIntent = {
   rawGloss: string;
@@ -179,7 +151,6 @@ export type SemanticIntent = {
   model: string;
   promptTokens?: number;
 };
-
 export type TranslationEnvelope = {
   mode: CommunicationMode;
   intake: SpeechIntake | null;
@@ -190,16 +161,12 @@ export type TranslationEnvelope = {
   intent?: SemanticIntent;
 };
 
-// Vision types
-
 export interface Point3D {
   x: number;
   y: number;
   z: number;
 }
-
 export type HandLandmarks = Point3D[];
-
 export interface FeatureVector {
   isValid: boolean;
   fingerStates: [boolean, boolean, boolean, boolean, boolean];
@@ -219,7 +186,6 @@ export interface FeatureVector {
   velocity: Point3D;
   isMoving: boolean;
 }
-
 export interface ClassificationResult {
   sign: string | null;
   confidence: number;
@@ -228,15 +194,12 @@ export interface ClassificationResult {
   isTransitioning?: boolean;
   gesture?: "double-letter-slide" | "double-letter-bounce" | "none";
 }
-
 export interface IFeatureExtractor {
   extract(landmarks: HandLandmarks, imageLandmarks?: HandLandmarks): FeatureVector;
 }
-
 export interface ISignMatcher {
   match(vector: FeatureVector): Array<{ name: string; score: number }>;
 }
-
 export interface ITemporalSmoother {
   smooth(candidates: Array<{ name: string; score: number }>): {
     sign: string | null;
@@ -244,13 +207,11 @@ export interface ITemporalSmoother {
   };
   reset(): void;
 }
-
 export interface ILandmarkSmoother {
   smooth(landmarks: HandLandmarks): HandLandmarks;
   getVelocity(): Point3D;
   reset(): void;
 }
-
 export interface IGestureDetector {
   update(velocity: Point3D): {
     type: "double-letter-slide" | "double-letter-bounce" | "none";
@@ -258,12 +219,10 @@ export interface IGestureDetector {
   };
   reset(): void;
 }
-
 export interface ITransitionDetector {
   isTransitioning(velocity: Point3D, confidence: number): boolean;
   reset(): void;
 }
-
 export interface VisionPipelineConfig {
   smoother: ILandmarkSmoother;
   extractor: IFeatureExtractor;
@@ -273,7 +232,6 @@ export interface VisionPipelineConfig {
   transition: ITransitionDetector;
   motionVelocityThreshold: number;
 }
-
 export type CameraTrackingState = {
   landmarks: HandLandmarks;
   classification: ClassificationResult | null;
@@ -282,14 +240,12 @@ export type CameraTrackingState = {
   sentenceText: string;
   committedToken: SignToken | null;
 };
-
 export interface HandshapeDefinition {
   name: string;
   fingerprint: string;
   requiresMotion?: boolean;
   disambiguate?: (vector: FeatureVector) => number;
 }
-
 export interface ClassifierConfig {
   windowSize: number;
   rawScoreThreshold: number;
@@ -299,7 +255,6 @@ export interface ClassifierConfig {
   unlockThreshold: number;
   motionVelocityThreshold: number;
 }
-
 export interface ASLModelInterface {
   readonly name: string;
   load(): Promise<void>;

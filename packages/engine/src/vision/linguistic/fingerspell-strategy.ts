@@ -2,7 +2,6 @@ import type { ILinguisticStrategy, WordBufferContext } from "../types";
 import type { SignToken } from "../../types";
 import { fingerspellToken } from "../../planning/tokens";
 import { ASL_DEFAULTS } from "../asl-defaults";
-
 export class FingerspellStrategy implements ILinguisticStrategy {
   readonly name = "fingerspell";
   private buffer = "";
@@ -11,12 +10,9 @@ export class FingerspellStrategy implements ILinguisticStrategy {
   private readonly minHoldMs = ASL_DEFAULTS.minLetterHoldMs;
   private readonly doubleLetterHoldMs = ASL_DEFAULTS.doubleLetterHoldMs;
   private doubleLetterCommitted = false;
-
   update(sign: string, context: WordBufferContext): SignToken | null {
-    if (sign.length !== 1) return null; // Only handle single characters
-
+    if (sign.length !== 1) return null;
     const now = performance.now();
-
     if (sign !== this.lastLetter) {
       if (now - this.lastLetterTime > this.minHoldMs) {
         this.buffer += sign;
@@ -27,7 +23,6 @@ export class FingerspellStrategy implements ILinguisticStrategy {
       return null;
     }
 
-    // Double letter detection
     if (
       !this.doubleLetterCommitted &&
       (context.gesture === "double-letter-slide" ||
@@ -37,21 +32,17 @@ export class FingerspellStrategy implements ILinguisticStrategy {
       this.buffer += sign;
       this.doubleLetterCommitted = true;
     }
-
     return null;
   }
-
   commit(): SignToken | null {
     if (!this.buffer) return null;
     const token = fingerspellToken(this.buffer);
     this.reset();
     return token;
   }
-
   getInProgress(): string {
     return this.buffer;
   }
-
   overrideLast(sign: string): void {
     if (this.buffer.length > 0) {
       this.buffer = this.buffer.slice(0, -1) + sign;
@@ -60,7 +51,6 @@ export class FingerspellStrategy implements ILinguisticStrategy {
     }
     this.lastLetter = sign;
   }
-
   reset(): void {
     this.buffer = "";
     this.lastLetter = "";

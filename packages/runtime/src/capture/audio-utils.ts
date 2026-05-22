@@ -6,7 +6,6 @@ const PREFERRED_AUDIO_RECORDING_MIME_TYPES = [
   "audio/ogg;codecs=opus",
   "audio/ogg",
 ] as const;
-
 export function getSupportedAudioRecordingMimeType(): string | undefined {
   if (
     typeof globalThis === "undefined" ||
@@ -15,15 +14,12 @@ export function getSupportedAudioRecordingMimeType(): string | undefined {
   ) {
     return undefined;
   }
-
   return PREFERRED_AUDIO_RECORDING_MIME_TYPES.find((mimeType) =>
     MediaRecorder.isTypeSupported(mimeType),
   );
 }
-
 export function getAudioFileExtension(mimeType: string | null | undefined): string {
   const normalizedMimeType = mimeType?.split(";")[0]?.trim().toLowerCase();
-
   switch (normalizedMimeType) {
     case "audio/mp4":
     case "audio/x-m4a":

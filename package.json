@@ -1,6 +1,15 @@
 {
   "name": "ikiraro",
   "private": true,
+  "homepage": "https://github.com/nkurunziza-saddy/ikiraro#readme",
+  "bugs": {
+    "url": "https://github.com/nkurunziza-saddy/ikiraro/issues"
+  },
+  "author": "Saddy Nkurunziza <nkurunziza-saddy>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nkurunziza-saddy/ikiraro.git"
+  },
   "workspaces": {
     "packages": [
       "apps/*",
@@ -31,7 +40,7 @@
     "check-types": "turbo check-types",
     "dev:web": "turbo -F web dev",
     "test": "turbo run test",
-    "check": "oxlint && oxfmt --write",
+    "check": "oxlint -c oxlintrc.json && oxfmt --write",
     "changeset": "changeset",
     "version": "changeset version && bun install",
     "release": "bun run build && bun run check-types && bun run test && changeset publish",

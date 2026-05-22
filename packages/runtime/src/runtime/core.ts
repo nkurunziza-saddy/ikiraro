@@ -5,68 +5,57 @@ import type {
   IkiraroState,
   PluginContext,
   EventRegistry,
-  PluginTeardown,
   RuntimeSnapshot,
 } from "./types";
 import { EventBus } from "./event-bus";
 import type { TranslationEnvelope, SttModel, TranslationContext } from "@ikiraro/engine/types";
-
 /**
  * The IkiraroRuntime is the "Nucleus" of the system.
  * It coordinates plugins through an Event Bus and maintains a unified state.
  */
 export class IkiraroRuntime {
   private state: IkiraroState = {
-    status: "idle",
+    lifecycleStatus: "idle",
     activeTracks: [],
     plugins: {} as IkiraroState["plugins"],
   };
-
   private bus = new EventBus();
-  private plugins: IkiraroPlugin[] = [];
+  private plugins: IkiraroPlugin<any>[] = [];
   private pluginDisposers: Array<() => void | Promise<void>> = [];
   private started = false;
-
+  private cachedSnapshot: RuntimeSnapshot | null = null;
   constructor(private config: RuntimeConfig) {}
-
   async start() {
     if (this.started) return;
     this.started = true;
     this.plugins = this.config.plugins || [];
 
-    // Pre-populate plugin states. The cast is load-bearing: plugins register by name at
-    // runtime, so TypeScript can't verify the key matches PluginRegistry at compile time.
     const pluginStates = this.state.plugins as unknown as Record<string, unknown>;
     for (const plugin of this.plugins) {
       if (plugin.initialState !== undefined) {
         pluginStates[plugin.name] = plugin.initialState;
       }
     }
-
     for (const plugin of this.plugins) {
-      const addPluginDisposer = (teardown: PluginTeardown) => {
-        if (!teardown) return;
-        if (Array.isArray(teardown)) {
-          this.pluginDisposers.push(...teardown);
-        } else {
-          this.pluginDisposers.push(teardown);
-        }
-      };
-
       const ctx: PluginContext = {
-        emit: (event) => this.dispatch(event),
+        emit: (event) => this.dispatch(event as IkiraroEvent),
         subscribe: (type, handler) => {
           const unsubscribe = this.subscribe(type, handler);
           this.pluginDisposers.push(unsubscribe);
           return unsubscribe;
         },
         getState: () => ({ ...this.state }),
-        getPluginState: () => pluginStates[plugin.name] as any,
+        getPluginState: () => pluginStates[plugin.name] as never,
         config: this.config,
       };
-      addPluginDisposer(await plugin.setup(ctx));
+      const teardown = await plugin.setup(ctx);
+      if (!teardown) continue;
+      if (Array.isArray(teardown)) {
+        this.pluginDisposers.push(...teardown);
+      } else {
+        this.pluginDisposers.push(teardown);
+      }
     }
-
     this.dispatch({
       type: "runtime:ready",
       payload: undefined,
@@ -74,50 +63,38 @@ export class IkiraroRuntime {
       source: "core",
     });
   }
-
   async stop() {
     if (!this.started) return;
-
     for (const dispose of [...this.pluginDisposers].reverse()) {
       await dispose();
     }
     this.pluginDisposers = [];
-
-    for (const plugin of this.plugins) {
-      if (plugin.teardown) await plugin.teardown();
-    }
     this.started = false;
   }
-
   /**
    * Dispatches an event: updates core state, runs plugin reducers, then emits on the bus.
    */
-  public dispatch<K extends keyof EventRegistry>(event: IkiraroEvent<K>) {
+  public dispatch(event: IkiraroEvent) {
     this.updateInternalState(event);
-
     const pluginStates = this.state.plugins as unknown as Record<string, unknown>;
     for (const plugin of this.plugins) {
       if (plugin.reducer && pluginStates[plugin.name] !== undefined) {
         pluginStates[plugin.name] = plugin.reducer(pluginStates[plugin.name], event);
       }
     }
-
+    this.cachedSnapshot = null;
     this.bus.emit(event);
   }
-
   public subscribe<K extends keyof EventRegistry>(
     type: K,
     handler: (event: IkiraroEvent<K>) => void,
-  ) {
+  ): () => void {
     return this.bus.on(type, handler);
   }
-
   /** Subscribe to every event on the bus. Use sparingly — prefer typed subscriptions. */
-  public subscribeAll(handler: (event: IkiraroEvent<any>) => void) {
+  public subscribeAll(handler: (event: IkiraroEvent) => void): () => void {
     return this.bus.onAll(handler);
   }
-
-  // Convenience API
 
   /** Translate a text string to signing. */
   translate(text: string, options: { context?: TranslationContext } = {}): void {
@@ -128,7 +105,6 @@ export class IkiraroRuntime {
       source: "sdk",
     });
   }
-
   /** Play back a sequence of manual sign units (e.g. from the sign keyboard). */
   translateUnits(units: string[]): void {
     this.dispatch({
@@ -138,7 +114,6 @@ export class IkiraroRuntime {
       source: "sdk",
     });
   }
-
   /** Begin microphone capture. Call `stopSpeech()` to transcribe and translate. */
   startSpeech(
     options: { sttModel?: SttModel; prompt?: string; context?: TranslationContext } = {},
@@ -150,7 +125,6 @@ export class IkiraroRuntime {
       source: "sdk",
     });
   }
-
   /** Stop capture and submit the recording for transcription → translation. */
   stopSpeech(): void {
     this.dispatch({
@@ -160,7 +134,6 @@ export class IkiraroRuntime {
       source: "sdk",
     });
   }
-
   /** Cancel an in-progress capture or translation without committing. */
   cancel(): void {
     this.dispatch({
@@ -170,7 +143,6 @@ export class IkiraroRuntime {
       source: "sdk",
     });
   }
-
   /**
    * Subscribe to completed translations. Returns an unsubscribe function.
    * Tip: in React, prefer reading `snapshot().lastEnvelope` in a `useEffect`.
@@ -178,14 +150,14 @@ export class IkiraroRuntime {
   onTranslated(handler: (envelope: TranslationEnvelope) => void): () => void {
     return this.subscribe("translation:finished", (event) => handler(event.payload));
   }
-
   /**
    * Returns a flat snapshot of the runtime state — no nested plugin paths needed.
-   * Safe to call on every render; returns a new object each time.
+   * Safe to call on every render; returns a cached reference if no state changes occurred.
    */
   snapshot(): RuntimeSnapshot {
+    if (this.cachedSnapshot) return this.cachedSnapshot;
     const plugins = this.state.plugins;
-    return {
+    this.cachedSnapshot = {
       status: plugins.session?.status ?? "idle",
       isTranslating: plugins.translation?.isTranslating ?? false,
       lastEnvelope: plugins.session?.lastEnvelope ?? null,
@@ -195,21 +167,23 @@ export class IkiraroRuntime {
       speechLevel: plugins.speech?.level ?? 0,
       error: plugins.session?.error ?? null,
     };
+    return this.cachedSnapshot;
+  }
+  /**
+   * Returns the raw internal state. Plugin states are live references — do not mutate.
+   * Prefer `snapshot()` for React consumption.
+   */
+  getState(): Readonly<IkiraroState> {
+    return this.state;
   }
 
-  // Internal
-
-  private updateInternalState(event: IkiraroEvent<any>) {
+  private updateInternalState(event: IkiraroEvent) {
     if (event.type === "runtime:status-change") {
-      this.state.status = event.payload;
+      this.state.lifecycleStatus = event.payload as IkiraroState["lifecycleStatus"];
     }
   }
-
-  getState() {
-    return { ...this.state };
-  }
 }
-
+/** Internal factory used by createIkiraro. Not part of the public API. */
 export async function articulate(config: RuntimeConfig) {
   const runtime = new IkiraroRuntime(config);
   await runtime.start();

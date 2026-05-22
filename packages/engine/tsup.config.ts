@@ -1,5 +1,4 @@
 import { defineConfig } from "tsup";
-
 export default defineConfig({
   entry: {
     "ikiraro-engine": "src/cdn.ts",

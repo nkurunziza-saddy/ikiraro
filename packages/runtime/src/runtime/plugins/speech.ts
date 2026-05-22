@@ -1,12 +1,10 @@
 import type { IkiraroPlugin, PluginContext, IkiraroEvent } from "../types";
 import { SpeechCaptureAdapter } from "../../capture/speech-capture";
 import type { CaptureStatus } from "../../capture/types";
-
 export interface SpeechState {
   status: CaptureStatus;
   level: number;
 }
-
 /**
  * Orchestrates speech capture and emits translation requests upon completion.
  */
@@ -14,7 +12,6 @@ export class SpeechPlugin implements IkiraroPlugin<SpeechState> {
   name = "speech";
   initialState: SpeechState = { status: "idle", level: 0 };
   private adapter = new SpeechCaptureAdapter();
-
   setup(ctx: PluginContext<SpeechState>) {
     const unsubscribeStatus = this.adapter.onStatus((status) => {
       ctx.emit({
@@ -24,7 +21,6 @@ export class SpeechPlugin implements IkiraroPlugin<SpeechState> {
         source: this.name,
       });
     });
-
     const unsubscribeLevel = this.adapter.onLevel((level) => {
       ctx.emit({
         type: "speech:level-update",
@@ -33,7 +29,6 @@ export class SpeechPlugin implements IkiraroPlugin<SpeechState> {
         source: this.name,
       });
     });
-
     ctx.subscribe("speech:cmd:start", async () => {
       try {
         await this.adapter.start();
@@ -46,7 +41,6 @@ export class SpeechPlugin implements IkiraroPlugin<SpeechState> {
         });
       }
     });
-
     ctx.subscribe("speech:cmd:stop", async (event) => {
       try {
         const audio = await this.adapter.stop();
@@ -71,14 +65,11 @@ export class SpeechPlugin implements IkiraroPlugin<SpeechState> {
         });
       }
     });
-
     ctx.subscribe("speech:cmd:cancel", () => {
       this.adapter.reset();
     });
-
-    return [unsubscribeStatus, unsubscribeLevel];
+    return [unsubscribeStatus, unsubscribeLevel, () => this.adapter.reset()];
   }
-
   reducer(state: SpeechState, event: IkiraroEvent): SpeechState {
     switch (event.type) {
       case "speech:status-change":
@@ -88,9 +79,5 @@ export class SpeechPlugin implements IkiraroPlugin<SpeechState> {
       default:
         return state;
     }
-  }
-
-  teardown() {
-    this.adapter.reset();
   }
 }
