@@ -16,6 +16,32 @@ export const Route = createFileRoute("/playground")({
 const tts = WebSpeechProvider.getInstance();
 const MODEL_URL = "/models/avatar.glb";
 type Mode = "text" | "speech" | "sign";
+
+const intentMap: Record<string, string> = {
+  hello: "Wave",
+  hi: "Wave",
+  hey: "Wave",
+  welcome: "Wave",
+  thanks: "ThankYou",
+  thank: "ThankYou",
+  appreciate: "ThankYou",
+  no: "Argue",
+  argue: "Argue",
+  stop: "Argue",
+  yes: "Talking",
+  yeah: "Talking",
+  ok: "Talking",
+  okay: "Talking",
+};
+
+function getBasicIntent(text: string): string {
+  const lower = text.toLowerCase();
+  for (const [key, intent] of Object.entries(intentMap)) {
+    if (lower.includes(key)) return intent;
+  }
+  return "Talking"; // default fallback for text
+}
+
 function DemoPage() {
   const {
     snapshot,
@@ -28,19 +54,35 @@ function DemoPage() {
   const camera = useHandTracking();
   const { start: startCamera, stop: stopCamera } = camera;
   const [mode, setMode] = useState<Mode>("text");
+  const [ttsProvider, setTtsProvider] = useState<"browser" | "openai" | "elevenlabs">("elevenlabs");
+  const [ttsApiKey, setTtsApiKey] = useState(import.meta.env.VITE_ELEVENLABS_API_KEY || "");
   const [textDraft, setTextDraft] = useState("");
   const [signUnits, setSignUnits] = useState<string[]>([]);
   const [visionEnabled, setVisionEnabled] = useState(false);
+  const [_currentIntent, setCurrentIntent] = useState<string | undefined>("Idle");
+
   const activeEnvelope = useDeferredValue(snapshot.lastEnvelope);
   const lastSpokenRef = useRef<string | null>(null);
   const isWorking = snapshot.isTranslating || snapshot.status === "recording";
   const displayError = snapshot.error ?? initError;
+
+  useEffect(() => {
+    tts.setConfig({ provider: ttsProvider, apiKey: ttsApiKey });
+  }, [ttsProvider, ttsApiKey]);
+
   useEffect(() => {
     if (!activeEnvelope) return;
-    const text = activeEnvelope.normalizedText;
+    const text = activeEnvelope.rawInput;
     if (!text || text === lastSpokenRef.current) return;
     lastSpokenRef.current = text;
     void tts.speak(text);
+
+    // Auto-map speech or tracked text to basic animation intent
+    setCurrentIntent(getBasicIntent(text));
+
+    // Return to idle after a few seconds
+    const tid = setTimeout(() => setCurrentIntent("Idle"), 4000);
+    return () => clearTimeout(tid);
   }, [activeEnvelope]);
 
   useEffect(() => {
@@ -50,17 +92,23 @@ function DemoPage() {
       stopCamera();
     }
   }, [visionEnabled, startCamera, stopCamera]);
+
   const commit = () => {
     if (mode === "text" && textDraft) {
+      setCurrentIntent(getBasicIntent(textDraft));
       translate(textDraft);
       setTextDraft("");
+      setTimeout(() => setCurrentIntent("Idle"), 4000);
     } else if (mode === "sign" && signUnits.length > 0) {
+      setCurrentIntent("Talking");
       translateUnits(signUnits);
       setSignUnits([]);
+      setTimeout(() => setCurrentIntent("Idle"), 4000);
     } else if (mode === "speech") {
       stopSpeech();
     }
   };
+
   return (
     <div className="min-h-screen bg-background flex flex-col pt-[100px] md:pt-[120px]">
       <main className="flex-1 max-w-[1200px] mx-auto w-full px-6 md:px-8 pb-12">
@@ -72,6 +120,29 @@ function DemoPage() {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-5 flex flex-col gap-6">
+            <div className="p-4 border border-border rounded-xl bg-card">
+              <h3 className="text-[13px] font-semibold text-foreground mb-3">TTS Settings</h3>
+              <div className="flex flex-col gap-3">
+                <select
+                  value={ttsProvider}
+                  onChange={(e) => setTtsProvider(e.target.value as any)}
+                  className="w-full bg-secondary text-foreground text-[13px] rounded-md px-3 py-1.5 border-none outline-none"
+                >
+                  <option value="browser">Browser Default</option>
+                  <option value="elevenlabs">ElevenLabs</option>
+                  <option value="openai">OpenAI</option>
+                </select>
+                {ttsProvider !== "browser" && (
+                  <input
+                    type="password"
+                    value={ttsApiKey}
+                    onChange={(e) => setTtsApiKey(e.target.value)}
+                    placeholder="API Key"
+                    className="w-full bg-secondary text-foreground text-[13px] rounded-md px-3 py-1.5 outline-none border border-transparent focus:border-border"
+                  />
+                )}
+              </div>
+            </div>
             <div className="flex items-center gap-2">
               {[
                 { id: "text", label: "Text", icon: Type },

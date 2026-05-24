@@ -149,6 +149,24 @@ export function computeMotionDelta(motion: MotionType, progress: number): Motion
       return delta({ rForeYDelta: Math.sin(q * Math.PI * 4) * 0.58 * e });
     }
 
+    case "wave": {
+      const q = boundedStrokeProgress(p, 0.1, 0.9);
+      const e = peakEnvelope(q, 0.15, 0.85);
+
+      // Extracted from Waving.fbx
+      const wave = Math.sin(q * Math.PI * 6);
+
+      return delta({
+        rArmXDelta: (-0.43 + 0.35 * wave) * e,
+        rArmYDelta: (0.3 + 0.45 * wave) * e,
+        rArmZDelta: (-0.15 + 0.4 * wave) * e,
+        rForeZDelta: (0.0 + 0.45 * wave) * e,
+        rHandXDelta: (-0.1 - 0.25 * wave) * e,
+        rHandYDelta: (-0.35 + 0.25 * wave) * e,
+        rHandZDelta: (-0.25 + 0.05 * wave) * e,
+      });
+    }
+
     case "circle": {
       const theta = boundedStrokeProgress(p, 0.16, 0.88) * Math.PI * 2;
       return delta({

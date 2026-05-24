@@ -93,7 +93,7 @@ function useAnimation(
         cancelAnimationFrame(frameIdRef.current);
       }
     };
-  }, [frames, isPlaying, options.fps, options.loop, options.onFrame]);
+  }, [frames, isPlaying, options]);
   useEffect(() => {
     setFrameIndex(0);
     setIsPlaying(options.autoplay);

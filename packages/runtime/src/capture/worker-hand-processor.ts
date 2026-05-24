@@ -1,9 +1,10 @@
 import type { CameraTrackingState, HandProcessor } from "@ikiraro/engine/vision";
 import type { MainToWorkerMessage, WorkerToMainMessage } from "./hand-tracking-types";
-import HandWorker from "../workers/hand-landmarker.worker?worker";
+import HolisticWorker from "../workers/holistic-landmarker.worker?worker";
+
 /**
- * Worker-based implementation of HandProcessor.
- * Handles the communication with the hand-landmarker Web Worker.
+ * Worker-based implementation of HandProcessor (now powered by Holistic Landmarker).
+ * Handles the communication with the holistic-landmarker Web Worker.
  */
 export class WorkerHandProcessor implements HandProcessor {
   private worker: Worker | null = null;
@@ -13,7 +14,7 @@ export class WorkerHandProcessor implements HandProcessor {
   private frameId = 0;
   async init(): Promise<void> {
     if (this.worker) return;
-    this.worker = new HandWorker();
+    this.worker = new HolisticWorker();
     if (!this.worker) return;
     this.worker.onmessage = (event: MessageEvent<WorkerToMainMessage>) => {
       const msg = event.data;

@@ -17,22 +17,36 @@ const workerBundlePlugin = {
       path: args.path,
       namespace: "ikiraro-worker",
     }));
-    build.onLoad({ filter: /.*/, namespace: "ikiraro-worker" }, () => ({
-      loader: "js",
-      contents: `
+    build.onLoad({ filter: /.*/, namespace: "ikiraro-worker" }, (args: any) => {
+      if (args.path.endsWith("holistic-landmarker.worker?worker")) {
+        return {
+          loader: "js",
+          contents: `
+          export default function WorkerFactory() {
+            return new Worker(new URL("./holistic-landmarker.worker.js", import.meta.url), {
+              type: "module"
+            });
+          }
+        `,
+        };
+      }
+      return {
+        loader: "js",
+        contents: `
         export default class IkiraroBundledWorker {
           constructor(options) {
             if (typeof Worker === "undefined") {
               throw new Error("Ikiraro hand tracking workers can only be created in a browser runtime.");
             }
-            return new Worker(new URL("./hand-landmarker.worker.js", import.meta.url), {
+            return new Worker(new URL("./holistic-landmarker.worker.js", import.meta.url), {
               ...options,
               type: "module",
             });
           }
         }
       `,
-    }));
+      };
+    });
   },
 };
 export default defineConfig({
@@ -40,7 +54,7 @@ export default defineConfig({
     index: "src/index.ts",
     components: "src/components.ts",
     engine: "src/engine.ts",
-    "hand-landmarker.worker": "../runtime/src/workers/hand-landmarker.worker.ts",
+    "holistic-landmarker.worker": "../runtime/src/workers/holistic-landmarker.worker.ts",
   },
   format: ["esm"],
   dts: {

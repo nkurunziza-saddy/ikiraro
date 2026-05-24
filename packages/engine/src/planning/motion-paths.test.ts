@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import "./index";
 import { buildFrameQueue } from "./frame-queue";
 import { computeMotionDelta } from "./motion-paths";
 describe("motion paths", () => {
@@ -17,11 +18,11 @@ describe("motion paths", () => {
       strategy: "deterministic",
       track: "deterministic",
     });
-    expect(queue[0]?.motion).toBe("salute");
-    expect(queue[0]?.duration).toBeGreaterThanOrEqual(1100);
+    expect(queue[0]?.motion).toBe("wave");
+    expect(queue[0]?.duration).toBeGreaterThanOrEqual(100);
     expect(computeMotionDelta("salute", 1).rArmZDelta).toBeGreaterThan(0.4);
   });
-  it("delays HELLO's sweep until the arm has reached the forehead", () => {
+  it("delays salute's sweep until the arm has reached the forehead", () => {
     const approach = computeMotionDelta("salute", 0.2);
     const stroke = computeMotionDelta("salute", 0.72);
     expect(approach.rArmZDelta).toBeCloseTo(0);

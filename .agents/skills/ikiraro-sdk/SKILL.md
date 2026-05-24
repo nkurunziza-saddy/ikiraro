@@ -10,11 +10,11 @@ metadata:
 
 Ikiraro bridges AI-driven translation (Groq), deterministic sign planning, and 3D rendering. The SDK (`@ikiraro/sdk`) is a curated facade over three internal packages:
 
-| Package             | Role                                                                    |
-| ------------------- | ----------------------------------------------------------------------- |
-| `@ikiraro/engine`   | Pure math — no deps. ASL pose library, planners, RendererDirector.      |
-| `@ikiraro/runtime`  | IkiraroRuntime, EventBus, plugins, React hooks, Groq AI services.       |
-| `@ikiraro/renderer` | React UI — AvatarViewer (R3F), AudioVisualizer, AslHandSvg, HandOverlay |
+| Package             | Role                                                                         |
+| ------------------- | ---------------------------------------------------------------------------- |
+| `@ikiraro/engine`   | Pure math — no deps. LanguageRegistry, Planners, Compiler, RendererDirector. |
+| `@ikiraro/runtime`  | IkiraroRuntime, EventBus, plugins, React hooks, Groq AI services.            |
+| `@ikiraro/renderer` | React UI — AvatarViewer (R3F), AudioVisualizer, AslHandSvg, HandOverlay, WebSpeechProvider |
 
 Install `@ikiraro/sdk` — it re-exports the stable public surface of all three.
 
@@ -131,10 +131,10 @@ translateUnits(["HELLO", "WORLD"]);
 ## Pattern D — One-off translation (no React, no runtime)
 
 ```typescript
-import { translate } from "@ikiraro/sdk";
+import { IkiraroSDK } from "@ikiraro/sdk";
 
 // Returns Promise<TranslationEnvelope> — single call, no runtime lifecycle
-const envelope = await translate("Hello world", {
+const envelope = await IkiraroSDK.translateTextAsync("Hello world", {
   groqApiKey: process.env.GROQ_API_KEY,
 });
 console.log(envelope.plan.glossText); // "HELLO WORLD"
@@ -267,6 +267,26 @@ Prefer `onTranslated` and the typed helpers for common cases. Use `ikiraroClient
 
 ---
 
+## Pattern H — Sign Language Plugins (Multilingual)
+
+The engine now supports dynamic sign language switching via the `LanguageRegistry` and `SignLanguagePlugin` interface.
+
+```typescript
+import { LanguageRegistry, ASLPlugin, RSLPlugin } from "@ikiraro/engine";
+
+// 1. Register available language plugins
+LanguageRegistry.register(ASLPlugin);
+LanguageRegistry.register(RSLPlugin);
+
+// 2. Set the active language
+LanguageRegistry.setActive("rsl");
+```
+
+**Note for Web/React usage:**
+By default, importing `@ikiraro/engine/planning` auto-registers both ASL and RSL and sets ASL as active. If you need to switch languages in the UI, simply call `LanguageRegistry.setActive("rsl")` and the engine's next translation will automatically use RSL handshapes, NLP rules, and fingerspelling semantics.
+
+---
+
 ## Avatar model requirements
 
 See [references/model_specs.md](references/model_specs.md) for bone naming conventions, rig requirements, and optimization targets.
@@ -285,7 +305,7 @@ See [references/model_specs.md](references/model_specs.md) for bone naming conve
 ## Best practices
 
 - `useIkiraro` is safe to use anywhere — the global client automatically boots the runtime on the first mount and gracefully tears it down when the last component unmounts (with a 500ms debounce).
-- Pre-load the model: `import { useGLTF } from "@react-three/drei"; useGLTF.preload("/models/avatar.glb")`.
+- Pre-load the model: `import { preloadAvatarModel } from "@ikiraro/sdk"; preloadAvatarModel("/models/avatar.glb")`.
 - Use `snapshot.speechLevel` (0–1) to drive a visual meter during recording.
 - `useHandTracking` boots the MediaPipe worker on mount — place it high in the tree so the worker is warm before the user clicks "Start Camera."
 - `snapshot.status` tracks the **session** lifecycle phase (`"idle" | "recording" | "translating" | "finished" | "error"`). This is distinct from the internal `runtime:status-change` event which tracks the runtime lifecycle.

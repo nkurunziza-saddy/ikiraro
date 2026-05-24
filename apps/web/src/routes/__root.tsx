@@ -33,6 +33,9 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
   component: RootDocument,
 });
 import { ThemeProvider } from "@/components/theme-provider";
+import { preloadAvatarModel } from "@ikiraro/renderer";
+
+preloadAvatarModel("/models/avatar.glb");
 function RootDocument() {
   return (
     <html lang="en" suppressHydrationWarning>

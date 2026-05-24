@@ -46,4 +46,19 @@ export class IkiraroSDK {
     });
     return Layer.mergeAll(SttGroqLive, GlossGroqLive).pipe(Layer.provide(groq));
   };
+  static translateTextAsync = (text: string, config: IkiraroConfig) =>
+    Effect.runPromise(
+      IkiraroSDK.translateText(text).pipe(Effect.provide(IkiraroSDK.makeLayer(config))),
+    );
+  static translateSpeechAsync = (
+    audio: File,
+    config: IkiraroConfig,
+    model?: SttModel,
+    prompt?: string,
+  ) =>
+    Effect.runPromise(
+      IkiraroSDK.translateSpeech(audio, model, prompt).pipe(
+        Effect.provide(IkiraroSDK.makeLayer(config)),
+      ),
+    );
 }

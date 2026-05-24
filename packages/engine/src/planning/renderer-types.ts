@@ -9,6 +9,9 @@ export interface SignCanvas {
   setOverlay(label: string, sublabel?: string): void;
   setExpression?(expression: string): void;
   setMotion?(motion: MotionType, progress: number, armTarget?: ArmTarget): void;
+  setMotionClip?(clipUrl: string | null, progress: number): void;
+  setSpatialTarget?(target: { x: number; y: number; z: number } | null): void;
+  setCoarticulationState?(state: { blendWeight: number; amplitudeScale: number } | null): void;
   clear(): void;
 }
 export interface RendererState {

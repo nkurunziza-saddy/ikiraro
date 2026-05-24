@@ -87,7 +87,7 @@ export function PixelBackground({
       }
     }
     cellsRef.current = newCells;
-  }, [dimensions, size, gap, darkColors, lightColors]);
+  }, [dimensions, size, gap, darkColors, lightColors, getColors]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -179,7 +179,7 @@ export function PixelBackground({
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [dimensions, pattern, size, gap, speed, darkColors, lightColors]);
+  }, [dimensions, pattern, size, gap, speed, darkColors, lightColors, getColors]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!canvasRef.current) return;

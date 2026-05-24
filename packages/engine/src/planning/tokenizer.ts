@@ -6,6 +6,7 @@ import type {
   SpeechIntake,
   TranslationEnvelope,
 } from "../types";
+import { LanguageRegistry } from "../language-registry";
 import { isKnownGloss } from "./gloss-registry";
 import { normalizeText } from "./normalizer";
 import {
@@ -18,26 +19,18 @@ import {
   pointingToken,
 } from "./tokens";
 import { buildFrameQueue } from "./frame-queue";
-const WH_GLOSS = new Set(["WHAT", "WHERE", "WHO", "WHEN", "WHY", "HOW"]);
+import { LinguisticParser, EpisodicSpatialMemory } from "../linguistic";
+import { SignCompiler } from "../compiler";
 
-const PRONOUN_PTR: Record<string, string> = {
-  I: "SELF",
-  ME: "SELF",
-  MY: "SELF",
-  YOU: "YOU",
-  YOUR: "YOU",
-  HE: "THAT",
-  SHE: "THAT",
-  HIM: "THAT",
-  HER: "THAT",
-  IT: "THAT",
-  THEY: "THAT",
-  THEM: "THAT",
-};
+const globalSpatialMemory = new EpisodicSpatialMemory();
+const parser = new LinguisticParser();
+const compiler = new SignCompiler();
+
 function pushLexeme(tokens: SignToken[], glosses: string[], hasWH: { v: boolean }, clean: string) {
-  if (WH_GLOSS.has(clean)) hasWH.v = true;
+  const lang = LanguageRegistry.getActive();
+  if (lang.nlp.questionWords.has(clean)) hasWH.v = true;
   const t = lexemeToken(clean);
-  if (WH_GLOSS.has(clean)) {
+  if (lang.nlp.questionWords.has(clean)) {
     t.facialExpression = "inquisitive";
     t.emphasis = "high";
   }
@@ -48,6 +41,7 @@ export function buildPlanFromGloss(intent: SemanticIntent, intake?: SpeechIntake
   const tokens: SignToken[] = [];
   const glosses: string[] = [];
   const hasWH = { v: false };
+  const lang = LanguageRegistry.getActive();
 
   for (const token of intent.glossTokens) {
     const clean = token.trim().toUpperCase();
@@ -69,9 +63,9 @@ export function buildPlanFromGloss(intent: SemanticIntent, intake?: SpeechIntake
       if (word.startsWith("PTR:")) {
         tokens.push(pointingToken(word.slice(4)));
         glosses.push(`PTR:${word.slice(4)}`);
-      } else if (PRONOUN_PTR[word]) {
-        tokens.push(pointingToken(PRONOUN_PTR[word]!));
-        glosses.push(`PTR:${PRONOUN_PTR[word]}`);
+      } else if (lang.nlp.pronouns[word]) {
+        tokens.push(pointingToken(lang.nlp.pronouns[word]!));
+        glosses.push(`PTR:${lang.nlp.pronouns[word]}`);
       } else if (isKnownGloss(word)) {
         pushLexeme(tokens, glosses, hasWH, word);
       } else {
@@ -84,9 +78,9 @@ export function buildPlanFromGloss(intent: SemanticIntent, intake?: SpeechIntake
     if (/^\d+$/.test(clean)) {
       tokens.push(numberToken(clean));
       glosses.push(`#${clean}`);
-    } else if (PRONOUN_PTR[clean]) {
-      tokens.push(pointingToken(PRONOUN_PTR[clean]!));
-      glosses.push(`PTR:${PRONOUN_PTR[clean]}`);
+    } else if (lang.nlp.pronouns[clean]) {
+      tokens.push(pointingToken(lang.nlp.pronouns[clean]!));
+      glosses.push(`PTR:${lang.nlp.pronouns[clean]}`);
     } else if (isKnownGloss(clean)) {
       pushLexeme(tokens, glosses, hasWH, clean);
     } else {
@@ -159,11 +153,15 @@ export function createEnvelope(
     intent?: SemanticIntent;
   } = {},
 ): TranslationEnvelope {
+  const graph = parser.parse(plan);
+  const instructions = compiler.compile(graph, globalSpatialMemory);
+
   return {
     mode: options.mode ?? "text",
     intake: options.intake ?? null,
     plan,
     rendererQueue: buildFrameQueue(plan),
+    instructions,
     rawInput: options.rawInput ?? plan.sourceText,
     normalizedText: plan.normalizedText,
     intent: options.intent,

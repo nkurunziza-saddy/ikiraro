@@ -71,7 +71,7 @@ useEffect(() => {
   const unsub = onTranslated((envelope) => {
     // Runs outside React render — safe for side effects
     console.log("Gloss:", envelope.plan.glossText);
-    myTTS.speak(envelope.normalizedText);
+    myTTS.speak(envelope.rawInput);
   });
   return unsub;
 }, [isReady, onTranslated]);`;

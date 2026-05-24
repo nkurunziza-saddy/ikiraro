@@ -42,3 +42,5 @@ export type { CaptureStatus } from "./capture/types";
  * For sustained app use, prefer `createIkiraro()` which reuses the AI layer.
  */
 export { translate } from "./translate";
+export { IkiraroSDK } from "./sdk";
+export type { IkiraroConfig } from "./sdk";

@@ -18,7 +18,7 @@ export const GLOSS_REGISTRY: Record<string, GlossRegistryEntry> = {
   GO: { label: "Go", durationMs: 720 }, // arc
   GOOD: { label: "Good", durationMs: 700 }, // arc
   HAVE: { label: "Have", durationMs: 740 }, // arc
-  HELLO: { label: "Hello", durationMs: 820 }, // arc
+  HELLO: { label: "Hello", durationMs: 1800 }, // wave
   HELP: { label: "Help", durationMs: 860 }, // arc
   HOW: { label: "How", durationMs: 800 }, // circle
   INTERPRETER: { label: "Interpreter", durationMs: 980 }, // circle

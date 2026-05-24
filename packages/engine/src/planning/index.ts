@@ -28,5 +28,17 @@ export { computeMotionDelta } from "./motion-paths";
 export type { MotionDelta } from "./motion-paths";
 export { RendererDirector } from "./renderer-director";
 export type { SignCanvas, RendererState, PlaybackOptions, HandPose } from "./renderer-types";
-export { coarticulationBlend } from "./coarticulation";
+export { coarticulationBlend, computeCoarticulationOffsets } from "./coarticulation";
 export type { CoarticulationMode, MotionType, ArmTarget } from "../types";
+export * from "../linguistic";
+export * from "../compiler";
+export * from "../language-registry";
+export * from "../plugins";
+
+import { LanguageRegistry } from "../language-registry";
+import { ASLPlugin } from "../plugins/asl-plugin";
+import { RSLPlugin } from "../plugins/rsl-plugin";
+
+LanguageRegistry.register(ASLPlugin);
+LanguageRegistry.register(RSLPlugin);
+LanguageRegistry.setActive("asl");

@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { ContactShadows, Environment, PerspectiveCamera } from "@react-three/drei";
+import { ContactShadows, Environment, PerspectiveCamera, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { RendererDirector } from "@ikiraro/engine/planning";
 import type { SignCanvas } from "@ikiraro/engine/planning";
@@ -9,21 +9,26 @@ import type { ArmTarget, MotionType } from "@ikiraro/engine/types";
 import { REST_POSE } from "@ikiraro/engine/planning";
 import type { Handshape } from "@ikiraro/engine/planning";
 import { SignModelGLTF } from "./sign-model-gltf";
+
 interface AvatarViewerProps {
   envelope: TranslationEnvelope | null;
   modelUrl: string;
   className?: string;
 }
+
 export type SignFrameState = {
   motion: MotionType;
   progress: number;
   armTarget: ArmTarget | null;
 };
+
 export function AvatarViewer({ envelope, modelUrl, className }: AvatarViewerProps) {
   const [pose, setPose] = useState<Handshape>(REST_POSE);
   const [active, setActive] = useState(false);
 
+  // Updated on every RAF tick via setMotion — avoid state to prevent re-renders.
   const signFrameRef = useRef<SignFrameState>({ motion: "none", progress: 0, armTarget: null });
+
   const adapter = useMemo<SignCanvas>(
     () => ({
       setPose,
@@ -39,22 +44,23 @@ export function AvatarViewer({ envelope, modelUrl, className }: AvatarViewerProp
     }),
     [],
   );
+
   const director = useMemo(() => new RendererDirector(adapter), [adapter]);
+
   useEffect(() => {
     const queue = envelope?.rendererQueue ?? [];
     director.setQueue(queue);
-    const unsub = director.subscribe((s) => setActive(s.isPlaying));
     if (queue.length > 0) {
       setActive(true);
       director.play();
     } else {
       setActive(false);
     }
-    return () => {
-      director.pause();
-      unsub();
-    };
+    return director.subscribe((s) => {
+      setActive(s.isPlaying);
+    });
   }, [director, envelope]);
+
   return (
     <Canvas
       className={className}
@@ -72,7 +78,9 @@ export function AvatarViewer({ envelope, modelUrl, className }: AvatarViewerProp
         gl.toneMappingExposure = 1.05;
       }}
     >
+      {/* Framed on signing space: shoulders → just above head, arms visible */}
       <PerspectiveCamera makeDefault position={[0, 0.15, 2.2]} fov={42} near={0.01} far={10} />
+
       <ambientLight intensity={0.22} color="#f8ece2" />
       <directionalLight
         position={[2.2, 4.5, 3.2]}
@@ -83,8 +91,10 @@ export function AvatarViewer({ envelope, modelUrl, className }: AvatarViewerProp
       />
       <directionalLight position={[-2.8, 1.4, 1.8]} intensity={0.55} color="#e2ecff" />
       <directionalLight position={[0.4, 2.6, -3.5]} intensity={0.85} color="#ffd9b8" />
+
       <Suspense fallback={null}>
         <Environment preset="apartment" background={false} />
+
         <SignModelGLTF
           url={modelUrl}
           pose={pose}
@@ -105,4 +115,8 @@ export function AvatarViewer({ envelope, modelUrl, className }: AvatarViewerProp
       </Suspense>
     </Canvas>
   );
+}
+
+export function preloadAvatarModel(url: string) {
+  useGLTF.preload(url);
 }

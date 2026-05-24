@@ -6,8 +6,8 @@
  */
 
 // Core factory and runtime
-export { createIkiraro, IkiraroRuntime } from "@ikiraro/runtime";
-export type { IkiraroDefaultConfig } from "@ikiraro/runtime";
+export { createIkiraro, IkiraroRuntime, IkiraroSDK } from "@ikiraro/runtime";
+export type { IkiraroDefaultConfig, IkiraroConfig } from "@ikiraro/runtime";
 
 // React hooks and clients
 export { createIkiraroClient } from "@ikiraro/runtime";
@@ -15,7 +15,13 @@ export type { IkiraroReactClient } from "@ikiraro/runtime";
 export { useHandTracking } from "@ikiraro/runtime";
 
 // React components
-export { AvatarViewer, AslHandSvg, AudioVisualizer, HandOverlay } from "@ikiraro/renderer";
+export {
+  AvatarViewer,
+  preloadAvatarModel,
+  AslHandSvg,
+  AudioVisualizer,
+  HandOverlay,
+} from "@ikiraro/renderer";
 export { WebSpeechProvider } from "@ikiraro/renderer";
 export type { SpeakOptions } from "@ikiraro/renderer";
 

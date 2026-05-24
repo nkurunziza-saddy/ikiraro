@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import "./index"; // Initialize LanguageRegistry
 import { resolveHandshape, mixHandshapes, ASL_HAND_POSES, REST_POSE } from "./pose-library";
 describe("Pose Library", () => {
   describe("resolveHandshape", () => {

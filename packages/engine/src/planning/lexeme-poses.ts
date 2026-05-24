@@ -1,6 +1,7 @@
 import type { ArmTarget, MotionType } from "../types";
 import type { Handshape } from "./pose-library";
 import { ASL_HAND_POSES } from "./pose-library";
+import { LanguageRegistry } from "../language-registry";
 export type LexemePose = {
   handshape: Handshape;
   armTarget?: ArmTarget;
@@ -69,7 +70,7 @@ export const LEXEME_POSES: Record<string, LexemePose> = {
   FIND: { handshape: F, armTarget: NEUTRAL, motion: "pull-back" },
   FOOD: { handshape: O, armTarget: CHIN, motion: "tap" },
   GO: { handshape: D, armTarget: NEUTRAL, motion: "outward-sweep" },
-  HELLO: { handshape: B, armTarget: FOREHEAD, motion: "salute" },
+  HELLO: { handshape: B, armTarget: NEUTRAL, motion: "wave" },
   HELP: { handshape: A, armTarget: { ...BOTH_CENTER, rArmX: 0.7 }, motion: "forward-push" },
   INTERPRETER: { handshape: I, armTarget: BOTH_CENTER, motion: "circle" },
   LEARN: { handshape: B, armTarget: { ...FOREHEAD, ...LEFT_LOW_PALM }, motion: "pull-back" },
@@ -110,5 +111,6 @@ export const LEXEME_POSES: Record<string, LexemePose> = {
   WORK: { handshape: A, armTarget: BOTH_CENTER, motion: "two-hand-tap" },
 };
 export function resolveLexemePose(lexemeId: string): LexemePose | null {
-  return LEXEME_POSES[lexemeId.toUpperCase()] ?? null;
+  const lang = LanguageRegistry.getActive();
+  return lang.getLexemePose(lexemeId) ?? null;
 }

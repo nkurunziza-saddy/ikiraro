@@ -51,10 +51,17 @@ const SNIPPET_ASL_HAND = `import { AslHandSvg } from "@ikiraro/sdk";
 const SNIPPET_WEB_SPEECH = `import { WebSpeechProvider } from "@ikiraro/sdk";
 // Singleton TTS — synchronized with avatar playback
 const tts = WebSpeechProvider.getInstance();
+
+// Optionally configure a cloud TTS provider for higher quality voices
+tts.setConfig({
+  provider: "elevenlabs", // or "openai", "browser"
+  apiKey: "YOUR_API_KEY",
+});
+
 // Speak when a new envelope arrives
 useEffect(() => {
   if (!envelope) return;
-  tts.speak(envelope.normalizedText);
+  tts.speak(envelope.rawInput);
 }, [envelope]);`;
 function ComponentsPage() {
   return (
@@ -147,17 +154,20 @@ function ComponentsPage() {
       <section className="space-y-4">
         <SectionHead id="web-speech-provider" label="WebSpeechProvider" />
         <p className="text-muted-foreground text-[13px] leading-relaxed">
-          A singleton that wraps the Web Speech API for synchronized TTS. It queues speech requests
-          and cancels pending ones on new input, keeping audio in sync with the avatar. Construct
-          once at module level so you don't create multiple instances.
+          A singleton that wraps the Web Speech API and cloud TTS providers for synchronized
+          playback. It queues speech requests and cancels pending ones on new input, keeping audio
+          in sync with the avatar. Construct once at module level so you don't create multiple
+          instances.
         </p>
         <CodeBlock code={SNIPPET_WEB_SPEECH} label="WebSpeechProvider" />
         <Callout>
-          <strong className="text-foreground">Browser support:</strong>{" "}
-          <code className="font-mono text-foreground">WebSpeechProvider</code> uses the{" "}
-          <code className="font-mono text-foreground">SpeechSynthesis</code> API. It's available in
-          all modern browsers, but voice quality varies by OS. Chrome on desktop generally has the
-          best voices.
+          <strong className="text-foreground">Cloud Providers:</strong>{" "}
+          <code className="font-mono text-foreground">WebSpeechProvider</code> now supports{" "}
+          <code className="font-mono text-foreground">elevenlabs</code> and{" "}
+          <code className="font-mono text-foreground">openai</code> TTS. When configured, it plays
+          audio streams via the <code className="font-mono text-foreground">AudioContext</code> API.
+          If no API key is provided, it falls back gracefully to the browser's built-in{" "}
+          <code className="font-mono text-foreground">SpeechSynthesis</code>.
         </Callout>
       </section>
       {/* Low-level */}

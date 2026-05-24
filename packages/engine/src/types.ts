@@ -66,6 +66,19 @@ export type SignPlan = {
   };
 };
 
+export type SignNode = {
+  gloss: string;
+  role: "topic" | "action" | "object" | "modifier";
+  emphasis: number;
+  spatialAnchor?: string;
+  tokenType?: "lexeme" | "fingerspell" | "number" | "pointing";
+};
+
+export type SignGraph = {
+  intent: "statement" | "question" | "command";
+  nodes: SignNode[];
+};
+
 export type MotionType =
   | "none"
   | "shake"
@@ -86,7 +99,8 @@ export type MotionType =
   | "h-slide"
   | "d-arc"
   | "n-dip"
-  | "k-push";
+  | "k-push"
+  | "wave";
 
 export type ArmTarget = {
   rArmX?: number;
@@ -111,9 +125,77 @@ export type FrameItem = {
   sublabel?: string;
   duration: number;
   motion?: MotionType;
+  motionClip?: string;
   armTarget?: ArmTarget;
   facialExpression?: string;
   coarticulation?: CoarticulationMode;
+};
+
+export type TransitionType = "blend" | "crossfade" | "inertial";
+export type Transition = {
+  from: MotionType;
+  to: MotionType;
+  type: TransitionType;
+  durationMs: number;
+};
+export type TransitionPlan = {
+  entry: Transition | null;
+  exit: Transition | null;
+};
+
+export interface SignLanguagePlugin {
+  id: string;
+  name: string;
+
+  // Rules for NLP tokenization & parsing
+  nlp: {
+    questionWords: Set<string>;
+    pronouns: Record<string, string>;
+    actionWords: Set<string>;
+    modifierWords: Set<string>;
+  };
+
+  // Alphabet & number motions
+  fingerspellMotions: Partial<Record<string, MotionType>>;
+  numberMotions: Partial<Record<string, MotionType>>;
+  numberArmTarget: ArmTarget;
+
+  // Handshapes and Lexicon
+  getHandshape: (key: string) => any | null; // We use 'any' here temporarily to avoid circular deps with Handshape
+  getLexemePose: (
+    gloss: string,
+  ) => { handshape: any; armTarget?: ArmTarget; motion: MotionType } | null;
+}
+
+export type CompiledSign = {
+  id: string;
+  bodyMotion: MotionType;
+  motionClip?: string;
+  handshape: string;
+  facial: string;
+  transitions: TransitionPlan;
+  duration: number;
+  spatialTarget?: { x: number; y: number; z: number };
+  armTarget?: ArmTarget;
+  emphasisCurve: "linear" | "accelerate" | "impact";
+};
+
+export type SpatialMemory = {
+  self: { x: number; y: number; z: number };
+  entities: Map<string, { x: number; y: number; z: number }>;
+  createdAt: Map<string, number>;
+};
+
+export type MotionInstruction = {
+  bodyMotion: MotionType;
+  startTime: number;
+  endTime: number;
+  spatialTarget?: { x: number; y: number; z: number };
+  armTarget?: ArmTarget;
+  handshape: string;
+  emphasisCurve: "linear" | "accelerate" | "impact";
+  facial: string;
+  coarticulationHint?: CoarticulationMode;
 };
 
 export type SpeechWordTiming = {
@@ -156,6 +238,7 @@ export type TranslationEnvelope = {
   intake: SpeechIntake | null;
   plan: SignPlan;
   rendererQueue: FrameItem[];
+  instructions?: MotionInstruction[];
   rawInput: string;
   normalizedText: string;
   intent?: SemanticIntent;
@@ -234,6 +317,8 @@ export interface VisionPipelineConfig {
 }
 export type CameraTrackingState = {
   landmarks: HandLandmarks;
+  faceLandmarks?: Point3D[];
+  poseLandmarks?: Point3D[];
   classification: ClassificationResult | null;
   currentWord: string;
   sentence: string[];

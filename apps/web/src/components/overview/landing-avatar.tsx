@@ -1,35 +1,29 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useDeferredValue,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { AvatarViewer } from "@ikiraro/renderer";
-import { useIkiraro } from "../../lib/ikiraro";
+
 const MODEL_URL = "/models/avatar.glb";
-type Sign = { units: string[]; delay: number };
+
+type Sign = { intent: string; label: string; delay: number };
 const signs: Sign[] = [
-  { units: ["H", "E", "L", "L", "O"], delay: 3000 },
-  { units: ["W", "O", "R", "L", "D"], delay: 4000 },
-  { units: ["S", "E", "N", "S", "A"], delay: 5000 },
-  { units: ["P", "R", "I", "V", "A", "C", "Y"], delay: 4000 },
-  { units: ["S", "P", "E", "E", "D"], delay: 3000 },
+  { intent: "Wave", label: "HELLO", delay: 3000 },
+  { intent: "Talking", label: "WELCOME", delay: 4000 },
+  { intent: "Argue", label: "ROBUST", delay: 4000 },
+  { intent: "ThankYou", label: "THANKS", delay: 3000 },
+  { intent: "Idle", label: "IKIRARO", delay: 4000 },
 ];
+
 const LandingAvatarContext = createContext<{
-  envelope: any;
   currentSign: Sign;
 } | null>(null);
+
 export function LandingAvatarProvider({ children }: { children: ReactNode }) {
-  const { snapshot, translateUnits } = useIkiraro();
   const [hasStarted, setHasStarted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const currentSign = signs[currentIndex];
+  const currentSign = signs[currentIndex]!;
+
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
     const playNext = () => {
-      translateUnits(currentSign.units);
       setHasStarted(true);
       timeoutId = setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % signs.length);
@@ -37,11 +31,11 @@ export function LandingAvatarProvider({ children }: { children: ReactNode }) {
     };
     timeoutId = setTimeout(playNext, hasStarted ? 0 : 1000);
     return () => clearTimeout(timeoutId);
-  }, [currentIndex, translateUnits, currentSign, hasStarted]);
+  }, [currentIndex, currentSign, hasStarted]);
+
   return (
     <LandingAvatarContext.Provider
       value={{
-        envelope: snapshot.lastEnvelope,
         currentSign,
       }}
     >
@@ -49,28 +43,30 @@ export function LandingAvatarProvider({ children }: { children: ReactNode }) {
     </LandingAvatarContext.Provider>
   );
 }
+
 function useLandingAvatar() {
   const ctx = useContext(LandingAvatarContext);
   if (!ctx) throw new Error("Missing provider");
-  return { ...ctx, envelope: useDeferredValue(ctx.envelope) };
+  return ctx;
 }
+
 export function HeroAvatarPane() {
-  const { envelope, currentSign } = useLandingAvatar();
+  const { currentSign } = useLandingAvatar();
   return (
     <div className="relative w-full h-full min-h-[400px] flex items-center justify-center">
       <div className="absolute inset-0 z-0 mix-blend-screen opacity-90 transition-all duration-1000">
-        <AvatarViewer envelope={envelope} modelUrl={MODEL_URL} className="w-full h-full" />
+        <AvatarViewer envelope={null} modelUrl={MODEL_URL} className="w-full h-full" />
       </div>
       <div className="absolute bottom-10 right-10 flex flex-col items-end gap-1">
         <span className="text-foreground font-semibold text-[32px] tracking-tighter leading-none block">
-          {currentSign.units.join("")}
+          {currentSign.label}
         </span>
       </div>
     </div>
   );
 }
 export function FloatingAvatarWidget() {
-  const { envelope } = useLandingAvatar();
+  useLandingAvatar();
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
     const handleScroll = () => {
@@ -89,7 +85,7 @@ export function FloatingAvatarWidget() {
       <div className="w-full h-full relative group pointer-events-auto">
         <div className="absolute inset-0 z-10 mix-blend-screen opacity-60 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
           <AvatarViewer
-            envelope={envelope}
+            envelope={null}
             modelUrl={MODEL_URL}
             className="w-full h-full scale-[1.2]"
           />

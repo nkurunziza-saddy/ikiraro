@@ -430,11 +430,22 @@ SVG overlay that renders hand landmark skeleton over a camera feed. Place as `po
 ### `WebSpeechProvider`
 
 ```typescript
+type TTSProvider = "browser" | "openai" | "elevenlabs";
+
+interface TTSConfig {
+  provider: TTSProvider;
+  apiKey?: string;
+  voiceId?: string;
+  model?: string;
+}
+
 class WebSpeechProvider {
   static getInstance(): WebSpeechProvider;
+  setConfig(config: Partial<TTSConfig>): void;
   speak(text: string): Promise<void>;
+  speakQueue(texts: string[]): Promise<void>;
   cancel(): void;
 }
 ```
 
-Singleton TTS using the Web Speech API. Queues speech requests and cancels pending ones on new input.
+Singleton TTS that wraps the native Web Speech API alongside cloud TTS providers (`elevenlabs`, `openai`). When configured with an API key, it streams audio and plays it via the native `AudioContext` for synchronized playback. It queues speech requests and cancels pending ones on new input, keeping audio in sync with the avatar.
