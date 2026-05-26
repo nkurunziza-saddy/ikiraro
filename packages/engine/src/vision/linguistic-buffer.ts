@@ -87,7 +87,13 @@ export class LinguisticBuffer {
       .join(" ");
     return {
       currentWord: this.getInProgress(),
-      sentence: this.tokens.map((t) => (t.type === "lexeme" ? t.lexemeId : (t as any).text)),
+      sentence: this.tokens.map((t) => {
+        if (t.type === "lexeme") return t.lexemeId;
+        if (t.type === "fingerspell") return t.text;
+        if (t.type === "number") return t.value;
+        if (t.type === "pointing") return t.target;
+        return "";
+      }),
       sentenceText: text,
     };
   }

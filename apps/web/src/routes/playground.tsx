@@ -1,359 +1,249 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useDeferredValue, useEffect, useRef, useState } from "react";
-import { Mic, Type, Hand, Eye, Delete, ArrowRight, EyeOff } from "lucide-react";
-import {
-  AslHandSvg,
-  AudioVisualizer,
-  AvatarViewer,
-  HandOverlay,
-  WebSpeechProvider,
-} from "@ikiraro/renderer";
-import { useHandTracking } from "@ikiraro/runtime";
+import { Hand, Mic, Send } from "lucide-react";
+import { WebSpeechProvider } from "@ikiraro/renderer/web-speech";
+import { AvatarViewer } from "@ikiraro/renderer/avatar-viewer";
+import { AslHandSvg } from "@ikiraro/renderer/asl-hand-svg";
+import { useHandTracking } from "@ikiraro/runtime/hand-tracking";
 import { useIkiraro } from "../lib/ikiraro";
+import { usePlaygroundStore } from "../store/playground";
+import { PlaygroundCamera } from "../components/playground/playground-camera";
+import { PlaygroundSettings } from "../components/playground/playground-settings";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+
 export const Route = createFileRoute("/playground")({
-  component: DemoPage,
+  component: PlaygroundPage,
 });
+
 const tts = WebSpeechProvider.getInstance();
 const MODEL_URL = "/models/avatar.glb";
-type Mode = "text" | "speech" | "sign";
 
-const intentMap: Record<string, string> = {
-  hello: "Wave",
-  hi: "Wave",
-  hey: "Wave",
-  welcome: "Wave",
-  thanks: "ThankYou",
-  thank: "ThankYou",
-  appreciate: "ThankYou",
-  no: "Argue",
-  argue: "Argue",
-  stop: "Argue",
-  yes: "Talking",
-  yeah: "Talking",
-  ok: "Talking",
-  okay: "Talking",
-};
+function PlaygroundPage() {
+  const { snapshot, translate, error: initError } = useIkiraro();
 
-function getBasicIntent(text: string): string {
-  const lower = text.toLowerCase();
-  for (const [key, intent] of Object.entries(intentMap)) {
-    if (lower.includes(key)) return intent;
-  }
-  return "Talking"; // default fallback for text
-}
-
-function DemoPage() {
-  const {
-    snapshot,
-    translate,
-    translateUnits,
-    startSpeech,
-    stopSpeech,
-    error: initError,
-  } = useIkiraro();
   const camera = useHandTracking();
   const { start: startCamera, stop: stopCamera } = camera;
-  const [mode, setMode] = useState<Mode>("text");
-  const [ttsProvider, setTtsProvider] = useState<"browser" | "openai" | "elevenlabs">("elevenlabs");
-  const [ttsApiKey, setTtsApiKey] = useState(import.meta.env.VITE_ELEVENLABS_API_KEY || "");
-  const [textDraft, setTextDraft] = useState("");
-  const [signUnits, setSignUnits] = useState<string[]>([]);
-  const [visionEnabled, setVisionEnabled] = useState(false);
-  const [_currentIntent, setCurrentIntent] = useState<string | undefined>("Idle");
+
+  const {
+    ttsProvider,
+    ttsApiKey,
+    visionEnabled,
+    showKeyboard,
+    setShowKeyboard,
+    textDraft,
+    setTextDraft,
+    signUnits,
+    setSignUnits,
+  } = usePlaygroundStore();
 
   const activeEnvelope = useDeferredValue(snapshot.lastEnvelope);
-  const lastSpokenRef = useRef<string | null>(null);
-  const isWorking = snapshot.isTranslating || snapshot.status === "recording";
   const displayError = snapshot.error ?? initError;
+
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     tts.setConfig({ provider: ttsProvider, apiKey: ttsApiKey });
   }, [ttsProvider, ttsApiKey]);
 
   useEffect(() => {
-    if (!activeEnvelope) return;
-    const text = activeEnvelope.rawInput;
-    if (!text || text === lastSpokenRef.current) return;
-    lastSpokenRef.current = text;
-    void tts.speak(text);
-
-    // Auto-map speech or tracked text to basic animation intent
-    setCurrentIntent(getBasicIntent(text));
-
-    // Return to idle after a few seconds
-    const tid = setTimeout(() => setCurrentIntent("Idle"), 4000);
-    return () => clearTimeout(tid);
-  }, [activeEnvelope]);
-
-  useEffect(() => {
-    if (visionEnabled) {
-      void startCamera();
-    } else {
-      stopCamera();
-    }
+    if (visionEnabled) void startCamera();
+    else stopCamera();
   }, [visionEnabled, startCamera, stopCamera]);
 
-  const commit = () => {
-    if (mode === "text" && textDraft) {
-      setCurrentIntent(getBasicIntent(textDraft));
-      translate(textDraft);
-      setTextDraft("");
-      setTimeout(() => setCurrentIntent("Idle"), 4000);
-    } else if (mode === "sign" && signUnits.length > 0) {
-      setCurrentIntent("Talking");
-      translateUnits(signUnits);
-      setSignUnits([]);
-      setTimeout(() => setCurrentIntent("Idle"), 4000);
-    } else if (mode === "speech") {
-      stopSpeech();
+  // Lazily create SpeechRecognition to avoid repeated instances
+  const getRecognition = () => {
+    if (recognitionRef.current) return recognitionRef.current;
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) return null;
+    const r = new SR();
+    r.continuous = false;
+    r.interimResults = false;
+    r.onresult = (e: any) => {
+      const text = e.results[0][0].transcript;
+      if (text) {
+        translate(text);
+        void tts.speak(text);
+      }
+      setIsRecording(false);
+    };
+    r.onend = () => setIsRecording(false);
+    recognitionRef.current = r;
+    return r;
+  };
+
+  const isSpeechSupported =
+    typeof window !== "undefined" &&
+    !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+
+  const toggleRecording = () => {
+    const r = getRecognition();
+    if (!r) return;
+    if (isRecording) {
+      r.stop();
+      setIsRecording(false);
+    } else {
+      try {
+        r.start();
+        setIsRecording(true);
+        setTimeout(() => setIsRecording(false), 8000);
+      } catch {
+        setIsRecording(false);
+      }
     }
   };
 
+  const commitText = (text: string) => {
+    if (!text.trim()) return;
+    translate(text);
+    void tts.speak(text);
+    setTextDraft("");
+  };
+
+  const commitSignUnits = () => {
+    const current = usePlaygroundStore.getState().signUnits;
+    if (current.length === 0) return;
+    commitText(current.join(""));
+    setSignUnits([]);
+  };
+
   return (
-    <div className="min-h-screen bg-background flex flex-col pt-[100px] md:pt-[120px]">
-      <main className="flex-1 max-w-[1200px] mx-auto w-full px-6 md:px-8 pb-12">
-        <div className="mb-8">
-          <h1 className="text-[28px] font-semibold text-foreground tracking-tight">Playground</h1>
-          <p className="text-[15px] text-muted-foreground mt-1">
-            Interact with the translation engine in real-time.
+    <div className="h-screen w-full bg-background overflow-hidden relative font-sans pt-[90px]">
+      {/* Camera widget */}
+      <PlaygroundCamera
+        camera={camera}
+        commitText={(text) => {
+          translate(text);
+          void tts.speak(text);
+        }}
+      />
+
+      {/* Hero + Avatar — centered stage */}
+      <div className="absolute top-[90px] bottom-[88px] left-0 right-0 flex flex-col items-center justify-center gap-6">
+        <div className="text-center mb-2 select-none">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1">
+            Interactive Engine
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            Sign Language Playground
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1.5">
+            Type or speak — watch the avatar sign it in real time
           </p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <div className="lg:col-span-5 flex flex-col gap-6">
-            <div className="p-4 border border-border rounded-xl bg-card">
-              <h3 className="text-[13px] font-semibold text-foreground mb-3">TTS Settings</h3>
-              <div className="flex flex-col gap-3">
-                <select
-                  value={ttsProvider}
-                  onChange={(e) => setTtsProvider(e.target.value as any)}
-                  className="w-full bg-secondary text-foreground text-[13px] rounded-md px-3 py-1.5 border-none outline-none"
-                >
-                  <option value="browser">Browser Default</option>
-                  <option value="elevenlabs">ElevenLabs</option>
-                  <option value="openai">OpenAI</option>
-                </select>
-                {ttsProvider !== "browser" && (
-                  <input
-                    type="password"
-                    value={ttsApiKey}
-                    onChange={(e) => setTtsApiKey(e.target.value)}
-                    placeholder="API Key"
-                    className="w-full bg-secondary text-foreground text-[13px] rounded-md px-3 py-1.5 outline-none border border-transparent focus:border-border"
-                  />
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {[
-                { id: "text", label: "Text", icon: Type },
-                { id: "speech", label: "Speech", icon: Mic },
-                { id: "sign", label: "Sign", icon: Hand },
-              ].map((m) => (
-                <button
-                  key={m.id}
-                  onClick={() => setMode(m.id as Mode)}
-                  className={`flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium rounded-md transition-colors ${
-                    mode === m.id
-                      ? "bg-foreground text-background"
-                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                  }`}
-                >
-                  <m.icon size={14} /> {m.label}
-                </button>
-              ))}
-              <div className="w-[1px] h-4 bg-border mx-2"></div>
-              <button
-                onClick={() => setVisionEnabled(!visionEnabled)}
-                className={`flex items-center gap-2 px-3 py-1.5 text-[13px] font-medium rounded-md transition-colors ${
-                  visionEnabled
-                    ? "bg-primary/10 text-primary border border-primary/20"
-                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-transparent"
-                }`}
-              >
-                {visionEnabled ? <Eye size={14} /> : <EyeOff size={14} />} Camera
-              </button>
-            </div>
-            <div className="min-h-[100px] flex flex-col justify-center py-4">
-              {activeEnvelope ? (
-                <div>
-                  <p className="text-[28px] font-semibold text-foreground tracking-tight leading-tight mb-1">
-                    {activeEnvelope.plan.glossText || activeEnvelope.normalizedText}
-                  </p>
-                  {activeEnvelope.normalizedText !== activeEnvelope.plan.glossText && (
-                    <p className="text-[14px] text-muted-foreground">
-                      {activeEnvelope.normalizedText}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <p className="text-[14px] text-muted-foreground">
-                  {isWorking ? "Translating..." : "Translation will appear here."}
+
+        {/* Avatar */}
+        <div className="relative w-[280px] h-[300px] md:w-[320px] md:h-[360px] rounded-3xl border border-border shadow-2xl overflow-hidden bg-background glass-pane">
+          <AvatarViewer envelope={activeEnvelope} modelUrl={MODEL_URL} className="w-full h-full" />
+
+          {/* Subtitle strip */}
+          <div className="absolute bottom-4 left-3 right-3 text-center pointer-events-none">
+            {activeEnvelope ? (
+              <div className="bg-background/70 backdrop-blur-md rounded-xl border border-border/20 px-3 py-2">
+                <p className="text-sm font-semibold text-foreground leading-tight line-clamp-2">
+                  {activeEnvelope.plan.glossText || activeEnvelope.normalizedText}
                 </p>
-              )}
-              {displayError && <p className="text-[13px] text-red-500 mt-2">{displayError}</p>}
-            </div>
-            <div className="border border-border rounded-xl overflow-hidden bg-card">
-              {mode === "text" && (
-                <div className="relative">
-                  <textarea
-                    value={textDraft}
-                    onChange={(e) => setTextDraft(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey && textDraft) {
-                        e.preventDefault();
-                        commit();
-                      }
-                    }}
-                    placeholder="Type something to sign..."
-                    className="w-full bg-transparent outline-none text-[15px] text-foreground p-5 resize-none min-h-[120px]"
-                  />
-                  <div className="flex items-center justify-between p-3 border-t border-border">
-                    <span className="text-[12px] text-muted-foreground ml-2">
-                      Press Enter to translate
-                    </span>
-                    <button
-                      onClick={commit}
-                      disabled={isWorking || !textDraft}
-                      className="px-4 py-1.5 bg-foreground text-background text-[13px] font-medium rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
-                    >
-                      Translate
-                    </button>
-                  </div>
-                </div>
-              )}
-              {mode === "speech" && (
-                <div className="flex flex-col items-center justify-center p-8 min-h-[180px]">
-                  {snapshot.speechStatus !== "capturing" ? (
-                    <div className="flex flex-col items-center gap-3">
-                      <button
-                        onClick={() => startSpeech()}
-                        className="w-12 h-12 rounded-full border border-border bg-background flex items-center justify-center hover:bg-secondary transition-all text-foreground"
-                      >
-                        <Mic size={18} />
-                      </button>
-                      <span className="text-[13px] text-muted-foreground">Click to record</span>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-4 w-full px-4">
-                      <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center animate-pulse text-primary-foreground">
-                        <Mic size={18} />
-                      </div>
-                      <div className="w-full h-[30px] flex items-center justify-center">
-                        <AudioVisualizer level={snapshot.speechLevel} count={24} />
-                      </div>
-                      <button
-                        onClick={commit}
-                        className="text-[13px] text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        Stop Recording
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-              {mode === "sign" && (
-                <div className="p-5">
-                  <div className="flex justify-between items-center mb-4 pb-4 border-b border-border">
-                    <span className="text-[18px] font-bold tracking-[0.1em] uppercase text-foreground">
-                      {signUnits.length > 0 ? (
-                        signUnits.join(" ")
-                      ) : (
-                        <span className="text-muted-foreground/50 tracking-normal font-medium text-[14px]">
-                          No sequence
-                        </span>
-                      )}
-                    </span>
-                    {signUnits.length > 0 && (
-                      <button
-                        onClick={() => setSignUnits((p) => p.slice(0, -1))}
-                        className="text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        <Delete size={16} />
-                      </button>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-7 gap-1">
-                    {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((l) => (
-                      <button
-                        key={l}
-                        onClick={() => setSignUnits((p) => [...p, l])}
-                        className="flex flex-col items-center justify-center gap-1 py-2 bg-secondary/50 hover:bg-secondary rounded-md transition-colors"
-                      >
-                        <AslHandSvg letter={l} size={16} className="text-muted-foreground" />
-                        <span className="text-[10px] font-semibold text-muted-foreground">{l}</span>
-                      </button>
-                    ))}
-                  </div>
-                  {signUnits.length > 0 && (
-                    <button
-                      onClick={commit}
-                      disabled={isWorking}
-                      className="w-full mt-4 bg-foreground text-background py-2 text-[13px] font-medium rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
-                    >
-                      Sign Sequence
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="lg:col-span-7 flex flex-col gap-4">
-            <div className="w-full aspect-[4/3] bg-secondary rounded-xl relative overflow-hidden flex items-center justify-center">
-              <AvatarViewer
-                envelope={activeEnvelope}
-                modelUrl={MODEL_URL}
-                className="w-full h-full scale-[1.1] transition-transform duration-700"
-              />
-            </div>
-            {visionEnabled && (
-              <div className="w-full rounded-xl border border-border bg-card overflow-hidden">
-                <div className="flex flex-col sm:flex-row h-auto sm:h-[180px]">
-                  <div className="aspect-video bg-black relative flex-shrink-0">
-                    <video
-                      ref={camera.videoRef}
-                      autoPlay
-                      muted
-                      playsInline
-                      className="absolute inset-0 w-full h-full object-cover scale-x-[-1] opacity-70"
-                    />
-                    <HandOverlay tracking={camera.tracking} />
-                  </div>
-                  <div className="flex-1 flex flex-col justify-center p-5">
-                    <span className="text-[12px] font-medium text-muted-foreground mb-1">
-                      Detected Text
-                    </span>
-                    {camera.tracking.sentenceText || camera.tracking.currentWord ? (
-                      <div className="flex flex-col">
-                        <span className="text-[18px] font-semibold text-foreground uppercase tracking-wide">
-                          {camera.tracking.sentenceText || camera.tracking.currentWord}
-                        </span>
-                        <button
-                          onClick={() => {
-                            const text =
-                              camera.tracking.sentenceText || camera.tracking.currentWord;
-                            if (text) {
-                              setTextDraft(text);
-                              setMode("text");
-                              camera.clear();
-                            }
-                          }}
-                          className="mt-3 text-[12px] font-medium text-primary hover:opacity-80 transition-opacity inline-flex items-center gap-1 w-fit"
-                        >
-                          Use Text <ArrowRight size={12} />
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="text-[13px] text-muted-foreground">
-                        Waiting for signs...
-                      </span>
-                    )}
-                  </div>
-                </div>
+              </div>
+            ) : (
+              <div className="bg-background/40 backdrop-blur-sm rounded-lg px-3 py-1.5 opacity-60">
+                <p className="text-xs text-muted-foreground">Waiting for input...</p>
               </div>
             )}
           </div>
         </div>
-      </main>
+
+        {displayError && (
+          <div className="bg-destructive/20 text-destructive-foreground px-4 py-2 rounded-lg text-xs border border-destructive max-w-xs text-center">
+            {displayError}
+          </div>
+        )}
+      </div>
+
+      {/* ASL Keyboard */}
+      {showKeyboard && (
+        <div className="absolute bottom-[88px] left-1/2 -translate-x-1/2 z-20 w-full max-w-[600px] px-4 md:px-0">
+          <div className="bg-popover/95 backdrop-blur-xl border border-border rounded-2xl shadow-xl p-4 animate-in slide-in-from-bottom-2 text-popover-foreground">
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-sm font-medium">
+                {signUnits.length > 0 ? signUnits.join(" ") : "Manual Alphabet Input"}
+              </span>
+              {signUnits.length > 0 && (
+                <Button
+                  onClick={commitSignUnits}
+                  size="sm"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-medium"
+                >
+                  Send Sign
+                </Button>
+              )}
+            </div>
+            <div className="grid grid-cols-7 sm:grid-cols-9 gap-1 max-h-[200px] overflow-y-auto">
+              {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setSignUnits((p) => [...p, l])}
+                  className="flex flex-col items-center justify-center gap-1 py-2 bg-secondary hover:bg-accent rounded-lg transition-colors border border-transparent hover:border-border"
+                >
+                  <AslHandSvg letter={l} size={20} className="text-muted-foreground" />
+                  <span className="text-[10px] font-semibold text-muted-foreground">{l}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Omnibar */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-[600px] px-4 md:px-0">
+        <div className="bg-popover/95 backdrop-blur-xl border border-border rounded-full shadow-2xl p-2 flex items-center w-full text-popover-foreground">
+          <button
+            onClick={() => setShowKeyboard(!showKeyboard)}
+            className={`p-3 rounded-full transition-colors flex-shrink-0 ${showKeyboard ? "bg-primary/10 text-primary" : "hover:bg-accent text-muted-foreground"}`}
+            title="Manual Sign Keyboard"
+          >
+            <Hand size={20} />
+          </button>
+
+          <PlaygroundSettings />
+
+          <Input
+            type="text"
+            value={textDraft}
+            onChange={(e) => setTextDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && textDraft) commitText(textDraft);
+            }}
+            placeholder="Type anything to sign..."
+            className="flex-1 bg-transparent border-none outline-none focus-visible:ring-0 shadow-none px-4 text-[15px]"
+            id="playground-input"
+          />
+
+          <button
+            onClick={toggleRecording}
+            disabled={!isSpeechSupported}
+            className={`p-3 rounded-full transition-colors flex-shrink-0 relative disabled:opacity-30 disabled:cursor-not-allowed ${
+              isRecording
+                ? "bg-destructive/10 text-destructive animate-pulse"
+                : "hover:bg-accent text-muted-foreground"
+            }`}
+            title={isSpeechSupported ? "Voice Input" : "Voice not supported in this browser"}
+          >
+            <Mic size={20} />
+            {isRecording && (
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-destructive rounded-full border-2 border-popover" />
+            )}
+          </button>
+
+          <button
+            onClick={() => textDraft && commitText(textDraft)}
+            disabled={!textDraft || snapshot.isTranslating}
+            className="p-3 bg-primary text-primary-foreground rounded-full transition-all disabled:opacity-50 ml-1 flex-shrink-0 hover:bg-primary/90 active:scale-95 shadow-md shadow-primary/20"
+          >
+            <Send size={18} />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

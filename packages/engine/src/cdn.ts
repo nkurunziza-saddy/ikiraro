@@ -24,12 +24,7 @@ export type { LexemePose } from "./planning/lexeme-poses";
 export { computeMotionDelta } from "./planning/motion-paths";
 export type { MotionDelta } from "./planning/motion-paths";
 export { RendererDirector } from "./planning/renderer-director";
-export type {
-  SignCanvas,
-  RendererState,
-  PlaybackOptions,
-  HandPose,
-} from "./planning/renderer-types";
+export type { SignCanvas, RendererState, PlaybackOptions } from "./planning/renderer-types";
 export { coarticulationBlend } from "./planning/coarticulation";
 export type { SignPlan, SignToken, TranslationEnvelope } from "./types";
 export * from "./language-registry";

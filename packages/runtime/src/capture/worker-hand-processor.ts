@@ -1,6 +1,7 @@
 import type { CameraTrackingState, HandProcessor } from "@ikiraro/engine/vision";
 import type { MainToWorkerMessage, WorkerToMainMessage } from "./hand-tracking-types";
 import HolisticWorker from "../workers/holistic-landmarker.worker?worker";
+import { globalResourceRegistry } from "../runtime/resource-registry";
 
 /**
  * Worker-based implementation of HandProcessor (now powered by Holistic Landmarker).
@@ -12,6 +13,11 @@ export class WorkerHandProcessor implements HandProcessor {
   private errorHandlers = new Set<(error: string) => void>();
   private readyHandlers = new Set<(delegate: "GPU" | "CPU") => void>();
   private frameId = 0;
+
+  constructor() {
+    globalResourceRegistry.register(this);
+  }
+
   async init(): Promise<void> {
     if (this.worker) return;
     this.worker = new HolisticWorker();
@@ -58,6 +64,7 @@ export class WorkerHandProcessor implements HandProcessor {
     this.worker?.terminate();
     this.worker = null;
     this.frameId = 0;
+    globalResourceRegistry.unregister(this);
   }
   onResult(cb: (tracking: CameraTrackingState) => void): void {
     this.resultHandlers.add(cb);

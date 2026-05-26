@@ -58,10 +58,11 @@ tts.setConfig({
   apiKey: "YOUR_API_KEY",
 });
 
-// Speak when a new envelope arrives
+// Speak when a new envelope arrives (synchronized)
 useEffect(() => {
   if (!envelope) return;
-  tts.speak(envelope.rawInput);
+  const targetDurationMs = envelope.rendererQueue?.reduce((sum, item) => sum + item.duration, 0);
+  tts.speak(envelope.rawInput, { targetDurationMs });
 }, [envelope]);`;
 function ComponentsPage() {
   return (

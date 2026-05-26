@@ -174,11 +174,26 @@ type FrameItem = {
 // "blend" — smooth interpolation between poses (default for lexemes)
 // "snap"  — immediate cut, no interpolation (used for fingerspell letter transitions)
 // "none"  — hold the previous pose until the frame ends, then cut
+
+### `KinematicPose`
+
+Snapshot of the avatar's arm joints for the physical engine.
+
+```typescript
+type KinematicPose = {
+  rArm: { x: number; y: number; z: number };
+  rFore: { x: number; y: number; z: number };
+  rHand: { x: number; y: number; z: number };
+  lArm: { x: number; y: number; z: number };
+  lFore: { x: number; y: number; z: number };
+  lHand: { x: number; y: number; z: number };
+};
 ```
 
 ### `SignToken`
 
-Discriminated union of gloss token types produced by the planner before expansion into `FrameItem[]`.
+Discriminated union
+ of gloss token types produced by the planner before expansion into `FrameItem[]`.
 
 ```typescript
 type LexemeToken = {

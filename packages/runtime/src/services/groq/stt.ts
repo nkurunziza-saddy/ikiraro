@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect";
 import { SttService } from "@ikiraro/engine/planning";
 import { Groq } from "./client";
-import type { SttModel } from "@ikiraro/engine/types";
+import type { SttModel, SpeechIntake } from "@ikiraro/engine/types";
 const DEFAULT_GROQ_STT_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
 export const SttGroqLive = Layer.effect(
   SttService,
@@ -70,7 +70,7 @@ export const SttGroqLive = Layer.effect(
                 end: s.end ?? 0,
                 text: s.text?.trim() ?? "",
               })) ?? [],
-          } as any;
+          } satisfies SpeechIntake;
         }).pipe(Effect.mapError((e) => (e instanceof Error ? e : new Error(String(e))))),
     };
   }),

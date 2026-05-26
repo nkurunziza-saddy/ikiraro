@@ -14,7 +14,9 @@ The Ikiraro engine uses a specific bone hierarchy for hand animations. The follo
 
 | Ikiraro Name         | Standard Alias | Description                           |
 | :------------------- | :------------- | :------------------------------------ |
-| `wrist`              | `Hand`         | The root bone of the hand.            |
+| `RightHand`          | `Hand_R`       | Root of the right hand.               |
+| `LeftHand`           | `Hand_L`       | Root of the left hand.                |
+| `wrist`              | `Hand`         | Generic root (legacy).                |
 | `thumb_proximal`     | `Thumb0`       | First joint of the thumb.             |
 | `thumb_intermediate` | `Thumb1`       | Second joint of the thumb.            |
 | `thumb_distal`       | `Thumb2`       | Tip of the thumb.                     |

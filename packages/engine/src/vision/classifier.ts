@@ -1,7 +1,7 @@
 import { LandmarkSmoother } from "./smoothing";
 import { IkiraroFeatureExtractor } from "./implementations/feature-extractor";
 import { IkiraroSurgicalMatcher } from "./implementations/surgical-matcher";
-import { IkiraroTemporalSmoother } from "./implementations/temporal-smoother";
+import { IkiraroProbabilisticIntegrator } from "./implementations/probabilistic-integrator";
 import { IkiraroGestureDetector } from "./gesture-detector";
 import { IkiraroTransitionDetector } from "./transition-detector";
 import type {
@@ -35,7 +35,7 @@ export class IkiraroSurgicalClassifier {
       smoother: config?.smoother ?? new LandmarkSmoother(),
       extractor: config?.extractor ?? new IkiraroFeatureExtractor(),
       matcher: config?.matcher ?? new IkiraroSurgicalMatcher(),
-      temporal: config?.temporal ?? new IkiraroTemporalSmoother(classifierConfig),
+      temporal: config?.temporal ?? new IkiraroProbabilisticIntegrator(classifierConfig),
       gesture: config?.gesture ?? new IkiraroGestureDetector(),
       transition: config?.transition ?? new IkiraroTransitionDetector(),
       motionVelocityThreshold:

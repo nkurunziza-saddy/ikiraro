@@ -13,6 +13,7 @@ export interface SpeakOptions {
   volume?: number;
   voiceName?: string;
   lang?: string;
+  targetDurationMs?: number;
 }
 
 export class WebSpeechProvider {
@@ -59,16 +60,16 @@ export class WebSpeechProvider {
     this.cancel();
 
     if (this.config.provider === "elevenlabs" && this.config.apiKey) {
-      return this.speakElevenLabs(text);
+      return this.speakElevenLabs(text, options);
     }
     if (this.config.provider === "openai" && this.config.apiKey) {
-      return this.speakOpenAI(text);
+      return this.speakOpenAI(text, options);
     }
 
     return this.speakBrowser(text, options);
   }
 
-  private async speakElevenLabs(text: string): Promise<void> {
+  private async speakElevenLabs(text: string, options: SpeakOptions): Promise<void> {
     this.cloudSpeaking = true;
     try {
       // Default to Adam (a free core male voice) if no voiceId provided
@@ -98,7 +99,7 @@ export class WebSpeechProvider {
 
       const arrayBuffer = await res.arrayBuffer();
       if (!this.cloudSpeaking) return; // cancelled during fetch
-      await this.playAudioBuffer(arrayBuffer);
+      await this.playAudioBuffer(arrayBuffer, options);
     } catch (err) {
       console.error(err);
     } finally {
@@ -106,7 +107,7 @@ export class WebSpeechProvider {
     }
   }
 
-  private async speakOpenAI(text: string): Promise<void> {
+  private async speakOpenAI(text: string, options: SpeakOptions): Promise<void> {
     this.cloudSpeaking = true;
     try {
       const voice = this.config.voiceId || "alloy";
@@ -132,7 +133,7 @@ export class WebSpeechProvider {
 
       const arrayBuffer = await res.arrayBuffer();
       if (!this.cloudSpeaking) return; // cancelled during fetch
-      await this.playAudioBuffer(arrayBuffer);
+      await this.playAudioBuffer(arrayBuffer, options);
     } catch (err) {
       console.error(err);
     } finally {
@@ -140,13 +141,25 @@ export class WebSpeechProvider {
     }
   }
 
-  private async playAudioBuffer(arrayBuffer: ArrayBuffer): Promise<void> {
+  private async playAudioBuffer(arrayBuffer: ArrayBuffer, options?: SpeakOptions): Promise<void> {
     if (!this.audioContext) return;
     const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
 
     return new Promise((resolve) => {
       const source = this.audioContext!.createBufferSource();
       source.buffer = audioBuffer;
+
+      if (options?.targetDurationMs && options.targetDurationMs > 0) {
+        const audioDurationMs = audioBuffer.duration * 1000;
+        // Calculate required playback rate to make audio match the target duration
+        const playbackRate = audioDurationMs / options.targetDurationMs;
+        source.playbackRate.value = playbackRate;
+        // Attempt to preserve pitch in modern browsers
+        if ("preservesPitch" in source) {
+          (source as any).preservesPitch = true;
+        }
+      }
+
       source.connect(this.audioContext!.destination);
       source.onended = () => {
         this.currentSource = null;

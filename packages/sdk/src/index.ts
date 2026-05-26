@@ -37,6 +37,23 @@ export type {
   IkiraroToken,
 } from "@ikiraro/engine/types";
 
+// Accessibility
+export {
+  AccessibilityModeManager,
+  accessibilityMode,
+  AudioQueue,
+  EarconPlayer,
+  AccessibilityShortcutManager,
+  useAccessibilityMode,
+} from "@ikiraro/runtime";
+export type {
+  AccessibilityMode,
+  AudioPriority,
+  EarconType,
+  ShortcutSpec,
+  AccessibilityShortcutManagerOptions,
+} from "@ikiraro/runtime";
+
 // Plugins
 export type {
   IkiraroPlugin,

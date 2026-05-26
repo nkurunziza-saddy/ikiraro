@@ -1,4 +1,9 @@
 import type { HandProcessor, VisionEventMap, VisionStatus } from "@ikiraro/engine/vision";
+
+type VideoElementWithVFC = HTMLVideoElement & {
+  requestVideoFrameCallback(callback: (now: number) => void): number;
+  cancelVideoFrameCallback(id: number): void;
+};
 /**
  * The VisionSystem orchestrates the end-to-end hand tracking pipeline.
  * It is responsible for:
@@ -101,7 +106,7 @@ export class VisionSystem {
       this.animationFrameId = null;
     }
     if (this.videoEl && "cancelVideoFrameCallback" in this.videoEl) {
-      const v = this.videoEl as any;
+      const v = this.videoEl as VideoElementWithVFC;
       if (this.videoFrameCallbackId !== null) {
         v.cancelVideoFrameCallback(this.videoFrameCallbackId);
         this.videoFrameCallbackId = null;
@@ -144,8 +149,8 @@ export class VisionSystem {
   private queueNextFrame() {
     if (this._status !== "active") return;
     if (this.videoEl && "requestVideoFrameCallback" in this.videoEl) {
-      const v = this.videoEl as any;
-      this.videoFrameCallbackId = v.requestVideoFrameCallback((now: number) => {
+      const v = this.videoEl as VideoElementWithVFC;
+      this.videoFrameCallbackId = v.requestVideoFrameCallback((now) => {
         this.videoFrameCallbackId = null;
         this.captureAndSend(now);
       });

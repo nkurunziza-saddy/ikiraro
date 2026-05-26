@@ -34,6 +34,23 @@ export { VisionPlugin } from "./runtime/plugins/vision";
 export { createIkiraroClient } from "./react/client";
 export type { IkiraroReactClient } from "./react/client";
 export { useHandTracking } from "./react/use-hand-tracking";
+export { useAccessibilityMode } from "./react/use-accessibility-mode";
+
+// Audio accessibility
+export {
+  AccessibilityModeManager,
+  accessibilityMode,
+  AudioQueue,
+  EarconPlayer,
+  AccessibilityShortcutManager,
+} from "./audio";
+export type {
+  AccessibilityMode,
+  AudioPriority,
+  EarconType,
+  ShortcutSpec,
+  AccessibilityShortcutManagerOptions,
+} from "./audio";
 
 // Utilities
 export type { CaptureStatus } from "./capture/types";

@@ -14,6 +14,8 @@ interface AvatarViewerProps {
   envelope: TranslationEnvelope | null;
   modelUrl: string;
   className?: string;
+  /** When true the canvas is not rendered — use in audio-first (blind) mode. */
+  hidden?: boolean;
 }
 
 export type SignFrameState = {
@@ -22,24 +24,35 @@ export type SignFrameState = {
   armTarget: ArmTarget | null;
 };
 
-export function AvatarViewer({ envelope, modelUrl, className }: AvatarViewerProps) {
+export function AvatarViewer({ envelope, modelUrl, className, hidden = false }: AvatarViewerProps) {
   const [pose, setPose] = useState<Handshape>(REST_POSE);
   const [active, setActive] = useState(false);
 
   // Updated on every RAF tick via setMotion — avoid state to prevent re-renders.
-  const signFrameRef = useRef<SignFrameState>({ motion: "none", progress: 0, armTarget: null });
+  const signFrameRef = useRef<SignFrameState>({
+    motion: "none",
+    progress: 0,
+    armTarget: null,
+  });
 
   const adapter = useMemo<SignCanvas>(
     () => ({
       setPose,
       setOverlay: () => {},
       setMotion: (motion, progress, armTarget) => {
-        signFrameRef.current = { motion, progress, armTarget: armTarget ?? null };
+        signFrameRef.current.motion = motion;
+        signFrameRef.current.progress = progress;
+        signFrameRef.current.armTarget = armTarget ?? null;
       },
+
       clear: () => {
         setPose(REST_POSE);
         setActive(false);
-        signFrameRef.current = { motion: "none", progress: 0, armTarget: null };
+        signFrameRef.current = {
+          motion: "none",
+          progress: 0,
+          armTarget: null,
+        };
       },
     }),
     [],
@@ -56,10 +69,17 @@ export function AvatarViewer({ envelope, modelUrl, className }: AvatarViewerProp
     } else {
       setActive(false);
     }
-    return director.subscribe((s) => {
+    const unsub = director.subscribe((s) => {
       setActive(s.isPlaying);
     });
+
+    return () => {
+      director.dispose();
+      unsub();
+    };
   }, [director, envelope]);
+
+  if (hidden) return null;
 
   return (
     <Canvas
@@ -79,7 +99,7 @@ export function AvatarViewer({ envelope, modelUrl, className }: AvatarViewerProp
       }}
     >
       {/* Framed on signing space: shoulders → just above head, arms visible */}
-      <PerspectiveCamera makeDefault position={[0, 0.15, 2.2]} fov={42} near={0.01} far={10} />
+      <PerspectiveCamera makeDefault position={[0, 0.08, 2.2]} fov={42} near={0.01} far={10} />
 
       <ambientLight intensity={0.22} color="#f8ece2" />
       <directionalLight

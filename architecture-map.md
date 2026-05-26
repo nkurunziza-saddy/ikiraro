@@ -12,8 +12,8 @@ Before diving into files, you must understand the singular, unbreakable flow of 
 2. **Runtime (`@ikiraro/runtime`):** Captures the input via an EventBus, debounces it, and sends it to the LLM (or deterministic fallback).
 3. **Parser (`@ikiraro/engine/linguistic`):** Analyzes the raw English gloss and assigns grammatical roles (Topic, Action) and 3D spatial anchors (Episodic Memory). Outputs a `SignGraph`.
 4. **Compiler (`@ikiraro/engine/compiler`):** Translates the `SignGraph` into raw physical rules (`MotionInstruction[]`), attaching exact handshapes and IK targets.
-5. **Director (`@ikiraro/engine/planning`):** A playback head that reads the `MotionInstruction[]` timeline and calculates what the avatar should be doing at any given millisecond.
-6. **Renderer (`@ikiraro/renderer`):** The Three.js loop asks the Director "what is the current state?", and applies those exact rotations to the 3D model's bones.
+5. **Director (`@ikiraro/engine/planning`):** A playback head that reads the `MotionInstruction[]` timeline. It uses the **Trajectory Engine** to calculate physical paths and the **Kinematic Controller** to ensure smooth, spring-tracked arm transitions.
+6. **Renderer (`@ikiraro/renderer`):** The Three.js loop asks the Director "what is the current state?", and applies the calculated **KinematicPose** to the 3D model's bones.
 
 ---
 
@@ -21,13 +21,18 @@ Before diving into files, you must understand the singular, unbreakable flow of 
 
 This package contains pure math and logic. It has zero dependencies on React or the DOM.
 
-### `language-registry.ts` & `plugins/*-plugin.ts`
+### `trajectories/` (The Trajectory Engine)
 
-- **What it is:** A singleton that stores the active sign language (e.g., ASL, RSL) and the interface (`SignLanguagePlugin`) that defines it.
-- **Why we did it:** We originally hardcoded ASL strings into the compiler. We ripped them out into plugins so the engine could support any global sign language dynamically without bloating the core bundle.
-- **Example:** `ASLPlugin` maps the word "I" to the pronoun slot "SELF", while `RSLPlugin` maps the Kinyarwanda word "NJYE" to "SELF". The engine doesn't care; it just asks the active plugin.
+- **What it is:** A polymorphic engine that separates **Rhythm** (how fast/slow/held a sign is) from **Space** (the physical path).
+- **Why we did it:** To avoid a massive switch statement and allow signs to have natural "Hold" phases at their peaks. It replaces the old monolithic `motion-paths.ts`.
+
+### `kinematics/` (The Kinematic Controller)
+
+- **What it is:** A stateful physical engine that uses multi-variate spring tracking to manage the avatar's arm positions.
+- **Why we did it:** To prevent "teleporting" hands. When switching between signs at different targets (e.g., forehead to chin), the Kinematic Controller guarantees a smooth, physically-plausible transition.
 
 ### `linguistic/parser.ts` & `linguistic/spatial-grammar.ts`
+...
 
 - **What it is:** Pass 1 of the engine. The parser converts sequential words into a grammatical `SignGraph`. `spatial-grammar.ts` tracks where entities live in 3D space.
 - **Why we did it:** If you sign "HE GAVE IT TO HER", you cannot just sign it in the center of your chest. The parser intercepts pronouns, registers them in `EpisodicSpatialMemory` (e.g., assigning "HE" to the left, "HER" to the right), and passes those coordinates down.

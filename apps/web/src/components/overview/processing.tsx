@@ -1,8 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { motion } from "motion/react";
 import { Matrix } from "@/components/ui/matrix";
-function HandGraphic({ active, color }: { active: boolean; color: string }) {
+const HandGraphic = memo(function HandGraphic({
+  active,
+  color,
+}: {
+  active: boolean;
+  color: string;
+}) {
   return (
     <div className="relative w-full h-full flex items-center justify-center">
       <svg
@@ -216,8 +222,14 @@ function HandGraphic({ active, color }: { active: boolean; color: string }) {
       </svg>
     </div>
   );
-}
-function FaceGraphic({ active, color }: { active: boolean; color: string }) {
+});
+const FaceGraphic = memo(function FaceGraphic({
+  active,
+  color,
+}: {
+  active: boolean;
+  color: string;
+}) {
   return (
     <div className="relative w-full h-full flex items-center justify-center">
       <svg
@@ -294,8 +306,14 @@ function FaceGraphic({ active, color }: { active: boolean; color: string }) {
       </svg>
     </div>
   );
-}
-function BodyGraphic({ active, color }: { active: boolean; color: string }) {
+});
+const BodyGraphic = memo(function BodyGraphic({
+  active,
+  color,
+}: {
+  active: boolean;
+  color: string;
+}) {
   return (
     <div className="relative w-full h-full flex items-center justify-center">
       <svg
@@ -411,7 +429,7 @@ function BodyGraphic({ active, color }: { active: boolean; color: string }) {
       </svg>
     </div>
   );
-}
+});
 const cardSettings = [
   {
     title: "Hand Tracking",

@@ -6,22 +6,8 @@ Tracked as of 2026-05-20. Ordered roughly by impact.
 
 ## Avatar / Rendering
 
-### 1. `arc` motion is overused and wrong for HELLO
-
-**Where:** `packages/engine/src/planning/lexeme-poses.ts`
-
-HELLO, LEARN, GOOD, BAD, COME, HAVE, SEE, MUSIC, HELP, GO, FIND all share `motion: "arc"`.
-The arc implementation in `motion-paths.ts` is `sin(p * π)` — a symmetric bell curve that starts
-at zero, peaks in the middle, and returns to zero. That makes HELLO look like the hand sweeps
-out and sweeps back. Real HELLO is a one-directional salute sweep away from the forehead —
-it does not return. LEARN (hand opens from forehead forward) has nothing to do with HELLO.
-Grouping them into the same motion makes every sign look identical.
-
-**Fix needed:** At minimum, add a `one-way-arc` or `sweep` motion type for outward-only
-movements. HELLO and THANK-YOU are salutes; LEARN, SEE are forward pushes. These are
-geometrically different trajectories. Each group needs its own motion.
-
----
+### 1. `arc` motion is overused and wrong for HELLO [FIXED]
+Fixed via **Trajectory Engine** refactor. Motions are now polymorphic classes. Added `salute`, `forward-push`, and `outward-sweep` to distinguish between trajectories that previously shared a generic symmetric arc.
 
 ### 2. Left arm is frozen — two-handed signs are broken
 
@@ -44,30 +30,13 @@ resolution to the left arm in the renderer.
 
 ---
 
-### 3. No hold phase — signs have no peak
-
-Signs in ASL have a three-part rhythm: **approach → hold → release**. The current
-implementation runs `computeMotionDelta(motion, progress)` from `p = 0` to `p = 1` uniformly
-across the entire frame duration. There is no hold at peak. The hand flies through the peak
-of the motion and immediately starts returning — which reads as rushed and unnatural.
-
-**Fix needed:** Remap the frame progress through a hold envelope:
-`approach [0 → 0.35] → hold [0.35 → 0.65] → release [0.65 → 1.0]`.
-The hold width and position can be a per-motion property. For tap/nod motions,
-the hold is at the bottom of the dip; for arc, at the peak.
+### 3. No hold phase — signs have no peak [FIXED]
+Fixed via **Rhythm Engine**. The trajectory progress is now remapped through an envelope that supports approach, hold, and release phases.
 
 ---
 
-### 4. Arm position jumps between consecutive signs with different `armTarget`
-
-When a sign at `FOREHEAD` (HELLO) is immediately followed by a sign at `CHIN` (FOOD),
-the arm target value changes in a single frame. The spring on `ek` (sign progress) smooths
-the IDLE↔SIGN transition, but the base target itself (`rArmXBase`) changes discontinuously.
-The arm jumps from forehead height to chin height at the frame boundary.
-
-**Fix needed:** Spring-track the arm target values independently from the sign progress spring.
-`rArmXBase`, `rForeZBase`, etc. should each have their own spring state that follows the
-incoming target, not just be read directly from `frame.armTarget`.
+### 4. Arm position jumps between consecutive signs with different `armTarget` [FIXED]
+Fixed via **Kinematic Controller**. Arm targets are now spring-tracked independently of sign progress, ensuring smooth physical continuity between different lexemes.
 
 ---
 
@@ -136,25 +105,8 @@ flat list and score all definitions rather than pre-bucketing by fingerprint.
 
 ---
 
-### 9. Temporal smoother discards score magnitude
-
-**Where:** `packages/engine/src/vision/implementations/temporal-smoother.ts`, line 18
-
-```ts
-const match = candidates[0] ?? null;
-const rawSign = match && match.score >= this.config.rawScoreThreshold ? match.name : null;
-```
-
-Only the top candidate is ever considered, and then it's binarized (pass/fail the
-`rawScoreThreshold`). A frame where A scores 0.72 and S scores 0.70 gets the same
-treatment as A scoring 0.98 with no competition. The history window accumulates
-sign _names_, not scores — so the confidence output is vote frequency, not signal
-strength. This makes M/N/S/T confusion especially bad because their scores are
-genuinely close and the winner flips frame-to-frame.
-
-**Fix needed:** Store `{ name, score }` in history, not just name. Weight the consensus
-calculation by score. Apply a score-gap threshold: if the top two candidates are within
-0.05 of each other, treat the frame as ambiguous (null) regardless of absolute score.
+### 9. Temporal smoother discards score magnitude [FIXED]
+Fixed via **Probabilistic Integrator**. The temporal integration now uses score distributions (histograms) instead of winner-takes-all plurality voting, significantly improving stability for Visually Similar Signs (VSS).
 
 ---
 
@@ -170,22 +122,8 @@ downstream `WorkerHandProcessor` currently doesn't act on gesture type to emit a
 
 ---
 
-### 11. `isMoving` flag has no hysteresis
-
-**Where:** `packages/engine/src/vision/classifier.ts`, lines 61–62
-
-```ts
-const speed = Math.sqrt(vector.velocity.x ** 2 + ...);
-vector.isMoving = speed > this.config.motionVelocityThreshold;
-```
-
-This is a hard threshold on raw velocity — no smoothing, no hysteresis. Small vibrations
-from holding a pose (natural hand tremor) will toggle `isMoving` on and off across frames.
-This directly affects J and Z detection (`requiresMotion` checks `isMoving`) and can cause
-them to score low even during a genuine stroke.
-
-**Fix needed:** Apply exponential smoothing to the speed estimate before thresholding,
-or use a Schmitt-trigger (different on/off thresholds) to prevent rapid toggling.
+### 11. `isMoving` flag has no hysteresis [FIXED]
+Fixed via **Schmitt-trigger** in `IkiraroSurgicalClassifier`. Speed is exponentially smoothed and uses on/off thresholds to prevent rapid toggling.
 
 ---
 

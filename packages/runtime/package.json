@@ -13,7 +13,11 @@
   },
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./react": "./src/react/client.ts",
+    "./hand-tracking": "./src/react/use-hand-tracking.ts",
+    "./accessibility": "./src/react/use-accessibility-mode.ts",
+    "./audio": "./src/audio/priority-queue.ts"
   },
   "scripts": {
     "check-types": "tsc --noEmit"

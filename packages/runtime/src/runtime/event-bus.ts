@@ -17,10 +17,10 @@ export class EventBus {
   ): () => void {
     const typeStr = type as string;
     const set = this.handlers.get(typeStr) ?? new Set();
-    set.add(handler as any);
+    set.add(handler as (event: IkiraroEvent<any>) => void);
     this.handlers.set(typeStr, set);
     return () => {
-      this.handlers.get(typeStr)?.delete(handler as any);
+      this.handlers.get(typeStr)?.delete(handler as (event: IkiraroEvent<any>) => void);
     };
   }
   onAll(handler: (event: IkiraroEvent<any>) => void): () => void {

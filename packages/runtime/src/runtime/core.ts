@@ -8,7 +8,9 @@ import type {
   RuntimeSnapshot,
 } from "./types";
 import { EventBus } from "./event-bus";
+import { globalResourceRegistry } from "./resource-registry";
 import type { TranslationEnvelope, SttModel, TranslationContext } from "@ikiraro/engine/types";
+
 /**
  * The IkiraroRuntime is the "Nucleus" of the system.
  * It coordinates plugins through an Event Bus and maintains a unified state.
@@ -69,6 +71,10 @@ export class IkiraroRuntime {
       await dispose();
     }
     this.pluginDisposers = [];
+
+    // Final safety layer: dispose any leaked heavy resources
+    await globalResourceRegistry.disposeAll();
+
     this.started = false;
   }
   /**

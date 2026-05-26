@@ -38,6 +38,7 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.35);
   --radius-4xl: calc(var(--radius) * 2.8);
+  --radius-full: calc(var(--radius) * 999);
 
   /* Bento Custom Colors */
   --color-bento-border: var(--bento-border);
@@ -53,6 +54,9 @@
 
     --card: #fdfdfd;
     --card-foreground: #09090b;
+
+    --popover: #ffffff;
+    --popover-foreground: #09090b;
 
     --primary: #ff4d29;
     --primary-foreground: #ffffff;
@@ -90,6 +94,9 @@
 
     --card: #080808;
     --card-foreground: #f2f2f2;
+
+    --popover: #0a0a0a;
+    --popover-foreground: #f2f2f2;
 
     --primary: #ff4d29;
     --primary-foreground: #ffffff;

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { AvatarViewer } from "@ikiraro/renderer";
+import { AvatarViewer } from "@ikiraro/renderer/avatar-viewer";
 
 const MODEL_URL = "/models/avatar.glb";
 
@@ -66,7 +66,6 @@ export function HeroAvatarPane() {
   );
 }
 export function FloatingAvatarWidget() {
-  useLandingAvatar();
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
     const handleScroll = () => {

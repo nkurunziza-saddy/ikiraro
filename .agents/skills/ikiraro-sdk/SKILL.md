@@ -10,13 +10,21 @@ metadata:
 
 Ikiraro bridges AI-driven translation (Groq), deterministic sign planning, and 3D rendering. The SDK (`@ikiraro/sdk`) is a curated facade over three internal packages:
 
-| Package             | Role                                                                         |
-| ------------------- | ---------------------------------------------------------------------------- |
-| `@ikiraro/engine`   | Pure math — no deps. LanguageRegistry, Planners, Compiler, RendererDirector. |
+| `@ikiraro/engine`   | Pure math — no deps. LanguageRegistry, Planners, Compiler, RendererDirector, **Kinematic Controller, Trajectory Engine**. |
 | `@ikiraro/runtime`  | IkiraroRuntime, EventBus, plugins, React hooks, Groq AI services.            |
 | `@ikiraro/renderer` | React UI — AvatarViewer (R3F), AudioVisualizer, AslHandSvg, HandOverlay, WebSpeechProvider |
 
 Install `@ikiraro/sdk` — it re-exports the stable public surface of all three.
+
+---
+
+## Architecture: The "Deep" Engine
+
+The engine follows a **Deep Architecture** pattern, providing high-leverage abstractions:
+
+- **Trajectory Engine:** Decouples sign rhythm (Hold phases) from physical movement.
+- **Kinematic Controller:** Uses stateful spring-damper tracking for arm positions.
+- **Probabilistic Vision:** Uses score distribution integration for stable sign detection.
 
 ---
 

@@ -79,13 +79,13 @@ export function OverviewFooter() {
         <div className="flex flex-col md:flex-row items-center justify-between text-[12px] text-muted-foreground font-mono uppercase tracking-widest">
           <p>Sensa Inc. © 2026</p>
           <div className="flex items-center gap-8 mt-6 md:mt-0">
+            <ThemeToggle />
             <a href="#" className="hover:text-foreground transition-colors">
               Privacy Policy
             </a>
             <a href="#" className="hover:text-foreground transition-colors">
               Terms of Service
             </a>
-            <ThemeToggle />
           </div>
         </div>
       </div>

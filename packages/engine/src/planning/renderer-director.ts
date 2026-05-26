@@ -4,6 +4,7 @@ import { resolveHandshape, mixHandshapes } from "./pose-library";
 import { resolveLexemePose } from "./lexeme-poses";
 import { coarticulationBlend, computeCoarticulationOffsets } from "./coarticulation";
 import type { MotionInstruction } from "../types";
+
 /**
  * The RendererDirector coordinates the playback of a SignPlan.
  * It implements the 'Director' pattern, where a logic-heavy orchestrator
@@ -218,6 +219,7 @@ export class RendererDirector {
       if (this.canvas.setExpression && frame.facialExpression) {
         this.canvas.setExpression(frame.facialExpression);
       }
+
       this.canvas.setMotion?.(
         (frame.motion ?? "none") as MotionType,
         this.state.progress,
@@ -239,6 +241,14 @@ export class RendererDirector {
         this.canvas.setPose(currentHandshape);
       }
     }
+  }
+  /**
+   * Permanently stops the director, cancels any active animation frames,
+   * and clears all state handlers.
+   */
+  dispose() {
+    this.pause();
+    this.stateHandlers.clear();
   }
   private notify() {
     const snap = { ...this.state };

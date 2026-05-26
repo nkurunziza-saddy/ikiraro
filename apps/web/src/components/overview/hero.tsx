@@ -37,6 +37,7 @@ export function OverviewHero() {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  aria-hidden="true"
                 >
                   <path d="M5 12h14" />
                   <path d="m12 5 7 7-7 7" />
@@ -90,7 +91,7 @@ export function OverviewHero() {
                   <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
                     Viewport Active
                   </span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2" aria-hidden="true">
                     <span className="w-1.5 h-1.5 bg-red-500 animate-pulse"></span>
                     <span className="text-[10px] font-mono uppercase tracking-widest text-foreground/60">
                       Live Render
@@ -117,7 +118,7 @@ export function OverviewHero() {
                   label: "Compute",
                   value: "Local",
                   color: "hsla(199, 75%, 60%, 1)",
-                  levels: [0.1, 0.2, 0.1, 0.3, 0.2, 0.4, 0.2, 0.1],
+                  levels: [0.8, 0.7, 0.9, 0.8, 0.6, 0.9, 0.7, 0.8],
                 },
               ].map((spec, i) => (
                 <div

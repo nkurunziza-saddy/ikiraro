@@ -256,8 +256,7 @@ export const pulse: Frame[] = (() => {
   }
   return frames;
 })();
-export function vu(columns: number, levels: number[]): Frame {
-  const rows = 7;
+export function vu(columns: number, levels: number[], rows: number = 7): Frame {
   const frame = emptyFrame(rows, columns);
   for (let col = 0; col < Math.min(columns, levels.length); col++) {
     const level = Math.max(0, Math.min(1, levels[col]));
@@ -395,7 +394,7 @@ export const Matrix = React.forwardRef<HTMLDivElement, MatrixProps>(
     });
     const currentFrame = useMemo(() => {
       if (mode === "vu" && levels && levels.length > 0) {
-        return ensureFrameSize(vu(cols, levels), rows, cols);
+        return ensureFrameSize(vu(cols, levels, rows), rows, cols);
       }
       if (pattern) {
         return ensureFrameSize(pattern, rows, cols);
@@ -457,8 +456,8 @@ export const Matrix = React.forwardRef<HTMLDivElement, MatrixProps>(
               <stop offset="100%" stopColor="var(--matrix-on)" stopOpacity="0.6" />
             </radialGradient>
             <radialGradient id="matrix-pixel-off" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="var(--muted-foreground)" stopOpacity="1" />
-              <stop offset="100%" stopColor="var(--muted-foreground)" stopOpacity="0.7" />
+              <stop offset="0%" stopColor="var(--matrix-off)" stopOpacity="1" />
+              <stop offset="100%" stopColor="var(--matrix-off)" stopOpacity="0.7" />
             </radialGradient>
             <filter id="matrix-glow" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur stdDeviation="2" result="blur" />

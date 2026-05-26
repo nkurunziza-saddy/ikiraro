@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { motion } from "motion/react";
 import { PixelBackground } from "@/components/ui/pixel";
-function ChipVisual({ active }: { active: boolean }) {
+const ChipVisual = memo(function ChipVisual({ active }: { active: boolean }) {
   return (
     <svg
       width="80"
@@ -70,8 +70,8 @@ function ChipVisual({ active }: { active: boolean }) {
       )}
     </svg>
   );
-}
-function MeshVisual({ active }: { active: boolean }) {
+});
+const MeshVisual = memo(function MeshVisual({ active }: { active: boolean }) {
   return (
     <svg
       width="80"
@@ -203,8 +203,8 @@ function MeshVisual({ active }: { active: boolean }) {
       )}
     </svg>
   );
-}
-function SyncVisual({ active }: { active: boolean }) {
+});
+const SyncVisual = memo(function SyncVisual({ active }: { active: boolean }) {
   return (
     <svg
       width="80"
@@ -230,8 +230,8 @@ function SyncVisual({ active }: { active: boolean }) {
       )}
     </svg>
   );
-}
-function SecurityVisual({ active }: { active: boolean }) {
+});
+const SecurityVisual = memo(function SecurityVisual({ active }: { active: boolean }) {
   return (
     <svg
       width="80"
@@ -261,7 +261,7 @@ function SecurityVisual({ active }: { active: boolean }) {
       )}
     </svg>
   );
-}
+});
 export function OverviewFeaturesGrid() {
   const [hoveredBlock, setHoveredBlock] = useState<number | null>(null);
   return (

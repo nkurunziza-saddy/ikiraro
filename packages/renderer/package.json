@@ -20,6 +20,18 @@
     },
     "./web-speech": {
       "default": "./src/web-speech.ts"
+    },
+    "./avatar-viewer": {
+      "default": "./src/avatar-viewer.tsx"
+    },
+    "./asl-hand-svg": {
+      "default": "./src/asl-hand-svg.tsx"
+    },
+    "./hand-overlay": {
+      "default": "./src/hand-overlay.tsx"
+    },
+    "./loader": {
+      "default": "./src/loader.tsx"
     }
   },
   "scripts": {

@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+
 export default function Header() {
   return (
     <header className="absolute top-0 left-0 right-0 z-50 w-full pt-[24px] px-6 md:px-12 bg-transparent">
@@ -10,15 +11,16 @@ export default function Header() {
           Sensa
         </Link>
         <div className="flex items-center gap-[32px]">
-          <nav className="hidden md:flex items-center gap-[24px]">
+          <nav className="hidden md:flex items-center gap-[24px]" aria-label="Main Navigation">
             {[
               { label: "Playground", to: "/playground" },
+              { label: "Demo", to: "/demo" },
               { label: "Documentation", to: "/docs" },
             ].map(({ label, to }) => (
               <Link
                 key={label}
                 to={to}
-                className="font-sans text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="font-sans text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors [&.active]:text-foreground [&.active]:font-semibold"
               >
                 {label}
               </Link>
@@ -37,6 +39,7 @@ export default function Header() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
             >
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />
