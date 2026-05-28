@@ -20,6 +20,7 @@ import { Route as DocsRuntimeRouteImport } from "./routes/docs/runtime";
 import { Route as DocsHooksRouteImport } from "./routes/docs/hooks";
 import { Route as DocsEventsRouteImport } from "./routes/docs/events";
 import { Route as DocsComponentsRouteImport } from "./routes/docs/components";
+import { Route as DocsAccessibilityRouteImport } from "./routes/docs/accessibility";
 
 const PlaygroundRoute = PlaygroundRouteImport.update({
   id: "/playground",
@@ -76,12 +77,18 @@ const DocsComponentsRoute = DocsComponentsRouteImport.update({
   path: "/components",
   getParentRoute: () => DocsRoute,
 } as any);
+const DocsAccessibilityRoute = DocsAccessibilityRouteImport.update({
+  id: "/accessibility",
+  path: "/accessibility",
+  getParentRoute: () => DocsRoute,
+} as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
   "/demo": typeof DemoRoute;
   "/docs": typeof DocsRouteWithChildren;
   "/playground": typeof PlaygroundRoute;
+  "/docs/accessibility": typeof DocsAccessibilityRoute;
   "/docs/components": typeof DocsComponentsRoute;
   "/docs/events": typeof DocsEventsRoute;
   "/docs/hooks": typeof DocsHooksRoute;
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   "/": typeof IndexRoute;
   "/demo": typeof DemoRoute;
   "/playground": typeof PlaygroundRoute;
+  "/docs/accessibility": typeof DocsAccessibilityRoute;
   "/docs/components": typeof DocsComponentsRoute;
   "/docs/events": typeof DocsEventsRoute;
   "/docs/hooks": typeof DocsHooksRoute;
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   "/demo": typeof DemoRoute;
   "/docs": typeof DocsRouteWithChildren;
   "/playground": typeof PlaygroundRoute;
+  "/docs/accessibility": typeof DocsAccessibilityRoute;
   "/docs/components": typeof DocsComponentsRoute;
   "/docs/events": typeof DocsEventsRoute;
   "/docs/hooks": typeof DocsHooksRoute;
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | "/demo"
     | "/docs"
     | "/playground"
+    | "/docs/accessibility"
     | "/docs/components"
     | "/docs/events"
     | "/docs/hooks"
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | "/"
     | "/demo"
     | "/playground"
+    | "/docs/accessibility"
     | "/docs/components"
     | "/docs/events"
     | "/docs/hooks"
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | "/demo"
     | "/docs"
     | "/playground"
+    | "/docs/accessibility"
     | "/docs/components"
     | "/docs/events"
     | "/docs/hooks"
@@ -243,10 +255,18 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof DocsComponentsRouteImport;
       parentRoute: typeof DocsRoute;
     };
+    "/docs/accessibility": {
+      id: "/docs/accessibility";
+      path: "/accessibility";
+      fullPath: "/docs/accessibility";
+      preLoaderRoute: typeof DocsAccessibilityRouteImport;
+      parentRoute: typeof DocsRoute;
+    };
   }
 }
 
 interface DocsRouteChildren {
+  DocsAccessibilityRoute: typeof DocsAccessibilityRoute;
   DocsComponentsRoute: typeof DocsComponentsRoute;
   DocsEventsRoute: typeof DocsEventsRoute;
   DocsHooksRoute: typeof DocsHooksRoute;
@@ -257,6 +277,7 @@ interface DocsRouteChildren {
 }
 
 const DocsRouteChildren: DocsRouteChildren = {
+  DocsAccessibilityRoute: DocsAccessibilityRoute,
   DocsComponentsRoute: DocsComponentsRoute,
   DocsEventsRoute: DocsEventsRoute,
   DocsHooksRoute: DocsHooksRoute,

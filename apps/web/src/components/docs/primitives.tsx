@@ -133,6 +133,11 @@ const TOKEN_COLOR: Record<TokenKind, string> = {
 };
 const PLAIN_LABELS = new Set(["terminal", ".env"]);
 
+// Code surfaces are always dark regardless of page theme.
+const CODE_BG = "#0d0e14";
+const CODE_BORDER = "rgba(255,255,255,0.07)";
+const CODE_LABEL = "rgba(255,255,255,0.30)";
+
 export function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
   return (
@@ -144,7 +149,8 @@ export function CopyButton({ text }: { text: string }) {
         });
       }}
       variant="ghost"
-      className="text-background/40 bg-background/5 h-auto px-2.5 py-1 text-[10px] transition-colors hover:bg-background/10 hover:text-background"
+      style={{ color: copied ? "rgba(134,239,172,0.9)" : CODE_LABEL }}
+      className="h-auto px-2.5 py-1 text-[10px] transition-colors hover:bg-white/8 hover:!text-white/70"
     >
       {copied ? <Check size={11} /> : <Copy size={11} />}
       {copied ? "copied" : "copy"}
@@ -154,12 +160,20 @@ export function CopyButton({ text }: { text: string }) {
 export function CodeBlock({ code, label }: { code: string; label?: string }) {
   const isPlain = !label || PLAIN_LABELS.has(label);
   return (
-    <div className="bg-foreground border border-background/10 rounded overflow-hidden text-[13px]">
+    <div
+      className="rounded overflow-hidden text-[13px]"
+      style={{ background: CODE_BG, border: `1px solid ${CODE_BORDER}` }}
+    >
       {label && (
-        <div className="border-b border-background/10 flex items-center justify-between px-4 py-2.5">
+        <div
+          className="flex items-center justify-between px-4 py-2.5"
+          style={{ borderBottom: `1px solid ${CODE_BORDER}` }}
+        >
           <div className="flex items-center gap-2">
-            <Terminal size={11} className="text-background/40" />
-            <span className="text-background/40 text-[10px] tracking-wide">{label}</span>
+            <Terminal size={11} style={{ color: CODE_LABEL }} />
+            <span className="text-[10px] tracking-wide" style={{ color: CODE_LABEL }}>
+              {label}
+            </span>
           </div>
           <CopyButton text={code} />
         </div>

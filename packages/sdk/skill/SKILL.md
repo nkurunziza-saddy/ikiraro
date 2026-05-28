@@ -2,8 +2,8 @@
 name: ikiraro
 description: "Ikiraro SDK integration guide for sign language translation and 3D rendering. Use when working with @ikiraro/sdk, @ikiraro/runtime, @ikiraro/engine, or @ikiraro/renderer packages. Triggers on: useIkiraro hook usage, useHandTracking, AvatarViewer, ASL/sign language translation, building a text/speech/vision-to-sign pipeline, runtime configuration, plugin authoring, accessibility mode, audio queue, earcons, shortcut manager, or any task involving the Ikiraro monorepo packages."
 metadata:
-  version: "1.2.0"
-  release_date: "2026-05-28"
+  version: "1.3.0"
+  release_date: "2026-05-29"
 ---
 
 # Ikiraro SDK
@@ -17,6 +17,12 @@ Ikiraro bridges AI-driven translation (Groq), deterministic sign planning, and 3
 | `@ikiraro/renderer` | React UI — AvatarViewer (R3F), AudioVisualizer, AslHandSvg, HandOverlay, WebSpeechProvider.                           |
 
 Install `@ikiraro/sdk` — it re-exports the stable public surface of all three.
+
+The SDK ships with this skill. After installing, run the one-liner to register it in your project:
+
+```bash
+npx ikiraro-sdk          # copies skill → .agents/skills/ikiraro-sdk/ and .claude/skills/ikiraro-sdk/
+```
 
 ---
 
@@ -33,11 +39,15 @@ The engine follows a **Deep Architecture** pattern:
 ## Installation
 
 ```bash
+# SDK (0.4.1) — bundles runtime, renderer, and engine
 bun add @ikiraro/sdk
 # required peers
 bun add effect three @react-three/fiber @react-three/drei
 # optional — only needed if you use useHandTracking / camera sign input
 bun add @mediapipe/tasks-vision
+
+# Install this Claude Code skill into your project
+npx ikiraro-sdk
 ```
 
 ```bash

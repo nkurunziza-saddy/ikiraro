@@ -25,6 +25,7 @@ const NAV = [
       { label: "Runtime API", to: "/docs/runtime" as const, exact: false },
       { label: "Event Reference", to: "/docs/events" as const, exact: false },
       { label: "Key Types", to: "/docs/types" as const, exact: false },
+      { label: "Accessibility", to: "/docs/accessibility" as const, exact: false },
     ],
   },
 ];
@@ -39,7 +40,7 @@ function SdkLayout() {
               <span className="bg-foreground text-background rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest">
                 SDK
               </span>
-              <span className="text-muted-foreground text-[10px]">v0.3.2</span>
+              <span className="text-muted-foreground text-[10px]">v0.4.1</span>
             </div>
             <nav className="flex flex-col gap-5">
               {NAV.map(({ group, items }) => (

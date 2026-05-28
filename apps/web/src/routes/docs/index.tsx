@@ -59,7 +59,7 @@ function SdkOverviewPage() {
             },
             {
               pkg: "@ikiraro/renderer",
-              desc: "AvatarViewer (R3F), AudioVisualizer, AslHandSvg, Button, and other Tailwind UI components.",
+              desc: "AvatarViewer (R3F), AudioVisualizer, AslHandSvg, HandOverlay, WebSpeechProvider.",
             },
             {
               pkg: "@ikiraro/engine",
@@ -152,6 +152,11 @@ function SdkOverviewPage() {
               desc: "All 34 events in the EventBus registry",
             },
             { label: "Key Types", to: "/docs/types", desc: "TypeScript types and architecture" },
+            {
+              label: "Accessibility",
+              to: "/docs/accessibility",
+              desc: "AudioQueue, EarconPlayer, useAccessibilityMode, shortcut manager",
+            },
           ].map(({ label, to, desc }) => (
             <Link
               key={to}
