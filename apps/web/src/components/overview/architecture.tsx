@@ -81,7 +81,7 @@ export function OverviewArchitecture() {
             </div>
           </div>
 
-          <div className="lg:col-span-5 order-1 lg:order-2 bento-cell p-10 md:p-14 flex flex-col justify-center">
+          <div className="lg:col-span-5 bento-cell p-10 md:p-14 flex flex-col justify-center order-1 lg:order-2">
             <h2 className="font-sans font-medium text-[32px] md:text-[44px] leading-[1.1] text-foreground tracking-tight mb-6">
               Hardware Synthesis. <br />
               Direct Data Flow.

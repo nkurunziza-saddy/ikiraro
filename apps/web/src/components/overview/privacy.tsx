@@ -74,7 +74,7 @@ export function OverviewPrivacy() {
   return (
     <section className="relative w-full bg-background py-[120px] md:py-[200px] border-b border-border">
       <div className="bento-container grid grid-cols-1 md:grid-cols-12 gap-24 items-center relative z-10">
-        <div className="md:col-span-5 md:col-start-2">
+        <div className="md:col-span-6">
           <h2 className="text-title mb-6">
             Your Data. <br /> Stays on Your Device.
           </h2>
@@ -130,7 +130,7 @@ export function OverviewPrivacy() {
                 <span className="text-metadata text-muted-foreground transition-colors duration-500 group-hover:text-foreground">
                   Status
                 </span>
-                <div className="font-mono text-[10px] text-muted-foreground leading-relaxed break-all p-5 border border-l-2 border-border transition-all duration-500 bg-secondary/20 shadow-inner group-hover:text-foreground group-hover:bg-secondary/40">
+                <div className="font-mono text-[10px] text-muted-foreground leading-relaxed break-all p-5 border border-border transition-all duration-500 bg-secondary/20 shadow-inner group-hover:text-foreground group-hover:bg-secondary/40">
                   <span style={{ color: PrivacyColor }}>0x8F2B...A9C4</span>
                   <br />
                   [SESSION ENCRYPTED]

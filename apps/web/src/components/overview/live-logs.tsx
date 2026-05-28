@@ -96,7 +96,7 @@ export function OverviewLiveLogs() {
               <div className="flex items-center gap-3">
                 <Terminal className="h-4 w-4 text-primary" />
                 <span className="text-[13px] font-mono text-foreground font-semibold">
-                  sensa-engine-logs.sh
+                  ikiraro-engine-logs.sh
                 </span>
               </div>
               <div className="flex gap-1.5 opacity-50">

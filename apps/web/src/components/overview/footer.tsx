@@ -1,72 +1,67 @@
+"use client";
 import { Link } from "@tanstack/react-router";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
-const nav = [
-  {
-    head: "Product",
-    links: [
-      { label: "Overview", href: "/" },
-      { label: "Playground", href: "/playground" },
-      { label: "Documentation", href: "/docs" },
-    ],
-  },
-  {
-    head: "Architecture",
-    links: [
-      { label: "Runtime", href: "/docs/runtime" },
-      { label: "Engine", href: "/docs/engine" },
-      { label: "Renderer", href: "/docs/renderer" },
-    ],
-  },
-  {
-    head: "Company",
-    links: [
-      { label: "About", href: "/about" },
-      { label: "Research", href: "/research" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-];
+
 export function OverviewFooter() {
+  const currentYear = new Date().getFullYear();
+
+  const links = [
+    {
+      title: "Product",
+      items: [
+        { label: "Playground", href: "/playground" },
+        { label: "Documentation", href: "/docs" },
+        { label: "SDK Download", href: "/docs" },
+        { label: "Status", href: "#" },
+      ],
+    },
+    {
+      title: "Resources",
+      items: [
+        { label: "GitHub Repository", href: "https://github.com/nkurunziza-saddy/ikiraro" },
+        { label: "Community Discord", href: "#" },
+        { label: "Research Papers", href: "#" },
+        { label: "API Reference", href: "/docs" },
+      ],
+    },
+    {
+      title: "Company",
+      items: [
+        { label: "Privacy Policy", href: "#" },
+        { label: "Terms of Service", href: "#" },
+        { label: "Contact Sales", href: "#" },
+      ],
+    },
+  ];
+
   return (
-    <footer className="relative w-full bg-background pt-[120px] pb-12 border-t border-border">
+    <footer className="w-full bg-background py-24 md:py-32 overflow-hidden border-t border-border">
       <div className="bento-container">
-        <div className="bento-grid md:grid-cols-12 mb-12">
-          <div className="md:col-span-4 bento-cell p-10 md:p-12 relative overflow-hidden group">
-            <div className="absolute inset-0 blueprint-grid opacity-[0.1] pointer-events-none"></div>
-            <div className="relative z-10">
-              <Link
-                to="/"
-                className="font-semibold tracking-tight text-[22px] text-foreground flex items-center gap-3 mb-6 w-fit"
-              >
-                Sensa
-              </Link>
-              <p className="text-[14px] text-secondary-foreground max-w-[240px] leading-relaxed mb-12">
-                Translating human intention into physical motion. Built for the edge.
-              </p>
-              <div className="flex items-center gap-3 bento-label">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#34d399] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#34d399]"></span>
-                </span>
-                All Systems Nominal
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 lg:gap-24 mb-24">
+          <div className="lg:col-span-5 space-y-10">
+            <div className="flex items-center gap-3">
+              <div className="size-5 bg-primary rounded-none"></div>
+              <span className="text-[20px] font-bold tracking-[-0.04em] uppercase">Ikiraro.</span>
             </div>
+            <p className="text-[16px] text-secondary-foreground leading-relaxed max-w-sm">
+              An open-source intelligence engine for browser-native sign language translation. Built
+              for low-latency accessibility.
+            </p>
           </div>
 
-          <div className="md:col-span-8 bento-grid grid-cols-2 md:grid-cols-3 border-none">
-            {nav.map(({ head, links }) => (
-              <div key={head} className="flex flex-col bento-cell bento-cell-hover p-10 md:p-12">
-                <h4 className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground font-semibold mb-6">
-                  {head}
+          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-12">
+            {links.map((group) => (
+              <div key={group.title} className="space-y-6">
+                <h4 className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.3em] font-bold">
+                  {group.title}
                 </h4>
-                <ul className="flex flex-col gap-4">
-                  {links.map(({ label, href }) => (
-                    <li key={label}>
+                <ul className="space-y-3">
+                  {group.items.map((link) => (
+                    <li key={link.label}>
                       <Link
-                        to={href}
-                        className="text-[14px] text-secondary-foreground hover:text-foreground transition-colors"
+                        to={link.href as any}
+                        className="text-[14px] text-foreground/70 hover:text-primary transition-colors duration-200"
                       >
-                        {label}
+                        {link.label}
                       </Link>
                     </li>
                   ))}
@@ -76,16 +71,17 @@ export function OverviewFooter() {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-between text-[12px] text-muted-foreground font-mono uppercase tracking-widest">
-          <p>Sensa Inc. © 2026</p>
-          <div className="flex items-center gap-8 mt-6 md:mt-0">
-            <ThemeToggle />
-            <a href="#" className="hover:text-foreground transition-colors">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-foreground transition-colors">
-              Terms of Service
-            </a>
+        <div className="pt-12 border-t border-border flex flex-col md:flex-row justify-between items-center gap-6 opacity-40">
+          <span className="text-[9px] font-mono uppercase tracking-[0.5em]">
+            © {currentYear} IKIRARO SYSTEMS // ALL RIGHTS RESERVED
+          </span>
+          <div className="flex items-center gap-10">
+            <span className="text-[9px] font-mono uppercase tracking-[0.5em]">v0.3.5-STABLE</span>
+            <div className="flex gap-1">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="size-1 bg-foreground rounded-none"></div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

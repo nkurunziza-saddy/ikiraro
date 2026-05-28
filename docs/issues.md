@@ -7,6 +7,7 @@ Tracked as of 2026-05-20. Ordered roughly by impact.
 ## Avatar / Rendering
 
 ### 1. `arc` motion is overused and wrong for HELLO [FIXED]
+
 Fixed via **Trajectory Engine** refactor. Motions are now polymorphic classes. Added `salute`, `forward-push`, and `outward-sweep` to distinguish between trajectories that previously shared a generic symmetric arc.
 
 ### 2. Left arm is frozen — two-handed signs are broken
@@ -31,11 +32,13 @@ resolution to the left arm in the renderer.
 ---
 
 ### 3. No hold phase — signs have no peak [FIXED]
+
 Fixed via **Rhythm Engine**. The trajectory progress is now remapped through an envelope that supports approach, hold, and release phases.
 
 ---
 
 ### 4. Arm position jumps between consecutive signs with different `armTarget` [FIXED]
+
 Fixed via **Kinematic Controller**. Arm targets are now spring-tracked independently of sign progress, ensuring smooth physical continuity between different lexemes.
 
 ---
@@ -106,6 +109,7 @@ flat list and score all definitions rather than pre-bucketing by fingerprint.
 ---
 
 ### 9. Temporal smoother discards score magnitude [FIXED]
+
 Fixed via **Probabilistic Integrator**. The temporal integration now uses score distributions (histograms) instead of winner-takes-all plurality voting, significantly improving stability for Visually Similar Signs (VSS).
 
 ---
@@ -123,6 +127,7 @@ downstream `WorkerHandProcessor` currently doesn't act on gesture type to emit a
 ---
 
 ### 11. `isMoving` flag has no hysteresis [FIXED]
+
 Fixed via **Schmitt-trigger** in `IkiraroSurgicalClassifier`. Speed is exponentially smoothed and uses on/off thresholds to prevent rapid toggling.
 
 ---

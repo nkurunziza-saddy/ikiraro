@@ -75,7 +75,7 @@ function buildPageContext(): { scene: string; content: string; actions: Record<s
   return { scene: "unknown page", content: "No content detected.", actions: {} };
 }
 
-const SYSTEM_PROMPT = `You are Sensa, a warm and knowledgeable accessibility guide.
+const SYSTEM_PROMPT = `You are Ikiraro, a warm and knowledgeable accessibility guide.
 You help people with visual, motor, or hearing impairments navigate a website.
 Users speak to you via voice, sign language, or text.
 

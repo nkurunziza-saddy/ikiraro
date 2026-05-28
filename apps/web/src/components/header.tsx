@@ -8,7 +8,7 @@ export default function Header() {
           to="/"
           className="font-semibold tracking-tight text-[22px] text-foreground flex items-center gap-3"
         >
-          Sensa
+          Ikiraro
         </Link>
         <div className="flex items-center gap-[32px]">
           <nav className="hidden md:flex items-center gap-[24px]" aria-label="Main Navigation">

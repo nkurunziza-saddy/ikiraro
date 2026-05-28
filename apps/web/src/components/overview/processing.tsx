@@ -470,12 +470,12 @@ export function OverviewProcessing() {
   return (
     <section className="relative w-full bg-background py-[120px] md:py-[200px] border-b border-border">
       <div className="bento-container grid grid-cols-1 lg:grid-cols-12 gap-24 items-center">
-        <div className="lg:col-span-5 lg:col-start-2 flex flex-col">
+        <div className="lg:col-span-6 flex flex-col">
           <h2 className="text-title mb-6">
             Multimodal Processing. <br /> Sub-millisecond Latency.
           </h2>
           <p className="text-subhero mb-10">
-            The Sensa engine captures high-fidelity kinematic data across multiple modalities
+            The Ikiraro engine captures high-fidelity kinematic data across multiple modalities
             simultaneously. Hands, face, and body posture are computed in parallel to reconstruct
             intent with zero lag.
           </p>
@@ -549,7 +549,7 @@ export function OverviewProcessing() {
           </div>
         </div>
 
-        <div className="lg:col-span-5 lg:col-start-7 relative w-full aspect-square border border-bento-border bg-background overflow-hidden rounded-none">
+        <div className="lg:col-span-6 relative w-full aspect-square border border-bento-border bg-background overflow-hidden rounded-none">
           <div className="absolute inset-0 flex flex-col gap-px bg-bento-gap">
             {cardSettings.map((card, i) => {
               const isActive = activeLayer === i;

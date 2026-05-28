@@ -8,272 +8,272 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as PlaygroundRouteImport } from "./routes/playground";
-import { Route as DocsRouteImport } from "./routes/docs";
-import { Route as DemoRouteImport } from "./routes/demo";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as DocsIndexRouteImport } from "./routes/docs/index";
-import { Route as DocsVisionRouteImport } from "./routes/docs/vision";
-import { Route as DocsTypesRouteImport } from "./routes/docs/types";
-import { Route as DocsRuntimeRouteImport } from "./routes/docs/runtime";
-import { Route as DocsHooksRouteImport } from "./routes/docs/hooks";
-import { Route as DocsEventsRouteImport } from "./routes/docs/events";
-import { Route as DocsComponentsRouteImport } from "./routes/docs/components";
-import { Route as DocsAccessibilityRouteImport } from "./routes/docs/accessibility";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as PlaygroundRouteImport } from './routes/playground'
+import { Route as DocsRouteImport } from './routes/docs'
+import { Route as DemoRouteImport } from './routes/demo'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as DocsVisionRouteImport } from './routes/docs/vision'
+import { Route as DocsTypesRouteImport } from './routes/docs/types'
+import { Route as DocsRuntimeRouteImport } from './routes/docs/runtime'
+import { Route as DocsHooksRouteImport } from './routes/docs/hooks'
+import { Route as DocsEventsRouteImport } from './routes/docs/events'
+import { Route as DocsComponentsRouteImport } from './routes/docs/components'
+import { Route as DocsAccessibilityRouteImport } from './routes/docs/accessibility'
 
 const PlaygroundRoute = PlaygroundRouteImport.update({
-  id: "/playground",
-  path: "/playground",
+  id: '/playground',
+  path: '/playground',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const DocsRoute = DocsRouteImport.update({
-  id: "/docs",
-  path: "/docs",
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const DemoRoute = DemoRouteImport.update({
-  id: "/demo",
-  path: "/demo",
+  id: '/demo',
+  path: '/demo',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const DocsIndexRoute = DocsIndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => DocsRoute,
-} as any);
+} as any)
 const DocsVisionRoute = DocsVisionRouteImport.update({
-  id: "/vision",
-  path: "/vision",
+  id: '/vision',
+  path: '/vision',
   getParentRoute: () => DocsRoute,
-} as any);
+} as any)
 const DocsTypesRoute = DocsTypesRouteImport.update({
-  id: "/types",
-  path: "/types",
+  id: '/types',
+  path: '/types',
   getParentRoute: () => DocsRoute,
-} as any);
+} as any)
 const DocsRuntimeRoute = DocsRuntimeRouteImport.update({
-  id: "/runtime",
-  path: "/runtime",
+  id: '/runtime',
+  path: '/runtime',
   getParentRoute: () => DocsRoute,
-} as any);
+} as any)
 const DocsHooksRoute = DocsHooksRouteImport.update({
-  id: "/hooks",
-  path: "/hooks",
+  id: '/hooks',
+  path: '/hooks',
   getParentRoute: () => DocsRoute,
-} as any);
+} as any)
 const DocsEventsRoute = DocsEventsRouteImport.update({
-  id: "/events",
-  path: "/events",
+  id: '/events',
+  path: '/events',
   getParentRoute: () => DocsRoute,
-} as any);
+} as any)
 const DocsComponentsRoute = DocsComponentsRouteImport.update({
-  id: "/components",
-  path: "/components",
+  id: '/components',
+  path: '/components',
   getParentRoute: () => DocsRoute,
-} as any);
+} as any)
 const DocsAccessibilityRoute = DocsAccessibilityRouteImport.update({
-  id: "/accessibility",
-  path: "/accessibility",
+  id: '/accessibility',
+  path: '/accessibility',
   getParentRoute: () => DocsRoute,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/demo": typeof DemoRoute;
-  "/docs": typeof DocsRouteWithChildren;
-  "/playground": typeof PlaygroundRoute;
-  "/docs/accessibility": typeof DocsAccessibilityRoute;
-  "/docs/components": typeof DocsComponentsRoute;
-  "/docs/events": typeof DocsEventsRoute;
-  "/docs/hooks": typeof DocsHooksRoute;
-  "/docs/runtime": typeof DocsRuntimeRoute;
-  "/docs/types": typeof DocsTypesRoute;
-  "/docs/vision": typeof DocsVisionRoute;
-  "/docs/": typeof DocsIndexRoute;
+  '/': typeof IndexRoute
+  '/demo': typeof DemoRoute
+  '/docs': typeof DocsRouteWithChildren
+  '/playground': typeof PlaygroundRoute
+  '/docs/accessibility': typeof DocsAccessibilityRoute
+  '/docs/components': typeof DocsComponentsRoute
+  '/docs/events': typeof DocsEventsRoute
+  '/docs/hooks': typeof DocsHooksRoute
+  '/docs/runtime': typeof DocsRuntimeRoute
+  '/docs/types': typeof DocsTypesRoute
+  '/docs/vision': typeof DocsVisionRoute
+  '/docs/': typeof DocsIndexRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/demo": typeof DemoRoute;
-  "/playground": typeof PlaygroundRoute;
-  "/docs/accessibility": typeof DocsAccessibilityRoute;
-  "/docs/components": typeof DocsComponentsRoute;
-  "/docs/events": typeof DocsEventsRoute;
-  "/docs/hooks": typeof DocsHooksRoute;
-  "/docs/runtime": typeof DocsRuntimeRoute;
-  "/docs/types": typeof DocsTypesRoute;
-  "/docs/vision": typeof DocsVisionRoute;
-  "/docs": typeof DocsIndexRoute;
+  '/': typeof IndexRoute
+  '/demo': typeof DemoRoute
+  '/playground': typeof PlaygroundRoute
+  '/docs/accessibility': typeof DocsAccessibilityRoute
+  '/docs/components': typeof DocsComponentsRoute
+  '/docs/events': typeof DocsEventsRoute
+  '/docs/hooks': typeof DocsHooksRoute
+  '/docs/runtime': typeof DocsRuntimeRoute
+  '/docs/types': typeof DocsTypesRoute
+  '/docs/vision': typeof DocsVisionRoute
+  '/docs': typeof DocsIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/demo": typeof DemoRoute;
-  "/docs": typeof DocsRouteWithChildren;
-  "/playground": typeof PlaygroundRoute;
-  "/docs/accessibility": typeof DocsAccessibilityRoute;
-  "/docs/components": typeof DocsComponentsRoute;
-  "/docs/events": typeof DocsEventsRoute;
-  "/docs/hooks": typeof DocsHooksRoute;
-  "/docs/runtime": typeof DocsRuntimeRoute;
-  "/docs/types": typeof DocsTypesRoute;
-  "/docs/vision": typeof DocsVisionRoute;
-  "/docs/": typeof DocsIndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/demo': typeof DemoRoute
+  '/docs': typeof DocsRouteWithChildren
+  '/playground': typeof PlaygroundRoute
+  '/docs/accessibility': typeof DocsAccessibilityRoute
+  '/docs/components': typeof DocsComponentsRoute
+  '/docs/events': typeof DocsEventsRoute
+  '/docs/hooks': typeof DocsHooksRoute
+  '/docs/runtime': typeof DocsRuntimeRoute
+  '/docs/types': typeof DocsTypesRoute
+  '/docs/vision': typeof DocsVisionRoute
+  '/docs/': typeof DocsIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/demo"
-    | "/docs"
-    | "/playground"
-    | "/docs/accessibility"
-    | "/docs/components"
-    | "/docs/events"
-    | "/docs/hooks"
-    | "/docs/runtime"
-    | "/docs/types"
-    | "/docs/vision"
-    | "/docs/";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | '/demo'
+    | '/docs'
+    | '/playground'
+    | '/docs/accessibility'
+    | '/docs/components'
+    | '/docs/events'
+    | '/docs/hooks'
+    | '/docs/runtime'
+    | '/docs/types'
+    | '/docs/vision'
+    | '/docs/'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | "/demo"
-    | "/playground"
-    | "/docs/accessibility"
-    | "/docs/components"
-    | "/docs/events"
-    | "/docs/hooks"
-    | "/docs/runtime"
-    | "/docs/types"
-    | "/docs/vision"
-    | "/docs";
+    | '/'
+    | '/demo'
+    | '/playground'
+    | '/docs/accessibility'
+    | '/docs/components'
+    | '/docs/events'
+    | '/docs/hooks'
+    | '/docs/runtime'
+    | '/docs/types'
+    | '/docs/vision'
+    | '/docs'
   id:
-    | "__root__"
-    | "/"
-    | "/demo"
-    | "/docs"
-    | "/playground"
-    | "/docs/accessibility"
-    | "/docs/components"
-    | "/docs/events"
-    | "/docs/hooks"
-    | "/docs/runtime"
-    | "/docs/types"
-    | "/docs/vision"
-    | "/docs/";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/demo'
+    | '/docs'
+    | '/playground'
+    | '/docs/accessibility'
+    | '/docs/components'
+    | '/docs/events'
+    | '/docs/hooks'
+    | '/docs/runtime'
+    | '/docs/types'
+    | '/docs/vision'
+    | '/docs/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  DemoRoute: typeof DemoRoute;
-  DocsRoute: typeof DocsRouteWithChildren;
-  PlaygroundRoute: typeof PlaygroundRoute;
+  IndexRoute: typeof IndexRoute
+  DemoRoute: typeof DemoRoute
+  DocsRoute: typeof DocsRouteWithChildren
+  PlaygroundRoute: typeof PlaygroundRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/playground": {
-      id: "/playground";
-      path: "/playground";
-      fullPath: "/playground";
-      preLoaderRoute: typeof PlaygroundRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/docs": {
-      id: "/docs";
-      path: "/docs";
-      fullPath: "/docs";
-      preLoaderRoute: typeof DocsRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/demo": {
-      id: "/demo";
-      path: "/demo";
-      fullPath: "/demo";
-      preLoaderRoute: typeof DemoRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/docs/": {
-      id: "/docs/";
-      path: "/";
-      fullPath: "/docs/";
-      preLoaderRoute: typeof DocsIndexRouteImport;
-      parentRoute: typeof DocsRoute;
-    };
-    "/docs/vision": {
-      id: "/docs/vision";
-      path: "/vision";
-      fullPath: "/docs/vision";
-      preLoaderRoute: typeof DocsVisionRouteImport;
-      parentRoute: typeof DocsRoute;
-    };
-    "/docs/types": {
-      id: "/docs/types";
-      path: "/types";
-      fullPath: "/docs/types";
-      preLoaderRoute: typeof DocsTypesRouteImport;
-      parentRoute: typeof DocsRoute;
-    };
-    "/docs/runtime": {
-      id: "/docs/runtime";
-      path: "/runtime";
-      fullPath: "/docs/runtime";
-      preLoaderRoute: typeof DocsRuntimeRouteImport;
-      parentRoute: typeof DocsRoute;
-    };
-    "/docs/hooks": {
-      id: "/docs/hooks";
-      path: "/hooks";
-      fullPath: "/docs/hooks";
-      preLoaderRoute: typeof DocsHooksRouteImport;
-      parentRoute: typeof DocsRoute;
-    };
-    "/docs/events": {
-      id: "/docs/events";
-      path: "/events";
-      fullPath: "/docs/events";
-      preLoaderRoute: typeof DocsEventsRouteImport;
-      parentRoute: typeof DocsRoute;
-    };
-    "/docs/components": {
-      id: "/docs/components";
-      path: "/components";
-      fullPath: "/docs/components";
-      preLoaderRoute: typeof DocsComponentsRouteImport;
-      parentRoute: typeof DocsRoute;
-    };
-    "/docs/accessibility": {
-      id: "/docs/accessibility";
-      path: "/accessibility";
-      fullPath: "/docs/accessibility";
-      preLoaderRoute: typeof DocsAccessibilityRouteImport;
-      parentRoute: typeof DocsRoute;
-    };
+    '/playground': {
+      id: '/playground'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo': {
+      id: '/demo'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/': {
+      id: '/docs/'
+      path: '/'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/vision': {
+      id: '/docs/vision'
+      path: '/vision'
+      fullPath: '/docs/vision'
+      preLoaderRoute: typeof DocsVisionRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/types': {
+      id: '/docs/types'
+      path: '/types'
+      fullPath: '/docs/types'
+      preLoaderRoute: typeof DocsTypesRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/runtime': {
+      id: '/docs/runtime'
+      path: '/runtime'
+      fullPath: '/docs/runtime'
+      preLoaderRoute: typeof DocsRuntimeRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/hooks': {
+      id: '/docs/hooks'
+      path: '/hooks'
+      fullPath: '/docs/hooks'
+      preLoaderRoute: typeof DocsHooksRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/events': {
+      id: '/docs/events'
+      path: '/events'
+      fullPath: '/docs/events'
+      preLoaderRoute: typeof DocsEventsRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/components': {
+      id: '/docs/components'
+      path: '/components'
+      fullPath: '/docs/components'
+      preLoaderRoute: typeof DocsComponentsRouteImport
+      parentRoute: typeof DocsRoute
+    }
+    '/docs/accessibility': {
+      id: '/docs/accessibility'
+      path: '/accessibility'
+      fullPath: '/docs/accessibility'
+      preLoaderRoute: typeof DocsAccessibilityRouteImport
+      parentRoute: typeof DocsRoute
+    }
   }
 }
 
 interface DocsRouteChildren {
-  DocsAccessibilityRoute: typeof DocsAccessibilityRoute;
-  DocsComponentsRoute: typeof DocsComponentsRoute;
-  DocsEventsRoute: typeof DocsEventsRoute;
-  DocsHooksRoute: typeof DocsHooksRoute;
-  DocsRuntimeRoute: typeof DocsRuntimeRoute;
-  DocsTypesRoute: typeof DocsTypesRoute;
-  DocsVisionRoute: typeof DocsVisionRoute;
-  DocsIndexRoute: typeof DocsIndexRoute;
+  DocsAccessibilityRoute: typeof DocsAccessibilityRoute
+  DocsComponentsRoute: typeof DocsComponentsRoute
+  DocsEventsRoute: typeof DocsEventsRoute
+  DocsHooksRoute: typeof DocsHooksRoute
+  DocsRuntimeRoute: typeof DocsRuntimeRoute
+  DocsTypesRoute: typeof DocsTypesRoute
+  DocsVisionRoute: typeof DocsVisionRoute
+  DocsIndexRoute: typeof DocsIndexRoute
 }
 
 const DocsRouteChildren: DocsRouteChildren = {
@@ -285,25 +285,25 @@ const DocsRouteChildren: DocsRouteChildren = {
   DocsTypesRoute: DocsTypesRoute,
   DocsVisionRoute: DocsVisionRoute,
   DocsIndexRoute: DocsIndexRoute,
-};
+}
 
-const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren);
+const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DemoRoute: DemoRoute,
   DocsRoute: DocsRouteWithChildren,
   PlaygroundRoute: PlaygroundRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from "./router.tsx";
-import type { createStart } from "@tanstack/react-start";
-declare module "@tanstack/react-start" {
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
   interface Register {
-    ssr: true;
-    router: Awaited<ReturnType<typeof getRouter>>;
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
   }
 }

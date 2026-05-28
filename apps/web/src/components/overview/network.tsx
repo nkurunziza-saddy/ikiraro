@@ -29,7 +29,7 @@ export function OverviewNetwork() {
               Zero Latency.
             </h2>
             <p className="font-sans text-[15px] md:text-[16px] text-muted-foreground leading-relaxed mb-12">
-              The Sensa engine is compiled to an ultra-lightweight WebAssembly core. It runs
+              The Ikiraro engine is compiled to an ultra-lightweight WebAssembly core. It runs
               entirely on the client, utilizing local GPU acceleration without sending voice or
               video data to third-party APIs.
             </p>

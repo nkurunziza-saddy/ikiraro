@@ -32,6 +32,7 @@ This package contains pure math and logic. It has zero dependencies on React or 
 - **Why we did it:** To prevent "teleporting" hands. When switching between signs at different targets (e.g., forehead to chin), the Kinematic Controller guarantees a smooth, physically-plausible transition.
 
 ### `linguistic/parser.ts` & `linguistic/spatial-grammar.ts`
+
 ...
 
 - **What it is:** Pass 1 of the engine. The parser converts sequential words into a grammatical `SignGraph`. `spatial-grammar.ts` tracks where entities live in 3D space.

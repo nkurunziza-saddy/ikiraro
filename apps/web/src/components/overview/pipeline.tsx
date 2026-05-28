@@ -1,10 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
-const AudioColor = "hsla(24, 75%, 60%, 1)";
-const VisionColor = "hsla(158, 55%, 55%, 1)";
-const TextColor = "hsla(199, 75%, 60%, 1)";
-const EngineColor = "hsla(263, 60%, 65%, 1)";
+
 function AudioIcon() {
   return (
     <svg
@@ -18,10 +15,10 @@ function AudioIcon() {
       <rect x="9" y="2" width="6" height="10" rx="3" fill="currentColor" fillOpacity="0.1" />
       <path d="M5 10v2a7 7 0 0 0 14 0v-2" />
       <line x1="12" y1="19" x2="12" y2="22" />
-      <line x1="8" y1="22" x2="16" y2="22" />
     </svg>
   );
 }
+
 function VisionIcon() {
   return (
     <svg
@@ -32,13 +29,14 @@ function VisionIcon() {
       stroke="currentColor"
       strokeWidth="1.5"
     >
-      <rect x="3" y="5" width="18" height="14" rx="2" fill="currentColor" fillOpacity="0.1" />
+      <rect x="3" y="5" width="18" height="14" rx="0" fill="currentColor" fillOpacity="0.1" />
       <circle cx="12" cy="12" r="3" />
       <line x1="3" y1="12" x2="6" y2="12" />
       <line x1="18" y1="12" x2="21" y2="12" />
     </svg>
   );
 }
+
 function TextIcon() {
   return (
     <svg
@@ -51,22 +49,22 @@ function TextIcon() {
     >
       <polyline points="4 7 10 12 4 17" />
       <line x1="12" y1="17" x2="20" y2="17" />
-      <rect x="2" y="3" width="20" height="18" rx="2" fill="currentColor" fillOpacity="0.05" />
     </svg>
   );
 }
+
 function EngineIcon() {
   return (
     <svg
-      width="32"
-      height="32"
+      width="40"
+      height="40"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="1"
     >
-      <rect x="4" y="4" width="16" height="16" rx="2" fill="currentColor" fillOpacity="0.1" />
-      <rect x="8" y="8" width="8" height="8" rx="1" />
+      <rect x="4" y="4" width="16" height="16" rx="0" fill="currentColor" fillOpacity="0.05" />
+      <rect x="8" y="8" width="8" height="8" rx="0" />
       <line x1="12" y1="2" x2="12" y2="4" />
       <line x1="12" y1="20" x2="12" y2="22" />
       <line x1="2" y1="12" x2="4" y2="12" />
@@ -74,11 +72,12 @@ function EngineIcon() {
     </svg>
   );
 }
+
 function OutputIcon() {
   return (
     <svg
-      width="24"
-      height="24"
+      width="32"
+      height="32"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -93,6 +92,7 @@ function OutputIcon() {
     </svg>
   );
 }
+
 export function OverviewPipeline() {
   const containerRef = useRef<HTMLDivElement>(null);
   const div1Ref = useRef<HTMLDivElement>(null);
@@ -100,252 +100,174 @@ export function OverviewPipeline() {
   const div3Ref = useRef<HTMLDivElement>(null);
   const div4Ref = useRef<HTMLDivElement>(null);
   const div5Ref = useRef<HTMLDivElement>(null);
+
   const [activeNode, setActiveNode] = useState<number | null>(null);
-  const getBeamOpacity = (nodeId: number) => {
-    if (activeNode === null) return 0.25;
-    return activeNode === nodeId || activeNode === 4 || activeNode === 5 ? 0.8 : 0.05;
-  };
-  const getBeamColor = (nodeId: number, defaultColor: string) => {
-    if (activeNode === null) return "rgba(255,255,255,0.15)";
-    return activeNode === nodeId || activeNode === 4 || activeNode === 5
-      ? defaultColor
-      : "rgba(255,255,255,0.05)";
-  };
+
+  const stages = [
+    {
+      stage: "01",
+      title: "Multimodal Normalization",
+      desc: "All inputs are converted into a standardized tensor format before routing.",
+    },
+    {
+      stage: "02",
+      title: "Kinematic Semantic Parsing",
+      desc: "The core engine resolves intent and maps it to the 3D bone hierarchy.",
+    },
+  ];
+
   return (
-    <section className="relative w-full bg-background py-[120px] md:py-[200px] border-b border-border">
-      <div className="bento-container grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-24 relative z-10">
-        <div className="md:col-span-5 md:col-start-2">
+    <section className="relative w-full bg-background py-24 md:py-32 border-b border-border">
+      <div className="bento-container grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24 relative z-10">
+        <div className="lg:col-span-6">
           <h2 className="text-title mb-6">Unified Synthesis Pipeline.</h2>
-          <p className="text-subhero mb-12">
-            Raw audio, text feeds, and vision matrices are collected simultaneously, parsed by our
-            lightweight inference network, and compiled into a unified joint stream.
+          <p className="text-subhero mb-12 max-w-[500px]">
+            Raw audio, text feeds, and vision matrices are collected simultaneously and compiled
+            into a unified joint stream.
           </p>
-          <div className="grid grid-cols-1 bento-grid">
-            {[
-              {
-                stage: "01",
-                title: "Multimodal Normalization",
-                desc: "All inputs are converted into a standardized tensor format before routing.",
-              },
-              {
-                stage: "02",
-                title: "Kinematic Semantic Parsing",
-                desc: "The core engine resolves intent and maps it to the 3D bone hierarchy.",
-              },
-            ].map((s, i) => (
+
+          <div className="grid grid-cols-1 bento-grid overflow-hidden">
+            {stages.map((s, i) => (
               <div
                 key={i}
-                className="flex flex-col gap-2 p-8 bento-cell bento-cell-hover cursor-pointer relative group"
+                className="flex flex-col gap-2 p-10 bento-cell bento-cell-hover cursor-crosshair relative group"
               >
-                <div className="text-[10px] font-mono text-secondary-foreground font-bold uppercase tracking-widest group-hover:text-foreground transition-colors duration-300">
-                  Stage {s.stage}
+                <div className="text-[18px] font-semibold text-foreground uppercase tracking-tight">
+                  {s.title}
                 </div>
-                <div className="text-[16px] font-semibold text-foreground">{s.title}</div>
-                <p className="text-[14px] text-secondary-foreground mt-2">{s.desc}</p>
+                <p className="text-[15px] text-secondary-foreground mt-2 leading-relaxed">
+                  {s.desc}
+                </p>
               </div>
             ))}
           </div>
         </div>
-
-        <div className="md:col-span-6">
+        <div className="lg:col-span-6">
           <div
             ref={containerRef}
-            className="relative w-full aspect-square md:aspect-auto md:h-[650px] flex items-center justify-center border border-border bg-background overflow-hidden"
+            className="relative w-full aspect-square md:aspect-auto md:h-[650px] flex items-center justify-center border border-border bg-card/30 overflow-hidden shadow-inner"
           >
-            <div className="absolute inset-0 blueprint-grid opacity-[0.2]"></div>
+            <div className="absolute inset-0 blueprint-grid opacity-[0.08]"></div>
 
-            <div className="flex flex-col gap-16 z-20 mr-auto ml-16 lg:ml-24">
-              <div
-                ref={div1Ref}
-                onMouseEnter={() => setActiveNode(1)}
-                onMouseLeave={() => setActiveNode(null)}
-                className="w-14 h-14 border bg-card flex items-center justify-center relative cursor-pointer transition-colors duration-300 group"
-                style={{ borderColor: activeNode === 1 ? AudioColor : "var(--bento-border)" }}
-              >
+            {/* Source Nodes */}
+            <div className="flex flex-col gap-20 z-20 mr-auto ml-12 lg:ml-20">
+              {[
+                { ref: div1Ref, id: 1, icon: <AudioIcon />, label: "Audio.Stream" },
+                { ref: div2Ref, id: 2, icon: <VisionIcon />, label: "Vision.Matrix" },
+                { ref: div3Ref, id: 3, icon: <TextIcon />, label: "Text.Input" },
+              ].map((node) => (
                 <div
-                  className="absolute inset-0 transition-opacity duration-300"
-                  style={{ backgroundColor: AudioColor, opacity: activeNode === 1 ? 0.1 : 0 }}
-                />
-                <div
-                  style={{ color: activeNode === 1 ? AudioColor : "var(--muted-foreground)" }}
-                  className="transition-colors duration-300 relative z-10"
-                >
-                  <AudioIcon />
-                </div>
-                <span
-                  className="absolute -left-28 w-24 text-right text-[10px] font-mono uppercase tracking-wider transition-colors duration-300"
+                  key={node.id}
+                  ref={node.ref}
+                  onMouseEnter={() => setActiveNode(node.id)}
+                  onMouseLeave={() => setActiveNode(null)}
+                  className="w-16 h-16 border bg-background flex items-center justify-center relative cursor-crosshair transition-all duration-300 group shadow-sm hover:shadow-primary/20"
                   style={{
-                    color: activeNode === 1 ? "var(--foreground)" : "var(--muted-foreground)",
+                    borderColor: activeNode === node.id ? "var(--primary)" : "var(--border)",
                   }}
                 >
-                  Audio Feed
-                </span>
-              </div>
-
-              <div
-                ref={div2Ref}
-                onMouseEnter={() => setActiveNode(2)}
-                onMouseLeave={() => setActiveNode(null)}
-                className="w-14 h-14 border bg-card flex items-center justify-center relative cursor-pointer transition-colors duration-300 group"
-                style={{ borderColor: activeNode === 2 ? VisionColor : "var(--bento-border)" }}
-              >
-                <div
-                  className="absolute inset-0 transition-opacity duration-300"
-                  style={{ backgroundColor: VisionColor, opacity: activeNode === 2 ? 0.1 : 0 }}
-                />
-                <div
-                  style={{ color: activeNode === 2 ? VisionColor : "var(--muted-foreground)" }}
-                  className="transition-colors duration-300 relative z-10"
-                >
-                  <VisionIcon />
+                  <div
+                    className="transition-colors duration-300 relative z-10"
+                    style={{
+                      color: activeNode === node.id ? "var(--primary)" : "var(--muted-foreground)",
+                    }}
+                  >
+                    {node.icon}
+                  </div>
+                  <span className="absolute -left-36 w-32 text-right text-[9px] font-mono uppercase tracking-[0.2em] opacity-40 group-hover:opacity-100 transition-opacity">
+                    {node.label}
+                  </span>
                 </div>
-                <span
-                  className="absolute -left-28 w-24 text-right text-[10px] font-mono uppercase tracking-wider transition-colors duration-300"
-                  style={{
-                    color: activeNode === 2 ? "var(--foreground)" : "var(--muted-foreground)",
-                  }}
-                >
-                  Vision Feed
-                </span>
-              </div>
-
-              <div
-                ref={div3Ref}
-                onMouseEnter={() => setActiveNode(3)}
-                onMouseLeave={() => setActiveNode(null)}
-                className="w-14 h-14 border bg-card flex items-center justify-center relative cursor-pointer transition-colors duration-300 group"
-                style={{ borderColor: activeNode === 3 ? TextColor : "var(--bento-border)" }}
-              >
-                <div
-                  className="absolute inset-0 transition-opacity duration-300"
-                  style={{ backgroundColor: TextColor, opacity: activeNode === 3 ? 0.1 : 0 }}
-                />
-                <div
-                  style={{ color: activeNode === 3 ? TextColor : "var(--muted-foreground)" }}
-                  className="transition-colors duration-300 relative z-10"
-                >
-                  <TextIcon />
-                </div>
-                <span
-                  className="absolute -left-28 w-24 text-right text-[10px] font-mono uppercase tracking-wider transition-colors duration-300"
-                  style={{
-                    color: activeNode === 3 ? "var(--foreground)" : "var(--muted-foreground)",
-                  }}
-                >
-                  Text Feed
-                </span>
-              </div>
+              ))}
             </div>
 
+            {/* The Central Engine - Standing Still as requested */}
             <div
               ref={div4Ref}
               onMouseEnter={() => setActiveNode(4)}
               onMouseLeave={() => setActiveNode(null)}
-              className="z-20 w-44 h-44 border bg-card flex flex-col items-center justify-center gap-6 relative cursor-pointer transition-colors duration-300 group"
-              style={{ borderColor: activeNode === 4 ? EngineColor : "var(--bento-border)" }}
+              className="z-20 w-48 h-48 border bg-background flex flex-col items-center justify-center gap-6 relative cursor-crosshair transition-all duration-300 group shadow-2xl"
+              style={{ borderColor: activeNode === 4 ? "var(--primary)" : "var(--border)" }}
             >
-              <div
-                className="absolute inset-0 transition-opacity duration-300"
-                style={{ backgroundColor: EngineColor, opacity: activeNode === 4 ? 0.05 : 0 }}
-              />
+              <div className="absolute inset-0 bg-radial from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="relative flex items-center justify-center">
+                {/* HUD Decoration around icon */}
+                <div className="absolute size-24 border border-border border-dashed rounded-full opacity-20"></div>
                 <div
-                  className="w-16 h-16 rounded-full border border-border animate-spin [animation-duration:8s] absolute"
-                  style={{ borderTopColor: EngineColor, borderRightColor: EngineColor }}
-                />
-                <div
-                  style={{ color: activeNode === 4 ? EngineColor : "var(--muted-foreground)" }}
                   className="transition-colors duration-300 relative z-10"
+                  style={{ color: activeNode === 4 ? "var(--primary)" : "var(--muted-foreground)" }}
                 >
                   <EngineIcon />
                 </div>
               </div>
-              <span
-                className="text-[10px] font-mono uppercase tracking-[0.2em] transition-colors duration-300"
-                style={{
-                  color: activeNode === 4 ? "var(--foreground)" : "var(--muted-foreground)",
-                }}
-              >
-                Inference Engine
-              </span>
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] font-mono uppercase tracking-[0.3em] font-bold text-foreground">
+                  Inference.Core
+                </span>
+                <span className="text-[8px] font-mono text-muted-foreground uppercase tracking-[0.2em]">
+                  Proc.Active
+                </span>
+              </div>
+              {/* HUD Brackets */}
+              <div className="absolute inset-2 pointer-events-none opacity-20 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-0 left-0 size-2 border-t border-l border-primary"></div>
+                <div className="absolute top-0 right-0 size-2 border-t border-r border-primary"></div>
+                <div className="absolute bottom-0 left-0 size-2 border-b border-l border-primary"></div>
+                <div className="absolute bottom-0 right-0 size-2 border-b border-r border-primary"></div>
+              </div>
             </div>
 
+            {/* Output Node */}
             <div
               ref={div5Ref}
               onMouseEnter={() => setActiveNode(5)}
               onMouseLeave={() => setActiveNode(null)}
-              className="z-20 w-28 h-28 border bg-card ml-auto mr-16 lg:mr-24 flex flex-col items-center justify-center relative cursor-pointer transition-colors duration-300 group"
-              style={{ borderColor: activeNode === 5 ? EngineColor : "var(--bento-border)" }}
+              className="z-20 w-32 h-32 border bg-background ml-auto mr-12 lg:mr-20 flex flex-col items-center justify-center relative cursor-crosshair transition-all duration-300 group shadow-lg"
+              style={{ borderColor: activeNode === 5 ? "var(--primary)" : "var(--border)" }}
             >
               <div
-                className="absolute inset-0 transition-opacity duration-300"
-                style={{ backgroundColor: EngineColor, opacity: activeNode === 5 ? 0.1 : 0 }}
-              />
-              <div
-                style={{ color: activeNode === 5 ? EngineColor : "var(--muted-foreground)" }}
-                className="transition-colors duration-300 mb-3 relative z-10"
+                className="transition-colors duration-300 mb-4 relative z-10"
+                style={{ color: activeNode === 5 ? "var(--primary)" : "var(--muted-foreground)" }}
               >
                 <OutputIcon />
               </div>
-              <span
-                className="absolute -right-28 w-24 text-[10px] font-mono uppercase tracking-wider transition-colors duration-300"
-                style={{
-                  color: activeNode === 5 ? "var(--foreground)" : "var(--muted-foreground)",
-                }}
-              >
-                Live Output
+              <span className="absolute -right-36 w-32 text-left text-[9px] font-mono uppercase tracking-[0.2em] opacity-40 group-hover:opacity-100 transition-opacity">
+                Render.Output
+              </span>
+              <span className="text-[10px] font-mono uppercase tracking-widest font-bold">
+                Kinematic.Stream
               </span>
             </div>
 
-            <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={div1Ref}
-              toRef={div4Ref}
-              curvature={-40}
-              pathWidth={1.5}
-              pathColor={getBeamColor(1, AudioColor)}
-              pathOpacity={getBeamOpacity(1)}
-              gradientStartColor="#ffffff"
-              gradientStopColor={AudioColor}
-              duration={3}
-              delay={0}
-            />
-            <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={div2Ref}
-              toRef={div4Ref}
-              pathWidth={1.5}
-              pathColor={getBeamColor(2, VisionColor)}
-              pathOpacity={getBeamOpacity(2)}
-              gradientStartColor="#ffffff"
-              gradientStopColor={VisionColor}
-              duration={3}
-              delay={1}
-            />
-            <AnimatedBeam
-              containerRef={containerRef}
-              fromRef={div3Ref}
-              toRef={div4Ref}
-              curvature={40}
-              pathWidth={1.5}
-              pathColor={getBeamColor(3, TextColor)}
-              pathOpacity={getBeamOpacity(3)}
-              gradientStartColor="#ffffff"
-              gradientStopColor={TextColor}
-              duration={3}
-              delay={2}
-            />
+            {/* Animated Beams */}
+            {[div1Ref, div2Ref, div3Ref].map((ref, i) => (
+              <AnimatedBeam
+                key={i}
+                containerRef={containerRef}
+                fromRef={ref}
+                toRef={div4Ref}
+                curvature={i === 0 ? -40 : i === 2 ? 40 : 0}
+                pathWidth={1.5}
+                pathColor="var(--primary)"
+                pathOpacity={activeNode === i + 1 || activeNode === 4 ? 0.6 : 0.1}
+                gradientStartColor="var(--background)"
+                gradientStopColor="var(--primary)"
+                duration={3}
+                delay={i * 0.5}
+              />
+            ))}
+
             <AnimatedBeam
               containerRef={containerRef}
               fromRef={div4Ref}
               toRef={div5Ref}
               pathWidth={2}
-              pathColor={getBeamColor(5, EngineColor)}
-              pathOpacity={getBeamOpacity(5)}
-              gradientStartColor={EngineColor}
-              gradientStopColor="#ffffff"
+              pathColor="var(--primary)"
+              pathOpacity={activeNode === 5 || activeNode === 4 ? 0.8 : 0.2}
+              gradientStartColor="var(--primary)"
+              gradientStopColor="var(--background)"
               duration={2}
-              delay={0.5}
+              delay={0}
             />
           </div>
         </div>

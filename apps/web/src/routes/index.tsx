@@ -24,9 +24,18 @@ const OverviewNetwork = lazy(() =>
 const OverviewPrivacy = lazy(() =>
   import("@/components/overview/privacy").then((m) => ({ default: m.OverviewPrivacy })),
 );
-const OverviewCommunity = lazy(() =>
-  import("@/components/overview/community").then((m) => ({ default: m.OverviewCommunity })),
+const UseCasesSection = lazy(() =>
+  import("@/components/overview/use-cases").then((m) => ({ default: m.UseCasesSection })),
 );
+const TestimonialsSection = lazy(() =>
+  import("@/components/overview/testimonials").then((m) => ({ default: m.TestimonialsSection })),
+);
+const TeamSection = lazy(() =>
+  import("@/components/overview/team-section").then((m) => ({ default: m.TeamSection })),
+);
+// const OverviewCommunity = lazy(() =>
+//   import("@/components/overview/community").then((m) => ({ default: m.OverviewCommunity })),
+// );
 const OverviewFooter = lazy(() =>
   import("@/components/overview/footer").then((m) => ({ default: m.OverviewFooter })),
 );
@@ -45,13 +54,15 @@ function HomeComponent() {
         <OverviewCapabilities />
         <OverviewFeaturesGrid />
         <Suspense fallback={<div className="h-40" />}>
+          <UseCasesSection />
           <OverviewArchitecture />
           <OverviewPipeline />
           <OverviewProcessing />
           <OverviewLiveLogs />
           <OverviewNetwork />
           <OverviewPrivacy />
-          <OverviewCommunity />
+          <TestimonialsSection />
+          <TeamSection />
           <div className="h-px bg-border mx-auto max-w-7xl" />
           <OverviewFooter />
         </Suspense>
