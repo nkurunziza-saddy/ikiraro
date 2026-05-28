@@ -1,44 +1,43 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { AvatarViewer } from "@ikiraro/renderer/avatar-viewer";
+import { buildPlanFromUnits, createEnvelope } from "@ikiraro/engine/planning";
+import type { TranslationEnvelope } from "@ikiraro/engine/types";
 
 const MODEL_URL = "/models/avatar.glb";
 
-type Sign = { intent: string; label: string; delay: number };
-const signs: Sign[] = [
-  { intent: "Wave", label: "HELLO", delay: 3000 },
-  { intent: "Talking", label: "WELCOME", delay: 4000 },
-  { intent: "Argue", label: "ROBUST", delay: 4000 },
-  { intent: "ThankYou", label: "THANKS", delay: 3000 },
-  { intent: "Idle", label: "IKIRARO", delay: 4000 },
+type SignEntry = { glosses: string[] | null; delay: number };
+
+const SIGN_SEQUENCE: SignEntry[] = [
+  { glosses: ["HELLO"], delay: 3500 },
+  { glosses: ["GOOD"], delay: 3000 },
+  { glosses: ["SIGN"], delay: 3000 },
+  { glosses: ["THANK-YOU"], delay: 3500 },
+  { glosses: null, delay: 2500 },
 ];
 
+const ENVELOPES: (TranslationEnvelope | null)[] = SIGN_SEQUENCE.map((s) => {
+  if (!s.glosses) return null;
+  return createEnvelope(buildPlanFromUnits(s.glosses));
+});
+
 const LandingAvatarContext = createContext<{
-  currentSign: Sign;
+  currentEnvelope: TranslationEnvelope | null;
 } | null>(null);
 
 export function LandingAvatarProvider({ children }: { children: ReactNode }) {
-  const [hasStarted, setHasStarted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const currentSign = signs[currentIndex]!;
+  const currentEnvelope = ENVELOPES[currentIndex] ?? null;
+  const delay = SIGN_SEQUENCE[currentIndex]!.delay;
 
   useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout>;
-    const playNext = () => {
-      setHasStarted(true);
-      timeoutId = setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % signs.length);
-      }, currentSign.delay);
-    };
-    timeoutId = setTimeout(playNext, hasStarted ? 0 : 1000);
-    return () => clearTimeout(timeoutId);
-  }, [currentIndex, currentSign, hasStarted]);
+    const tid = setTimeout(() => {
+      setCurrentIndex((prev) => (prev + 1) % SIGN_SEQUENCE.length);
+    }, delay);
+    return () => clearTimeout(tid);
+  }, [currentIndex, delay]);
 
   return (
-    <LandingAvatarContext.Provider
-      value={{
-        currentSign,
-      }}
-    >
+    <LandingAvatarContext.Provider value={{ currentEnvelope }}>
       {children}
     </LandingAvatarContext.Provider>
   );
@@ -46,35 +45,32 @@ export function LandingAvatarProvider({ children }: { children: ReactNode }) {
 
 function useLandingAvatar() {
   const ctx = useContext(LandingAvatarContext);
-  if (!ctx) throw new Error("Missing provider");
+  if (!ctx) throw new Error("Missing LandingAvatarProvider");
   return ctx;
 }
 
 export function HeroAvatarPane() {
-  const { currentSign } = useLandingAvatar();
+  const { currentEnvelope } = useLandingAvatar();
   return (
     <div className="relative w-full h-full min-h-[400px] flex items-center justify-center">
       <div className="absolute inset-0 z-0 mix-blend-screen opacity-90 transition-all duration-1000">
-        <AvatarViewer envelope={null} modelUrl={MODEL_URL} className="w-full h-full" />
-      </div>
-      <div className="absolute bottom-10 right-10 flex flex-col items-end gap-1">
-        <span className="text-foreground font-semibold text-[32px] tracking-tighter leading-none block">
-          {currentSign.label}
-        </span>
+        <AvatarViewer envelope={currentEnvelope} modelUrl={MODEL_URL} className="w-full h-full" />
       </div>
     </div>
   );
 }
+
 export function FloatingAvatarWidget() {
+  const { currentEnvelope } = useLandingAvatar();
   const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
-    const handleScroll = () => {
-      setIsVisible(window.scrollY > 800);
-    };
+    const handleScroll = () => setIsVisible(window.scrollY > 800);
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
   return (
     <div
       className={`fixed bottom-10 right-10 z-50 pointer-events-none w-[180px] h-[220px] transition-all duration-700 ease-in-out ${
@@ -84,7 +80,7 @@ export function FloatingAvatarWidget() {
       <div className="w-full h-full relative group pointer-events-auto">
         <div className="absolute inset-0 z-10 mix-blend-screen opacity-60 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
           <AvatarViewer
-            envelope={null}
+            envelope={currentEnvelope}
             modelUrl={MODEL_URL}
             className="w-full h-full scale-[1.2]"
           />

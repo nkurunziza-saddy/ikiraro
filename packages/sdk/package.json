@@ -1,6 +1,6 @@
 {
   "name": "@ikiraro/sdk",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "description": "Ikiraro SDK — sign language translation and rendering",
   "keywords": [
     "accessibility",
@@ -20,8 +20,13 @@
   },
   "files": [
     "dist",
+    "skill",
+    "bin",
     "README.md"
   ],
+  "bin": {
+    "ikiraro-sdk": "./bin/add-skill.mjs"
+  },
   "type": "module",
   "exports": {
     ".": {
