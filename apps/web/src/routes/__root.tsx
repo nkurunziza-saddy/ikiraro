@@ -14,15 +14,44 @@ export interface RouterAppContext {}
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   head: () => ({
     meta: [
+      // Standard Metadata
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Ikiraro Bridge — Accessible Communication" },
+      { title: "Ikiraro Bridge" },
       {
         name: "description",
-        content: "A translation console for speech, text, and sign planning.",
+        content: "Accessible Communication.",
       },
+      {
+        name: "keywords",
+        content:
+          "Ikiraro Bridge, sign language translation, ASL, accessibility, deaf communication, text to sign, speech to sign, 3D avatar, sign planning, accessible communication, deaf, hard of hearing, sign language app",
+      },
+
+      // Theme & Browser Config
+      { name: "theme-color", content: "#000000" },
+      { name: "msapplication-TileColor", content: "#000000" },
+      { name: "msapplication-config", content: "/browserconfig.xml" },
+
+      // Open Graph
+      { property: "og:title", content: "Ikiraro Bridge" },
+      { property: "og:description", content: "Accessible Communication." },
+      { property: "og:type", content: "website" },
+
+      // Twitter
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Ikiraro Bridge" },
+      { name: "twitter:description", content: "Accessible Communication." },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png" },
+      { rel: "icon", type: "image/png", sizes: "48x48", href: "/favicon-48x48.png" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+      { rel: "manifest", href: "/manifest.json" },
+    ],
   }),
   component: RootDocument,
 });
