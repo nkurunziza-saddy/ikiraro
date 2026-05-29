@@ -1,5 +1,36 @@
 "use client";
 import { Link } from "@tanstack/react-router";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+
+function FooterThemeToggle() {
+  const { setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) return <div className="w-7 h-7 border border-border bg-secondary animate-pulse" />;
+  const isDark = resolvedTheme === "dark";
+  return (
+    <button
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="relative flex items-center justify-center w-7 h-7 border border-border bg-background hover:bg-secondary transition-colors overflow-hidden group"
+      aria-label="Toggle theme"
+    >
+      <div
+        className={`absolute transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isDark ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"}`}
+      >
+        <Sun className="h-3 w-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+      </div>
+      <div
+        className={`absolute transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isDark ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"}`}
+      >
+        <Moon className="h-3 w-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+      </div>
+    </button>
+  );
+}
 
 export function OverviewFooter() {
   const currentYear = new Date().getFullYear();
@@ -77,10 +108,13 @@ export function OverviewFooter() {
           </span>
           <div className="flex items-center gap-10">
             <span className="text-[9px] font-mono uppercase tracking-[0.5em]">v0.3.5-STABLE</span>
-            <div className="flex gap-1">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="size-1 bg-foreground rounded-none"></div>
-              ))}
+            <div className="flex items-center gap-4">
+              <div className="flex gap-1">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="size-1 bg-foreground rounded-none"></div>
+                ))}
+              </div>
+              <FooterThemeToggle />
             </div>
           </div>
         </div>

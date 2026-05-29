@@ -33,6 +33,9 @@ const TestimonialsSection = lazy(() =>
 const TeamSection = lazy(() =>
   import("@/components/overview/team-section").then((m) => ({ default: m.TeamSection })),
 );
+const PricingSection = lazy(() =>
+  import("@/components/overview/pricing").then((m) => ({ default: m.PricingSection })),
+);
 // const OverviewCommunity = lazy(() =>
 //   import("@/components/overview/community").then((m) => ({ default: m.OverviewCommunity })),
 // );
@@ -63,6 +66,7 @@ function HomeComponent() {
           <OverviewPrivacy />
           <TestimonialsSection />
           <TeamSection />
+          <PricingSection />
           <div className="h-px bg-border mx-auto max-w-7xl" />
           <OverviewFooter />
         </Suspense>

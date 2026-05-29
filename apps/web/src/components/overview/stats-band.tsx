@@ -170,7 +170,7 @@ export function StatsBand() {
     },
     {
       key: "Compute",
-      val: "100% On-Device",
+      val: "On-Device",
       desc: "Zero-server architecture utilizing WebGL and WebAssembly.",
       visual: ClientVisual,
     },

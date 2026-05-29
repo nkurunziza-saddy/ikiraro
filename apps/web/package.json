@@ -3,10 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build",
     "check-types": "tsc -p tsconfig.json --noEmit",
-    "serve": "vite preview",
-    "dev": "vite dev"
+    "dev": "vite dev",
+    "build": "vite build && tsc --noEmit",
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler deploy",
+    "cf-typegen": "wrangler types"
+
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -52,12 +55,14 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.39.0",
     "@ikiraro/config": "workspace:*",
     "@tanstack/react-router-devtools": "^1.166.13",
     "@types/react": "^19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "typescript": "catalog:",
-    "vite": "^8.0.12"
+    "vite": "^8.0.12",
+    "wrangler": "^4.95.0"
   }
 }
