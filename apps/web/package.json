@@ -59,7 +59,7 @@
     "@ikiraro/config": "workspace:*",
     "@tanstack/react-router-devtools": "^1.166.13",
     "@types/react": "^19.2.14",
-    "@types/react-dom": "19.2.3",
+    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "typescript": "catalog:",
     "vite": "^8.0.12",

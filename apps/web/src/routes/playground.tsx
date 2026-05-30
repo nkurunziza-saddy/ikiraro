@@ -20,7 +20,7 @@ const tts = WebSpeechProvider.getInstance();
 const MODEL_URL = "/models/avatar.glb";
 
 function PlaygroundPage() {
-  const { snapshot, translate, error: initError } = useIkiraro();
+  const { snapshot, translate } = useIkiraro();
 
   const camera = useHandTracking();
   const { start: startCamera, stop: stopCamera } = camera;
@@ -38,7 +38,6 @@ function PlaygroundPage() {
   } = usePlaygroundStore();
 
   const activeEnvelope = useDeferredValue(snapshot.lastEnvelope);
-  const displayError = snapshot.error ?? initError;
 
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<any>(null);
@@ -102,9 +101,8 @@ function PlaygroundPage() {
   };
 
   const commitSignUnits = () => {
-    const current = usePlaygroundStore.getState().signUnits;
-    if (current.length === 0) return;
-    commitText(current.join(""));
+    if (signUnits.length === 0) return;
+    commitText(signUnits.join(""));
     setSignUnits([]);
   };
 
@@ -136,28 +134,7 @@ function PlaygroundPage() {
         {/* Avatar */}
         <div className="relative w-[280px] h-[300px] md:w-[320px] md:h-[360px] rounded-3xl border border-border shadow-2xl overflow-hidden bg-background glass-pane">
           <AvatarViewer envelope={activeEnvelope} modelUrl={MODEL_URL} className="w-full h-full" />
-
-          {/* Subtitle strip */}
-          <div className="absolute bottom-4 left-3 right-3 text-center pointer-events-none">
-            {activeEnvelope ? (
-              <div className="bg-background/70 backdrop-blur-md rounded-xl border border-border/20 px-3 py-2">
-                <p className="text-sm font-semibold text-foreground leading-tight line-clamp-2">
-                  {activeEnvelope.plan.glossText || activeEnvelope.normalizedText}
-                </p>
-              </div>
-            ) : (
-              <div className="bg-background/40 backdrop-blur-sm rounded-lg px-3 py-1.5 opacity-60">
-                <p className="text-xs text-muted-foreground">Waiting for input...</p>
-              </div>
-            )}
-          </div>
         </div>
-
-        {displayError && (
-          <div className="bg-destructive/20 text-destructive-foreground px-4 py-2 rounded-lg text-xs border border-destructive max-w-xs text-center">
-            {displayError}
-          </div>
-        )}
       </div>
 
       {/* ASL Keyboard */}

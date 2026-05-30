@@ -23,3 +23,29 @@ export const GROQ_CHAT_RESPONSE_SCHEMA = Schema.Struct({
 });
 export type GlossOutput = Schema.Schema.Type<typeof GLOSS_OUTPUT_SCHEMA>;
 export type GroqChatResponse = Schema.Schema.Type<typeof GROQ_CHAT_RESPONSE_SCHEMA>;
+
+export const STT_RESPONSE_SCHEMA = Schema.Struct({
+  text: Schema.optional(Schema.String),
+  language: Schema.optional(Schema.String),
+  duration: Schema.optional(Schema.Number),
+  words: Schema.optional(
+    Schema.Array(
+      Schema.Struct({
+        word: Schema.String,
+        start: Schema.Number,
+        end: Schema.Number,
+        confidence: Schema.Number,
+      }),
+    ),
+  ),
+  segments: Schema.optional(
+    Schema.Array(
+      Schema.Struct({
+        id: Schema.Number,
+        start: Schema.Number,
+        end: Schema.Number,
+        text: Schema.String,
+      }),
+    ),
+  ),
+});

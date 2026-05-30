@@ -18,7 +18,6 @@ import type { TranslationEnvelope, SttModel, TranslationContext } from "@ikiraro
 export class IkiraroRuntime {
   private state: IkiraroState = {
     lifecycleStatus: "idle",
-    activeTracks: [],
     plugins: {} as IkiraroState["plugins"],
   };
   private bus = new EventBus();

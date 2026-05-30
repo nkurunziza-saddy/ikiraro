@@ -4,9 +4,9 @@
  * - standard:     All modalities on (sign avatar + TTS + visuals).
  * - audio-first:  Sign avatar suppressed. TTS is primary output. For blind users.
  * - visual-first: TTS suppressed. Sign avatar + visuals are primary. For deaf users.
- * - motor:        Full audio + sign, but all interactions via single-key / switch scanning.
+ * - visual-first: TTS suppressed. Sign avatar + visuals are primary. For deaf users.
  */
-export type AccessibilityMode = "standard" | "audio-first" | "visual-first" | "motor";
+export type AccessibilityMode = "standard" | "audio-first" | "visual-first";
 
 /**
  * Priority levels for the audio queue.

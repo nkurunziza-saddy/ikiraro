@@ -6,7 +6,8 @@
  */
 
 // Core factory and runtime
-export { createIkiraro, IkiraroRuntime, IkiraroSDK } from "@ikiraro/runtime";
+export { createIkiraro, IkiraroRuntime } from "@ikiraro/runtime";
+
 export type { IkiraroDefaultConfig, IkiraroConfig } from "@ikiraro/runtime";
 
 // React hooks and clients
@@ -68,7 +69,7 @@ export type {
   TranslationState,
   SpeechState,
 } from "@ikiraro/runtime";
-export { KeyboardPlugin, InspectorPlugin, VisionPlugin } from "@ikiraro/runtime";
+export { KeyboardPlugin, VisionPlugin } from "@ikiraro/runtime";
 
 // Advanced / custom renderers
 export { RendererDirector } from "@ikiraro/engine/planning";

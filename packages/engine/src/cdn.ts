@@ -29,12 +29,9 @@ export { coarticulationBlend } from "./planning/coarticulation";
 export type { SignPlan, SignToken, TranslationEnvelope } from "./types";
 export * from "./language-registry";
 export * from "./plugins/asl-plugin";
-export * from "./plugins/rsl-plugin";
 
 import { LanguageRegistry } from "./language-registry";
 import { ASLPlugin } from "./plugins/asl-plugin";
-import { RSLPlugin } from "./plugins/rsl-plugin";
 
 LanguageRegistry.register(ASLPlugin);
-LanguageRegistry.register(RSLPlugin);
 LanguageRegistry.setActive("asl");

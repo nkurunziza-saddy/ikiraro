@@ -18,8 +18,15 @@ export class TranslationPlugin implements IkiraroPlugin<TranslationState> {
   setup(ctx: PluginContext<TranslationState>) {
     this.planners = createTranslationPlanners(ctx.config.sdk);
     ctx.subscribe("translation:cmd:request", async (event) => {
+      const state = ctx.getPluginState();
+      if (state && state.isTranslating) return;
       await this.handleTranslationRequest(event.payload, ctx);
     });
+    return async () => {
+      for (const planner of this.planners) {
+        if (planner.dispose) await planner.dispose();
+      }
+    };
   }
   reducer(state: TranslationState, event: IkiraroEvent): TranslationState {
     switch (event.type) {

@@ -50,6 +50,11 @@
     "check-types": "tsc --noEmit",
     "dev": "tsup --watch"
   },
+  "dependencies": {
+    "@ikiraro/engine": "workspace:*",
+    "@ikiraro/renderer": "workspace:*",
+    "@ikiraro/runtime": "workspace:*"
+  },
   "devDependencies": {
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -58,7 +63,7 @@
   },
   "peerDependencies": {
     "@mediapipe/tasks-vision": "0.10.35",
-    "@react-three/drei": ">=9.0.0",
+    "@react-three/drei": ">=10.0.0",
     "@react-three/fiber": ">=9.0.0",
     "effect": ">=3.0.0",
     "react": ">=18",

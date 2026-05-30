@@ -1,6 +1,8 @@
 import { Effect, Layer } from "effect";
 import { SttService } from "@ikiraro/engine/planning";
 import { Groq } from "./client";
+import { Schema } from "effect";
+import { STT_RESPONSE_SCHEMA } from "./schemas";
 import type { SttModel, SpeechIntake } from "@ikiraro/engine/types";
 const DEFAULT_GROQ_STT_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
 export const SttGroqLive = Layer.effect(
@@ -44,12 +46,18 @@ export const SttGroqLive = Layer.effect(
               Effect.fail(new Error(errorText || `Groq STT returned ${response.status}`)),
             );
           }
-          const payload = yield* _(
+          const rawPayload = yield* _(
             Effect.tryPromise({
-              try: () => response.json(),
+              try: () => response.json() as Promise<unknown>,
               catch: (e) => (e instanceof Error ? e : new Error(String(e))),
             }),
           );
+
+          const payload = yield* _(
+            Schema.decodeUnknown(STT_RESPONSE_SCHEMA)(rawPayload),
+            Effect.mapError(() => new Error("Invalid STT response format")),
+          );
+
           return {
             model,
             text: payload.text?.trim() ?? "",
@@ -57,14 +65,14 @@ export const SttGroqLive = Layer.effect(
             durationSeconds: payload.duration ?? null,
             prompt: prompt ?? "",
             words:
-              payload.words?.map((w: any) => ({
+              payload.words?.map((w) => ({
                 word: w.word,
                 start: w.start,
                 end: w.end,
                 confidence: w.confidence,
               })) ?? [],
             segments:
-              payload.segments?.map((s: any, i: number) => ({
+              payload.segments?.map((s, i) => ({
                 id: s.id ?? i,
                 start: s.start ?? 0,
                 end: s.end ?? 0,

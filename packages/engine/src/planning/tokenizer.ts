@@ -18,13 +18,7 @@ import {
   pauseToken,
   pointingToken,
 } from "./tokens";
-import { buildFrameQueue } from "./frame-queue";
-import { LinguisticParser, EpisodicSpatialMemory } from "../linguistic";
-import { SignCompiler } from "../compiler";
-
-const globalSpatialMemory = new EpisodicSpatialMemory();
-const parser = new LinguisticParser();
-const compiler = new SignCompiler();
+import { frameBuilder } from "./frame-builder";
 
 function pushLexeme(tokens: SignToken[], glosses: string[], hasWH: { v: boolean }, clean: string) {
   const lang = LanguageRegistry.getActive();
@@ -153,15 +147,11 @@ export function createEnvelope(
     intent?: SemanticIntent;
   } = {},
 ): TranslationEnvelope {
-  const graph = parser.parse(plan);
-  const instructions = compiler.compile(graph, globalSpatialMemory);
-
   return {
     mode: options.mode ?? "text",
     intake: options.intake ?? null,
     plan,
-    rendererQueue: buildFrameQueue(plan),
-    instructions,
+    rendererQueue: frameBuilder.build(plan),
     rawInput: options.rawInput ?? plan.sourceText,
     normalizedText: plan.normalizedText,
     intent: options.intent,

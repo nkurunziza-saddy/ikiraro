@@ -36,9 +36,7 @@ const TeamSection = lazy(() =>
 const PricingSection = lazy(() =>
   import("@/components/overview/pricing").then((m) => ({ default: m.PricingSection })),
 );
-// const OverviewCommunity = lazy(() =>
-//   import("@/components/overview/community").then((m) => ({ default: m.OverviewCommunity })),
-// );
+
 const OverviewFooter = lazy(() =>
   import("@/components/overview/footer").then((m) => ({ default: m.OverviewFooter })),
 );

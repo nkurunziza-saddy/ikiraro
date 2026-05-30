@@ -38,17 +38,25 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@ikiraro/engine": "workspace:*",
-    "@react-three/drei": "^10.0.0",
-    "@react-three/fiber": "^9.0.4",
-    "react": "^19.2.6",
-    "three": "^0.174.0"
+    "@ikiraro/engine": "workspace:*"
+  },
+  "peerDependencies": {
+    "@react-three/drei": ">=10.0.0",
+    "@react-three/fiber": ">=9.0.0",
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0",
+    "three": ">=0.174.0"
   },
   "devDependencies": {
     "@ikiraro/config": "workspace:*",
+    "@react-three/drei": "^10.0.0",
+    "@react-three/fiber": "^9.0.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.174.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "three": "^0.174.0",
     "typescript": "catalog:"
   }
 }

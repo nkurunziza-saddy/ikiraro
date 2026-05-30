@@ -9,14 +9,9 @@ import {
   KinematicController,
   computeMotionDelta,
 } from "@ikiraro/engine/planning";
-import type { ArmTarget, MotionType } from "@ikiraro/engine/types";
-import { springStep } from "@ikiraro/engine/math";
 
-type SignFrameState = {
-  motion: MotionType;
-  progress: number;
-  armTarget: ArmTarget | null;
-};
+import { springStep } from "@ikiraro/engine/math";
+import type { SignFrameState } from "./avatar-viewer";
 
 interface SignModelGLTFProps {
   url: string;

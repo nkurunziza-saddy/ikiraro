@@ -24,7 +24,9 @@ export class KeyboardPlugin implements IkiraroPlugin {
         source: this.name,
       });
     };
-    window.addEventListener("keydown", handler);
+    if (typeof window !== "undefined") {
+      window.addEventListener("keydown", handler);
+    }
     ctx.subscribe("keyboard:cmd:press", (event) => {
       const now = Date.now();
       ctx.emit({
@@ -42,6 +44,10 @@ export class KeyboardPlugin implements IkiraroPlugin {
         source: this.name,
       });
     });
-    return () => window.removeEventListener("keydown", handler);
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("keydown", handler);
+      }
+    };
   }
 }

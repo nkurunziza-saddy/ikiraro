@@ -23,7 +23,6 @@ export interface RuntimeSnapshot {
 }
 import type { CompositionState } from "./plugins/composition";
 import type { TranslationState } from "./plugins/translation";
-import type { InspectorState } from "./plugins/inspector";
 import type { SessionState } from "./plugins/session";
 import type { SpeechState } from "./plugins/speech";
 /** Shared payload for translation:cmd:request and translation:started. */
@@ -151,7 +150,6 @@ export interface PluginRegistry {
   composition: CompositionState;
   translation: TranslationState;
   speech: SpeechState;
-  inspector?: InspectorState;
 }
 /**
  * The central state of the runtime.
@@ -159,7 +157,6 @@ export interface PluginRegistry {
 export interface IkiraroState {
   /** Runtime lifecycle status. Distinct from session status in RuntimeSnapshot. */
   lifecycleStatus: "idle" | "active" | "processing" | "error";
-  activeTracks: string[];
   plugins: PluginRegistry;
 }
 /**

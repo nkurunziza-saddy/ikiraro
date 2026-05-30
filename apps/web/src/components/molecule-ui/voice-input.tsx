@@ -17,17 +17,25 @@ export function VoiceInput({
   const [listening, setListening] = React.useState(false);
   const [time, setTime] = React.useState(0);
 
+  const onStartRef = React.useRef(onStart);
+  const onStopRef = React.useRef(onStop);
+
+  React.useEffect(() => {
+    onStartRef.current = onStart;
+    onStopRef.current = onStop;
+  }, [onStart, onStop]);
+
   React.useEffect(() => {
     let intervalId: ReturnType<typeof setInterval>;
     if (listening) {
-      onStart?.();
+      onStartRef.current?.();
       intervalId = setInterval(() => setTime((t) => t + 1), 1000);
     } else {
-      onStop?.();
+      onStopRef.current?.();
       setTime(0);
     }
     return () => clearInterval(intervalId);
-  }, [listening, onStart, onStop]);
+  }, [listening]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

@@ -51,7 +51,7 @@ export function computeCoarticulationOffsets(
   };
 }
 
-export type CoarticulationMode = "blend" | "snap" | "none";
+import type { CoarticulationMode } from "../types";
 const BLEND_WINDOWS: Record<CoarticulationMode, number> = {
   blend: 0.2,
   snap: 0.05,

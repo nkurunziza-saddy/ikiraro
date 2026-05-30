@@ -39,8 +39,5 @@ export * from "../plugins";
 
 import { LanguageRegistry } from "../language-registry";
 import { ASLPlugin } from "../plugins/asl-plugin";
-import { RSLPlugin } from "../plugins/rsl-plugin";
-
 LanguageRegistry.register(ASLPlugin);
-LanguageRegistry.register(RSLPlugin);
 LanguageRegistry.setActive("asl");

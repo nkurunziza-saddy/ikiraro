@@ -2,11 +2,12 @@ import { ManagedRuntime } from "effect";
 import { buildPlanFromUnits, createEnvelope } from "@ikiraro/engine/planning";
 import type { TranslationEnvelope } from "@ikiraro/engine/types";
 import { getAudioFileExtension } from "../capture/audio-utils";
-import { IkiraroSDK } from "../sdk";
+import { translateTextEffect, translateSpeechEffect, makeGroqLayer } from "../sdk";
 import type { TranslationRequest } from "./types";
 export interface TranslationPlanner {
   canPlan(request: TranslationRequest): boolean;
   plan(request: TranslationRequest): Promise<TranslationEnvelope>;
+  dispose?: () => Promise<void> | void;
 }
 export class DeterministicUnitsPlanner implements TranslationPlanner {
   canPlan(request: TranslationRequest): boolean {
@@ -26,7 +27,7 @@ export class DeterministicUnitsPlanner implements TranslationPlanner {
 export class GroqSemanticPlanner implements TranslationPlanner {
   private effectRuntime: ManagedRuntime.ManagedRuntime<any, never>;
   constructor(config: import("../sdk").IkiraroConfig) {
-    this.effectRuntime = ManagedRuntime.make(IkiraroSDK.makeLayer(config));
+    this.effectRuntime = ManagedRuntime.make(makeGroqLayer(config));
   }
   canPlan(request: TranslationRequest): boolean {
     return request.mode === "text" || request.mode === "speech";
@@ -36,15 +37,19 @@ export class GroqSemanticPlanner implements TranslationPlanner {
       const ext = getAudioFileExtension(request.audio.type);
       const file = new File([request.audio], `speech.${ext}`, { type: request.audio.type });
       return this.effectRuntime.runPromise(
-        IkiraroSDK.translateSpeech(file, request.sttModel, request.prompt),
+        translateSpeechEffect(file, request.sttModel, request.prompt),
       );
     }
     if (request.mode === "text" && request.text) {
-      return this.effectRuntime.runPromise(IkiraroSDK.translateText(request.text));
+      return this.effectRuntime.runPromise(translateTextEffect(request.text));
     }
     throw new Error(`Unsupported or invalid translation request: ${request.mode}`);
   }
+  async dispose() {
+    await this.effectRuntime.dispose();
+  }
 }
+
 export function createTranslationPlanners(
   config?: import("../sdk").IkiraroConfig,
 ): TranslationPlanner[] {

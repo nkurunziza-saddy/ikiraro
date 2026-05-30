@@ -27,6 +27,7 @@ export type SignFrameState = {
 export function AvatarViewer({ envelope, modelUrl, className, hidden = false }: AvatarViewerProps) {
   const [pose, setPose] = useState<Handshape>(REST_POSE);
   const [active, setActive] = useState(false);
+  const [overlay, setOverlayText] = useState<{ label: string; sublabel?: string } | null>(null);
 
   // Updated on every RAF tick via setMotion — avoid state to prevent re-renders.
   const signFrameRef = useRef<SignFrameState>({
@@ -38,7 +39,10 @@ export function AvatarViewer({ envelope, modelUrl, className, hidden = false }: 
   const adapter = useMemo<SignCanvas>(
     () => ({
       setPose,
-      setOverlay: () => {},
+      setOverlay: (label, sublabel) => {
+        if (label) setOverlayText({ label, sublabel });
+        else setOverlayText(null);
+      },
       setMotion: (motion, progress, armTarget) => {
         signFrameRef.current.motion = motion;
         signFrameRef.current.progress = progress;
@@ -48,6 +52,7 @@ export function AvatarViewer({ envelope, modelUrl, className, hidden = false }: 
       clear: () => {
         setPose(REST_POSE);
         setActive(false);
+        setOverlayText(null);
         signFrameRef.current = {
           motion: "none",
           progress: 0,
@@ -74,66 +79,74 @@ export function AvatarViewer({ envelope, modelUrl, className, hidden = false }: 
     });
 
     return () => {
-      director.dispose();
       unsub();
+      director.dispose();
     };
   }, [director, envelope]);
 
   if (hidden) return null;
 
   return (
-    <Canvas
-      className={className}
-      shadows
-      dpr={[1, 1.5]}
-      gl={{
-        antialias: true,
-        alpha: true,
-        powerPreference: "high-performance",
-        stencil: false,
-      }}
-      onCreated={({ gl }) => {
-        gl.setClearColor(0x000000, 0);
-        gl.toneMapping = THREE.ACESFilmicToneMapping;
-        gl.toneMappingExposure = 1.05;
-      }}
-    >
-      {/* Framed on signing space: shoulders → just above head, arms visible */}
-      <PerspectiveCamera makeDefault position={[0, 0.08, 2.2]} fov={42} near={0.01} far={10} />
+    <div className={`relative w-full h-full overflow-hidden ${className || ""}`}>
+      <Canvas
+        className="w-full h-full"
+        shadows
+        dpr={[1, 1.5]}
+        gl={{
+          antialias: true,
+          alpha: true,
+          powerPreference: "high-performance",
+          stencil: false,
+        }}
+        onCreated={({ gl }) => {
+          gl.setClearColor(0x000000, 0);
+          gl.toneMapping = THREE.ACESFilmicToneMapping;
+          gl.toneMappingExposure = 1.05;
+        }}
+      >
+        {/* Framed on signing space: shoulders → just above head, arms visible */}
+        <PerspectiveCamera makeDefault position={[0, 0.08, 2.2]} fov={42} near={0.01} far={10} />
 
-      <ambientLight intensity={0.22} color="#f8ece2" />
-      <directionalLight
-        position={[2.2, 4.5, 3.2]}
-        intensity={2.4}
-        color="#fff2e2"
-        castShadow
-        shadow-mapSize={[512, 512]}
-      />
-      <directionalLight position={[-2.8, 1.4, 1.8]} intensity={0.55} color="#e2ecff" />
-      <directionalLight position={[0.4, 2.6, -3.5]} intensity={0.85} color="#ffd9b8" />
-
-      <Suspense fallback={null}>
-        <Environment preset="apartment" background={false} />
-
-        <SignModelGLTF
-          url={modelUrl}
-          pose={pose}
-          active={active}
-          signFrameRef={signFrameRef}
-          scale={1}
-          position={[0, -1.2, 0]}
+        <ambientLight intensity={0.22} color="#f8ece2" />
+        <directionalLight
+          position={[2.2, 4.5, 3.2]}
+          intensity={2.4}
+          color="#fff2e2"
+          castShadow
+          shadow-mapSize={[512, 512]}
         />
-        <ContactShadows
-          position={[0, -1.2, 0]}
-          opacity={0.35}
-          scale={2}
-          blur={2.5}
-          far={1}
-          color="#1a0e06"
-          resolution={512}
-        />
-      </Suspense>
-    </Canvas>
+        <directionalLight position={[-2.8, 1.4, 1.8]} intensity={0.55} color="#e2ecff" />
+        <directionalLight position={[0.4, 2.6, -3.5]} intensity={0.85} color="#ffd9b8" />
+
+        <Suspense fallback={null}>
+          <Environment preset="apartment" background={false} />
+
+          <SignModelGLTF
+            url={modelUrl}
+            pose={pose}
+            active={active}
+            signFrameRef={signFrameRef}
+            scale={1}
+            position={[0, -1.2, 0]}
+          />
+          <ContactShadows
+            position={[0, -1.2, 0]}
+            opacity={0.35}
+            scale={2}
+            blur={2.5}
+            far={1}
+            color="#1a0e06"
+            resolution={512}
+          />
+        </Suspense>
+      </Canvas>
+      {overlay && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none text-center bg-black/60 backdrop-blur-sm text-white px-4 py-2 rounded-2xl flex flex-col items-center">
+          <span className="text-xl font-bold tracking-wide">{overlay.label}</span>
+          {overlay.sublabel && <span className="text-sm opacity-80">{overlay.sublabel}</span>}
+        </div>
+      )}
+    </div>
   );
 }
 

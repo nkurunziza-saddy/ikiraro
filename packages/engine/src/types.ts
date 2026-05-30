@@ -161,10 +161,14 @@ export interface SignLanguagePlugin {
   numberArmTarget: ArmTarget;
 
   // Handshapes and Lexicon
-  getHandshape: (key: string) => any | null; // We use 'any' here temporarily to avoid circular deps with Handshape
+  getHandshape: (key: string) => import("./planning/pose-library").Handshape | null;
   getLexemePose: (
     gloss: string,
-  ) => { handshape: any; armTarget?: ArmTarget; motion: MotionType } | null;
+  ) => {
+    handshape: import("./planning/pose-library").Handshape;
+    armTarget?: ArmTarget;
+    motion: MotionType;
+  } | null;
 }
 
 export type CompiledSign = {

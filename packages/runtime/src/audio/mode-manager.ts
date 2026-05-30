@@ -4,12 +4,7 @@ type ModeChangeListener = (mode: AccessibilityMode) => void;
 
 const STORAGE_KEY = "ikiraro:accessibility-mode";
 
-const VALID_MODES = new Set<AccessibilityMode>([
-  "standard",
-  "audio-first",
-  "visual-first",
-  "motor",
-]);
+const VALID_MODES = new Set<AccessibilityMode>(["standard", "audio-first", "visual-first"]);
 
 function loadMode(): AccessibilityMode {
   if (typeof localStorage === "undefined") return "standard";
