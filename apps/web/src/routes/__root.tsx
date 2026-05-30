@@ -1,11 +1,10 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
-import { GlobalErrorBoundary } from "@/components/error-boundary";
 import { preloadAvatarModel } from "@ikiraro/renderer";
-import Header from "../components/header";
 import appCss from "../index.css?url";
+import { GlobalErrorBoundary } from "@/components/error-boundary";
+import Header from "@/components/header";
 
 preloadAvatarModel("/models/avatar.glb");
 
@@ -46,10 +45,29 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
-      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
-      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png" },
-      { rel: "icon", type: "image/png", sizes: "48x48", href: "/favicon-48x48.png" },
-      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        href: "/favicon-16x16.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/favicon-32x32.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "48x48",
+        href: "/favicon-48x48.png",
+      },
+      {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        href: "/apple-touch-icon.png",
+      },
       { rel: "manifest", href: "/manifest.json" },
     ],
   }),
@@ -81,7 +99,7 @@ function RootDocument() {
                 <Outlet />
               </main>
             </div>
-            <Toaster richColors />
+
             <TanStackRouterDevtools position="bottom-left" />
           </ThemeProvider>
           <Scripts />
