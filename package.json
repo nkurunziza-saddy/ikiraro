@@ -16,12 +16,8 @@
       "packages/*"
     ],
     "catalog": {
-      "dotenv": "^17.4.2",
-      "zod": "^4.4.3",
       "typescript": "^6.0.3",
       "@types/node": "^25.6.2",
-      "valibot": "^1.4.0",
-      "i18next": "^26.1.0",
       "vitest": "^4.1.5",
       "@vitest/ui": "^4.1.5",
       "@vitest/coverage-v8": "^4.1.5",
@@ -46,10 +42,6 @@
     "version": "changeset version && bun install",
     "release": "bun run build && bun run check-types && bun run test && changeset publish",
     "prepare": "husky"
-  },
-  "dependencies": {
-    "dotenv": "catalog:",
-    "zod": "catalog:"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.0",
