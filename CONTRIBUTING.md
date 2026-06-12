@@ -35,7 +35,8 @@ Ikiraro is a monorepo utilizing Turborepo and Bun workspaces.
 2. **Make changes**: Implement your changes in the appropriate package.
 3. **Verify**: Run the following commands to ensure everything is solid:
    ```bash
-   bun run check        # Lints and formats code
+   bun run lint         # Lints code (no changes written)
+   bun run format       # Formats code in place
    bun run check-types  # Type-checks all packages
    bun run build        # Builds the SDK
    ```
