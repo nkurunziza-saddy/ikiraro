@@ -72,21 +72,23 @@ export class VisionPlugin implements IkiraroPlugin {
         source: this.name,
       });
     };
-    this.vision.on("status-change", handleStatusChange);
-    this.vision.on("tracking-update", handleTrackingUpdate);
-    this.vision.on("sign-detected", handleSignDetected);
-    this.vision.on("word-committed", handleWordCommitted);
-    ctx.subscribe("vision:cmd:start", (event) => {
+    const unsubStatus = this.vision.on("status-change", handleStatusChange);
+    const unsubTracking = this.vision.on("tracking-update", handleTrackingUpdate);
+    const unsubSign = this.vision.on("sign-detected", handleSignDetected);
+    const unsubWord = this.vision.on("word-committed", handleWordCommitted);
+    const unsubStart = ctx.subscribe("vision:cmd:start", (event) => {
       this.vision.start(event.payload.videoElement);
     });
-    ctx.subscribe("vision:cmd:stop", () => {
+    const unsubStop = ctx.subscribe("vision:cmd:stop", () => {
       this.vision.stop();
     });
     return [
-      () => this.vision.off("status-change", handleStatusChange),
-      () => this.vision.off("tracking-update", handleTrackingUpdate),
-      () => this.vision.off("sign-detected", handleSignDetected),
-      () => this.vision.off("word-committed", handleWordCommitted),
+      unsubStatus,
+      unsubTracking,
+      unsubSign,
+      unsubWord,
+      unsubStart,
+      unsubStop,
       () => this.vision.stop(),
     ];
   }

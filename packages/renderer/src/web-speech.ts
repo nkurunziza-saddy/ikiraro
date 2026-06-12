@@ -96,15 +96,17 @@ export class WebSpeechProvider {
       });
 
       if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`ElevenLabs API error (${res.status}): ${errText}`);
+        const errText = await res.text().catch(() => "");
+        console.error(`[Ikiraro:TTS] ElevenLabs ${res.status}:`, errText);
+        throw new Error(`ElevenLabs TTS failed (HTTP ${res.status})`);
       }
 
       const arrayBuffer = await res.arrayBuffer();
       if (!this.cloudSpeaking) return; // cancelled during fetch
       await this.playAudioBuffer(arrayBuffer, options);
     } catch (err) {
-      console.error(err);
+      console.error("[Ikiraro:TTS] ElevenLabs speech failed:", err);
+      throw err;
     } finally {
       this.cloudSpeaking = false;
     }
@@ -130,15 +132,17 @@ export class WebSpeechProvider {
       });
 
       if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`OpenAI API error (${res.status}): ${errText}`);
+        const errText = await res.text().catch(() => "");
+        console.error(`[Ikiraro:TTS] OpenAI ${res.status}:`, errText);
+        throw new Error(`OpenAI TTS failed (HTTP ${res.status})`);
       }
 
       const arrayBuffer = await res.arrayBuffer();
       if (!this.cloudSpeaking) return; // cancelled during fetch
       await this.playAudioBuffer(arrayBuffer, options);
     } catch (err) {
-      console.error(err);
+      console.error("[Ikiraro:TTS] OpenAI speech failed:", err);
+      throw err;
     } finally {
       this.cloudSpeaking = false;
     }
@@ -203,11 +207,14 @@ export class WebSpeechProvider {
 
   async speakQueue(texts: string[], options: SpeakOptions = {}): Promise<void> {
     this.queueActive = true;
-    for (const text of texts) {
-      if (!this.queueActive) break;
-      await this.speak(text, options);
+    try {
+      for (const text of texts) {
+        if (!this.queueActive) break;
+        await this.speak(text, options);
+      }
+    } finally {
+      this.queueActive = false;
     }
-    this.queueActive = false;
   }
 
   cancel(): void {

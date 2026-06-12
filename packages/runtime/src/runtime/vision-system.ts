@@ -25,6 +25,8 @@ export class VisionSystem {
   private animationFrameId: number | null = null;
   private videoFrameCallbackId: number | null = null;
   private busy = false;
+  private captureCanvas: OffscreenCanvas | null = null;
+  private captureCtx: OffscreenCanvasRenderingContext2D | null = null;
   private lastFpsTime = 0;
   private frameCount = 0;
   private lastVideoTime = -1;
@@ -115,6 +117,8 @@ export class VisionSystem {
     }
     this.stream?.getTracks().forEach((t) => t.stop());
     this.stream = null;
+    this.captureCanvas = null;
+    this.captureCtx = null;
     this.lastVideoTime = -1;
     this.busy = false;
     if (this.videoEl) {
@@ -131,10 +135,16 @@ export class VisionSystem {
   get status(): VisionStatus {
     return this._status;
   }
-  on<K extends keyof VisionEventMap>(event: K, handler: (data: VisionEventMap[K]) => void): void {
+  on<K extends keyof VisionEventMap>(
+    event: K,
+    handler: (data: VisionEventMap[K]) => void,
+  ): () => void {
     const set = this.handlers.get(event) ?? new Set();
     set.add(handler);
     this.handlers.set(event, set);
+    return () => {
+      this.handlers.get(event)?.delete(handler);
+    };
   }
   off<K extends keyof VisionEventMap>(event: K, handler: (data: VisionEventMap[K]) => void): void {
     this.handlers.get(event)?.delete(handler);
@@ -180,12 +190,23 @@ export class VisionSystem {
     this.busy = true;
     try {
       const { videoWidth: w, videoHeight: h } = this.videoEl;
-      const canvas = new OffscreenCanvas(w, h);
-      const ctx = canvas.getContext("2d")!;
-      ctx.translate(w, 0);
-      ctx.scale(-1, 1);
+      if (
+        !this.captureCanvas ||
+        this.captureCanvas.width !== w ||
+        this.captureCanvas.height !== h
+      ) {
+        this.captureCanvas = new OffscreenCanvas(w, h);
+        this.captureCtx = this.captureCanvas.getContext("2d");
+      }
+      const ctx = this.captureCtx;
+      if (!ctx) {
+        this.busy = false;
+        this.queueNextFrame();
+        return;
+      }
+      ctx.setTransform(-1, 0, 0, 1, w, 0);
       ctx.drawImage(this.videoEl, 0, 0);
-      const bitmap = await createImageBitmap(canvas);
+      const bitmap = await createImageBitmap(this.captureCanvas);
       if (this._status !== "active") {
         bitmap.close();
         this.busy = false;
@@ -193,8 +214,10 @@ export class VisionSystem {
       }
       this.processor.process(bitmap, now);
       this.queueNextFrame();
-    } catch {
+    } catch (err) {
       this.busy = false;
+      const message = err instanceof Error ? err.message : "Frame capture failed.";
+      this.emit("error", message);
       this.queueNextFrame();
     }
   }

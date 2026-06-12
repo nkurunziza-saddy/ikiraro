@@ -98,4 +98,14 @@ describe("RendererDirector", () => {
 
     expect(mockCanvas.setPose).toHaveBeenCalledWith(resolveHandshape("B"));
   });
+  it("should guard against NaN recursion with zero-duration frames in loop mode", () => {
+    const director = new RendererDirector(mockCanvas);
+    director.setOptions({ loop: true });
+    director.setQueue([{ duration: 0, type: "fingerspell", value: "A" } as any]);
+    director.seek(100);
+
+    const state = director.getState();
+    expect(Number.isFinite(state.time)).toBe(true);
+    expect(state.isPlaying).toBe(false);
+  });
 });

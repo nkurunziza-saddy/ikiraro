@@ -13,28 +13,38 @@
   "type": "module",
   "exports": {
     ".": {
-      "default": "./src/types.ts"
+      "types": "./dist/types.d.ts",
+      "default": "./dist/types.js"
     },
     "./types": {
-      "default": "./src/types.ts"
+      "types": "./dist/types.d.ts",
+      "default": "./dist/types.js"
     },
     "./planning": {
-      "default": "./src/planning/index.ts"
+      "types": "./dist/planning/index.d.ts",
+      "default": "./dist/planning/index.js"
     },
     "./math": {
-      "default": "./src/math/index.ts"
+      "types": "./dist/math/index.d.ts",
+      "default": "./dist/math/index.js"
     },
     "./vision": {
-      "default": "./src/vision/index.ts"
+      "types": "./dist/vision/index.d.ts",
+      "default": "./dist/vision/index.js"
     },
     "./cdn": {
-      "default": "./src/cdn.ts"
+      "types": "./dist/cdn.d.ts",
+      "default": "./dist/cdn.js"
     }
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "check-types": "tsc --noEmit",
     "test": "vitest run",
-    "cdn:build": "tsup"
+    "build": "tsup"
   },
   "dependencies": {
     "effect": "catalog:"

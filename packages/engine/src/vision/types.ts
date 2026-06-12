@@ -82,7 +82,7 @@ export interface HandProcessor {
   reset(): void;
   correct(sign: string): void;
   dispose(): void;
-  onResult(cb: (tracking: import("../types").CameraTrackingState) => void): void;
-  onError(cb: (error: string) => void): void;
-  onReady(cb: (delegate: "GPU" | "CPU") => void): void;
+  onResult(cb: (tracking: import("../types").CameraTrackingState) => void): () => void;
+  onError(cb: (error: string) => void): () => void;
+  onReady(cb: (delegate: "GPU" | "CPU") => void): () => void;
 }

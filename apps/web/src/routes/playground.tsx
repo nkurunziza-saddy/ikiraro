@@ -34,7 +34,7 @@ export const Route = createFileRoute("/playground")({
 const MODEL_URL = "/models/avatar.glb";
 const tts = WebSpeechProvider.getInstance();
 const audioQueue = AudioQueue.getInstance(
-  (text) => tts.speak(text),
+  (text) => tts.speak(text).catch((err) => console.error("TTS failed:", err)),
   () => tts.cancel(),
 );
 

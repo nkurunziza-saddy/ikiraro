@@ -89,10 +89,12 @@ export function buildPlanFromGloss(intent: SemanticIntent, intake?: SpeechIntake
     const totalSpeechMs = intake.durationSeconds * 1000;
     const totalBaseMs = tokens.reduce((acc, t) => acc + t.durationMs, 0);
 
-    const scale = Math.min(2.0, Math.max(0.5, totalSpeechMs / totalBaseMs));
-    for (const token of tokens) {
-      if (token.type !== "pause") {
-        token.durationMs = Math.round(token.durationMs * scale);
+    if (totalBaseMs > 0) {
+      const scale = Math.min(2.0, Math.max(0.5, totalSpeechMs / totalBaseMs));
+      for (const token of tokens) {
+        if (token.type !== "pause") {
+          token.durationMs = Math.round(token.durationMs * scale);
+        }
       }
     }
   }

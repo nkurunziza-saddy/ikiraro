@@ -29,27 +29,29 @@ export function useHandTracking() {
   const processor = useMemo(() => new WorkerHandProcessor(), []);
   const vision = useMemo(() => new VisionSystem(processor), [processor]);
   useEffect(() => {
-    processor.onReady((d: "GPU" | "CPU") => {
-      setDelegate(d);
-      setIsReady(true);
-      setError(null);
-    });
-    vision.on("status-change", (s: VisionStatus) => {
-      setIsActive(s === "active");
-    });
-    vision.on("fps-update", (f: number) => setFps(f));
-    vision.on("error", (e: string) => setError(e));
-
-    vision.on("tracking-update", (t: CameraTrackingState) => {
-      startTransition(() => {
-        setTracking(t);
-      });
-    });
+    const subs = [
+      processor.onReady((d: "GPU" | "CPU") => {
+        setDelegate(d);
+        setIsReady(true);
+        setError(null);
+      }),
+      vision.on("status-change", (s: VisionStatus) => {
+        setIsActive(s === "active");
+      }),
+      vision.on("fps-update", (f: number) => setFps(f)),
+      vision.on("error", (e: string) => setError(e)),
+      vision.on("tracking-update", (t: CameraTrackingState) => {
+        startTransition(() => {
+          setTracking(t);
+        });
+      }),
+    ];
 
     processor.init().catch((err) => {
       setError(err instanceof Error ? err.message : "Failed to initialize worker");
     });
     return () => {
+      for (const unsub of subs) unsub();
       vision.stop();
       processor.dispose();
     };

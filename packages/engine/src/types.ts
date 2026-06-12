@@ -1,3 +1,5 @@
+import type { Handshape } from "./planning/pose-library";
+
 export type CommunicationMode = "speech" | "text" | "sign-keys" | "camera-fingerspell";
 export type TranslationTrack = "semantic" | "deterministic";
 export type PlanningStrategy = "semantic" | "deterministic";
@@ -136,9 +138,9 @@ export interface SignLanguagePlugin {
   numberArmTarget: ArmTarget;
 
   // Handshapes and Lexicon
-  getHandshape: (key: string) => import("./planning/pose-library").Handshape | null;
+  getHandshape: (key: string) => Handshape | null;
   getLexemePose: (gloss: string) => {
-    handshape: import("./planning/pose-library").Handshape;
+    handshape: Handshape;
     armTarget?: ArmTarget;
     motion: MotionType;
   } | null;

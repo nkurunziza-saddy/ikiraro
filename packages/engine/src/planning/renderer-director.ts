@@ -114,7 +114,7 @@ export class RendererDirector {
       totalTime += frame.duration;
     }
     if (!found) {
-      if (this.options.loop) {
+      if (this.options.loop && totalTime > 0) {
         this.state.time %= totalTime;
         this.updateStateFromTime();
       } else {

@@ -23,7 +23,7 @@ export class SignAllRecognizer implements SignRecognizer {
   }
 
   process(worldLandmarks: HandLandmarks, _imageLandmarks?: HandLandmarks): ClassificationResult {
-    if (worldLandmarks.length === 0) {
+    if (worldLandmarks.length < 21) {
       this.history = [];
       return this.noMatch();
     }
@@ -126,6 +126,7 @@ export class SignAllRecognizer implements SignRecognizer {
     if (this.history.length < 3 || !trained.motionSignature) return 0;
 
     const index = trained.motionLandmarkIndex!;
+    if (index < 0 || this.history.some((h) => index >= h.length)) return 0;
     const livePath = this.history.map((h) => h[index]!);
 
     // Simple path correlation (normalized Euclidean distance of points)

@@ -65,14 +65,20 @@ export class WorkerHandProcessor implements HandProcessor {
     this.worker = null;
     this.frameId = 0;
     globalResourceRegistry.unregister(this);
+    this.resultHandlers.clear();
+    this.errorHandlers.clear();
+    this.readyHandlers.clear();
   }
-  onResult(cb: (tracking: CameraTrackingState) => void): void {
+  onResult(cb: (tracking: CameraTrackingState) => void): () => void {
     this.resultHandlers.add(cb);
+    return () => this.resultHandlers.delete(cb);
   }
-  onError(cb: (error: string) => void): void {
+  onError(cb: (error: string) => void): () => void {
     this.errorHandlers.add(cb);
+    return () => this.errorHandlers.delete(cb);
   }
-  onReady(cb: (delegate: "GPU" | "CPU") => void): void {
+  onReady(cb: (delegate: "GPU" | "CPU") => void): () => void {
     this.readyHandlers.add(cb);
+    return () => this.readyHandlers.delete(cb);
   }
 }
