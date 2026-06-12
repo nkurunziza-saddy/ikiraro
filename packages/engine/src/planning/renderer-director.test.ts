@@ -13,9 +13,10 @@ afterEach(() => {
 });
 import "./index"; // Initialize LanguageRegistry
 import { RendererDirector } from "./renderer-director";
-import { buildFrameQueue } from "./frame-queue";
+import { FrameBuilder } from "./frame-builder";
 import type { SignCanvas } from "./renderer-types";
 import { resolveHandshape } from "./pose-library";
+const builder = new FrameBuilder();
 describe("RendererDirector", () => {
   const mockCanvas: SignCanvas = {
     setPose: vi.fn(),
@@ -32,7 +33,7 @@ describe("RendererDirector", () => {
         },
       ],
     } as any;
-    const queue = buildFrameQueue(plan);
+    const queue = builder.build(plan);
     director.setQueue(queue);
 
     director.reset();
@@ -49,7 +50,7 @@ describe("RendererDirector", () => {
         },
       ],
     } as any;
-    const queue = buildFrameQueue(plan);
+    const queue = builder.build(plan);
     director.setQueue(queue);
 
     (mockCanvas.setPose as any).mockClear();
@@ -74,8 +75,8 @@ describe("RendererDirector", () => {
       clauses: [{ tokens: [{ type: "fingerspell", text: "B", durationMs: 1000 }] }],
     } as any;
 
-    const queue1 = buildFrameQueue(plan1);
-    const queue2 = buildFrameQueue(plan2);
+    const queue1 = builder.build(plan1);
+    const queue2 = builder.build(plan2);
 
     let isPlaying = false;
     director.subscribe((state) => {

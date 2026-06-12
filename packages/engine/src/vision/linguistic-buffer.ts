@@ -2,6 +2,7 @@ import type { LinguisticBufferConfig, WordBufferContext, BufferState } from "./t
 import type { SignToken } from "../types";
 import { FingerspellStrategy } from "./linguistic/fingerspell-strategy";
 import { LexemeStrategy } from "./linguistic/lexeme-strategy";
+
 /**
  * The LinguisticBuffer is a 'Deep' fusion layer.
  * It transforms high-frequency sign detections into high-level SignTokens
@@ -12,12 +13,18 @@ export class LinguisticBuffer {
   private currentSign: string | null = null;
   private lastSignTime = 0;
   private config: LinguisticBufferConfig;
+
+  // SOTA Plateau Detection thresholds
+  private readonly PLATEAU_VELOCITY_THRESHOLD = 0.05;
+  private readonly PLATEAU_STABILITY_MS = 150;
+
   constructor(config?: Partial<LinguisticBufferConfig>) {
     this.config = {
       strategies: config?.strategies ?? [new FingerspellStrategy(), new LexemeStrategy()],
       pauseThresholdMs: config?.pauseThresholdMs ?? 1000,
     };
   }
+
   /**
    * Updates the buffer with a new sign detection.
    *
@@ -30,6 +37,12 @@ export class LinguisticBuffer {
 
     if (context.isTransitioning) return null;
 
+    // Plateau Detection: If velocity is near-zero, it indicates a stable pose.
+    const isStationary = context.velocity
+      ? Math.sqrt(context.velocity.x ** 2 + context.velocity.y ** 2 + context.velocity.z ** 2) <
+        this.PLATEAU_VELOCITY_THRESHOLD
+      : false;
+
     if (!sign) {
       if (this.currentSign && now - this.lastSignTime > this.config.pauseThresholdMs) {
         return this.commitAll();
@@ -37,10 +50,20 @@ export class LinguisticBuffer {
       return null;
     }
 
+    // If we are stationary and holding the same sign, a plateau is reached.
+    const isPlateauReached =
+      isStationary &&
+      sign === this.currentSign &&
+      now - this.lastSignTime > this.PLATEAU_STABILITY_MS;
+
     this.currentSign = sign;
     this.lastSignTime = now;
+
+    // Inject plateau state into context for strategies
+    const enrichedContext = { ...context, isPlateauReached };
+
     for (const strategy of this.config.strategies) {
-      const token = strategy.update(sign, context);
+      const token = strategy.update(sign, enrichedContext);
       if (token) {
         this.tokens.push(token);
         return token;
@@ -48,6 +71,7 @@ export class LinguisticBuffer {
     }
     return null;
   }
+
   private commitAll(): SignToken | null {
     for (const strategy of this.config.strategies) {
       if (strategy.commit) {
@@ -62,6 +86,7 @@ export class LinguisticBuffer {
     this.currentSign = null;
     return null;
   }
+
   getInProgress(): string {
     for (const strategy of this.config.strategies) {
       const v = strategy.getInProgress?.();
@@ -69,6 +94,7 @@ export class LinguisticBuffer {
     }
     return "";
   }
+
   overrideLast(sign: string): void {
     for (const strategy of this.config.strategies) {
       if (strategy.overrideLast) {
@@ -77,6 +103,7 @@ export class LinguisticBuffer {
       }
     }
   }
+
   getState(): BufferState {
     const text = this.tokens
       .map((t) => {
@@ -97,6 +124,7 @@ export class LinguisticBuffer {
       sentenceText: text,
     };
   }
+
   clear(): void {
     this.tokens = [];
     this.currentSign = null;

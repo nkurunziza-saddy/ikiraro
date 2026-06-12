@@ -23,11 +23,16 @@ class OneEuroFilter3D {
   private lastY: number = 0;
   private lastZ: number = 0;
   private initialized: boolean = false;
+
   constructor(
     private minCutoff: number = 1.0,
     private beta: number = 0.007,
     private dCutoff: number = 1.0,
+    // Z-axis specific overrides for depth jitter reduction
+    private zMinCutoff: number = 0.5,
+    private zBeta: number = 0.001,
   ) {}
+
   filter(value: Point3D): Point3D {
     const freq = 30;
     const dxVal = !this.initialized ? 0 : (value.x - this.lastX) * freq;
@@ -37,16 +42,19 @@ class OneEuroFilter3D {
     this.lastY = value.y;
     this.lastZ = value.z;
     this.initialized = true;
+
     const alphaD = this.getAlpha(freq, this.dCutoff);
     const edx = this.dx.filter(dxVal, alphaD);
     const edy = this.dy.filter(dyVal, alphaD);
     const edz = this.dz.filter(dzVal, alphaD);
+
     return {
       x: this.x.filter(value.x, this.getAlpha(freq, this.minCutoff + this.beta * Math.abs(edx))),
       y: this.y.filter(value.y, this.getAlpha(freq, this.minCutoff + this.beta * Math.abs(edy))),
-      z: this.z.filter(value.z, this.getAlpha(freq, this.minCutoff + this.beta * Math.abs(edz))),
+      z: this.z.filter(value.z, this.getAlpha(freq, this.zMinCutoff + this.zBeta * Math.abs(edz))),
     };
   }
+
   getDerivative(): Point3D {
     return { x: this.dx.y, y: this.dy.y, z: this.dz.y };
   }

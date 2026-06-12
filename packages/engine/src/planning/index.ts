@@ -19,7 +19,7 @@ export {
 } from "./tokens";
 export * from "./services";
 export { buildPlanFromGloss, buildPlanFromUnits, createEnvelope } from "./tokenizer";
-export { buildFrameQueue } from "./frame-queue";
+export { FrameBuilder, frameBuilder } from "./frame-builder";
 export type { FrameItem } from "../types";
 export * from "./pose-library";
 export { resolveLexemePose, LEXEME_POSES } from "./lexeme-poses";
@@ -30,10 +30,8 @@ export type { KinematicPose } from "./kinematics/types";
 export { KinematicController } from "./kinematics/controller";
 export { RendererDirector } from "./renderer-director";
 export type { SignCanvas, RendererState, PlaybackOptions } from "./renderer-types";
-export { coarticulationBlend, computeCoarticulationOffsets } from "./coarticulation";
+export { coarticulationBlend } from "./coarticulation";
 export type { CoarticulationMode, MotionType, ArmTarget } from "../types";
-export * from "../linguistic";
-export * from "../compiler";
 export * from "../language-registry";
 export * from "../plugins";
 

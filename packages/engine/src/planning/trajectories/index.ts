@@ -69,13 +69,14 @@ export class TrajectoryEngine {
   }
 
   private scaleDelta(delta: MotionDelta, scale: number): MotionDelta {
-    const scaled: any = { ...delta };
-    for (const key in scaled) {
-      if (typeof scaled[key] === "number") {
-        scaled[key] *= scale;
+    const scaled = { ...delta };
+    (Object.keys(scaled) as Array<keyof MotionDelta>).forEach((key) => {
+      const val = scaled[key];
+      if (typeof val === "number") {
+        (scaled[key] as number) = val * scale;
       }
-    }
-    return scaled as MotionDelta;
+    });
+    return scaled;
   }
 }
 

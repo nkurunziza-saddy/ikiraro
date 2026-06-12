@@ -66,19 +66,6 @@ export type SignPlan = {
   };
 };
 
-export type SignNode = {
-  gloss: string;
-  role: "topic" | "action" | "object" | "modifier";
-  emphasis: number;
-  spatialAnchor?: string;
-  tokenType?: "lexeme" | "fingerspell" | "number" | "pointing";
-};
-
-export type SignGraph = {
-  intent: "statement" | "question" | "command";
-  nodes: SignNode[];
-};
-
 export type MotionType =
   | "none"
   | "shake"
@@ -107,15 +94,15 @@ export type ArmTarget = {
   rArmZ?: number;
   rArmY?: number;
   rForeX?: number;
-  rForeZ?: number;
   rForeY?: number;
+  rForeZ?: number;
   rHandX?: number;
   lArmX?: number;
   lArmZ?: number;
   lArmY?: number;
   lForeX?: number;
-  lForeZ?: number;
   lForeY?: number;
+  lForeZ?: number;
   lHandX?: number;
 };
 export type FrameItem = {
@@ -129,18 +116,6 @@ export type FrameItem = {
   armTarget?: ArmTarget;
   facialExpression?: string;
   coarticulation?: CoarticulationMode;
-};
-
-export type TransitionType = "blend" | "crossfade" | "inertial";
-export type Transition = {
-  from: MotionType;
-  to: MotionType;
-  type: TransitionType;
-  durationMs: number;
-};
-export type TransitionPlan = {
-  entry: Transition | null;
-  exit: Transition | null;
 };
 
 export interface SignLanguagePlugin {
@@ -162,45 +137,12 @@ export interface SignLanguagePlugin {
 
   // Handshapes and Lexicon
   getHandshape: (key: string) => import("./planning/pose-library").Handshape | null;
-  getLexemePose: (
-    gloss: string,
-  ) => {
+  getLexemePose: (gloss: string) => {
     handshape: import("./planning/pose-library").Handshape;
     armTarget?: ArmTarget;
     motion: MotionType;
   } | null;
 }
-
-export type CompiledSign = {
-  id: string;
-  bodyMotion: MotionType;
-  motionClip?: string;
-  handshape: string;
-  facial: string;
-  transitions: TransitionPlan;
-  duration: number;
-  spatialTarget?: { x: number; y: number; z: number };
-  armTarget?: ArmTarget;
-  emphasisCurve: "linear" | "accelerate" | "impact";
-};
-
-export type SpatialMemory = {
-  self: { x: number; y: number; z: number };
-  entities: Map<string, { x: number; y: number; z: number }>;
-  createdAt: Map<string, number>;
-};
-
-export type MotionInstruction = {
-  bodyMotion: MotionType;
-  startTime: number;
-  endTime: number;
-  spatialTarget?: { x: number; y: number; z: number };
-  armTarget?: ArmTarget;
-  handshape: string;
-  emphasisCurve: "linear" | "accelerate" | "impact";
-  facial: string;
-  coarticulationHint?: CoarticulationMode;
-};
 
 export type SpeechWordTiming = {
   word: string;
@@ -242,7 +184,6 @@ export type TranslationEnvelope = {
   intake: SpeechIntake | null;
   plan: SignPlan;
   rendererQueue: FrameItem[];
-  instructions?: MotionInstruction[];
   rawInput: string;
   normalizedText: string;
   intent?: SemanticIntent;
@@ -254,71 +195,22 @@ export interface Point3D {
   z: number;
 }
 export type HandLandmarks = Point3D[];
-export interface FeatureVector {
-  isValid: boolean;
-  fingerStates: [boolean, boolean, boolean, boolean, boolean];
-  fingerCurls: [number, number, number, number, number];
-  thumbToIndexDist: number;
-  thumbToMiddleDist: number;
-  thumbToPinkyDist: number;
-  indexMiddleSpread: number;
-  ringPinkySpread: number;
-  palmOrientation: number;
-  thumbPosition: number;
-  thumbVsFingerDepth: number;
-  fingerAngles: [number, number, number, number, number];
-  wristAngle: number;
-  fingerprint: string;
-  spatialZone: "chest" | "face" | "chin" | "forehead" | "neutral";
-  velocity: Point3D;
-  isMoving: boolean;
-}
+
 export interface ClassificationResult {
   sign: string | null;
   confidence: number;
-  vector: FeatureVector;
   candidates: Array<{ name: string; score: number }>;
+  velocity: Point3D;
+  isMoving: boolean;
   isTransitioning?: boolean;
-  gesture?: "double-letter-slide" | "double-letter-bounce" | "none";
 }
-export interface IFeatureExtractor {
-  extract(landmarks: HandLandmarks, imageLandmarks?: HandLandmarks): FeatureVector;
-}
-export interface ISignMatcher {
-  match(vector: FeatureVector): Array<{ name: string; score: number }>;
-}
-export interface ITemporalSmoother {
-  smooth(candidates: Array<{ name: string; score: number }>): {
-    sign: string | null;
-    confidence: number;
-  };
-  reset(): void;
-}
+
 export interface ILandmarkSmoother {
   smooth(landmarks: HandLandmarks): HandLandmarks;
   getVelocity(): Point3D;
   reset(): void;
 }
-export interface IGestureDetector {
-  update(velocity: Point3D): {
-    type: "double-letter-slide" | "double-letter-bounce" | "none";
-    confidence: number;
-  };
-  reset(): void;
-}
-export interface ITransitionDetector {
-  isTransitioning(velocity: Point3D, confidence: number): boolean;
-  reset(): void;
-}
-export interface VisionPipelineConfig {
-  smoother: ILandmarkSmoother;
-  extractor: IFeatureExtractor;
-  matcher: ISignMatcher;
-  temporal: ITemporalSmoother;
-  gesture: IGestureDetector;
-  transition: ITransitionDetector;
-  motionVelocityThreshold: number;
-}
+
 export type CameraTrackingState = {
   landmarks: HandLandmarks;
   faceLandmarks?: Point3D[];
@@ -329,21 +221,7 @@ export type CameraTrackingState = {
   sentenceText: string;
   committedToken: SignToken | null;
 };
-export interface HandshapeDefinition {
-  name: string;
-  fingerprint: string;
-  requiresMotion?: boolean;
-  disambiguate?: (vector: FeatureVector) => number;
-}
-export interface ClassifierConfig {
-  windowSize: number;
-  rawScoreThreshold: number;
-  minCandidateScore: number;
-  scoreGapThreshold: number;
-  lockThreshold: number;
-  unlockThreshold: number;
-  motionVelocityThreshold: number;
-}
+
 export interface ASLModelInterface {
   readonly name: string;
   load(): Promise<void>;

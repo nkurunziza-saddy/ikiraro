@@ -13,8 +13,14 @@ export class FingerspellStrategy implements ILinguisticStrategy {
   update(sign: string, context: WordBufferContext): SignToken | null {
     if (sign.length !== 1) return null;
     const now = performance.now();
+
+    // SOTA Plateau: If the hand stopped moving and the sign is the same,
+    // we can accept it much faster than minHoldMs.
+    const holdDuration = now - this.lastLetterTime;
+    const canAccept = context.isPlateauReached || holdDuration > this.minHoldMs;
+
     if (sign !== this.lastLetter) {
-      if (now - this.lastLetterTime > this.minHoldMs) {
+      if (canAccept) {
         this.buffer += sign;
         this.lastLetter = sign;
         this.lastLetterTime = now;
@@ -23,12 +29,7 @@ export class FingerspellStrategy implements ILinguisticStrategy {
       return null;
     }
 
-    if (
-      !this.doubleLetterCommitted &&
-      (context.gesture === "double-letter-slide" ||
-        context.gesture === "double-letter-bounce" ||
-        now - this.lastLetterTime > this.doubleLetterHoldMs)
-    ) {
+    if (!this.doubleLetterCommitted && now - this.lastLetterTime > this.doubleLetterHoldMs) {
       this.buffer += sign;
       this.doubleLetterCommitted = true;
     }

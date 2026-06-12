@@ -1,18 +1,11 @@
 export type {
   Point3D,
   HandLandmarks,
-  FeatureVector,
   ClassificationResult,
   CameraTrackingState,
   ASLModelInterface,
-  HandshapeDefinition,
-  ClassifierConfig,
-  IFeatureExtractor,
-  ISignMatcher,
-  ITemporalSmoother,
   ILinguisticStrategy,
   LinguisticBufferConfig,
-  WordBufferOptions,
   BufferState,
   VisionStatus,
   VisionEventMap,
@@ -21,15 +14,9 @@ export type {
 export { ASL_DEFAULTS } from "./asl-defaults";
 export type { HandBounds, HandGeometryQuality } from "./quality";
 export { evaluateHandGeometry } from "./quality";
-export { extractFeatureVector } from "./feature-vector";
 export { LandmarkSmoother } from "./smoothing";
-export { ASL_ALPHABET } from "./handshapes";
-export { IkiraroFeatureExtractor } from "./implementations/feature-extractor";
-export { IkiraroSurgicalMatcher } from "./implementations/surgical-matcher";
-export { IkiraroTemporalSmoother } from "./implementations/temporal-smoother";
-export { IkiraroSurgicalClassifier, DEFAULT_CLASSIFIER_CONFIG } from "./classifier";
 export { LinguisticBuffer } from "./linguistic-buffer";
-export { WordBuffer } from "./word-buffer";
 export { SignDetectionPipeline } from "./pipeline";
+export { SignAllRecognizer } from "./sign-all-recognizer";
 export { FingerspellStrategy } from "./linguistic/fingerspell-strategy";
 export { LexemeStrategy } from "./linguistic/lexeme-strategy";

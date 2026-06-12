@@ -44,7 +44,10 @@ export class WebSpeechProvider {
   setConfig(config: Partial<TTSConfig>) {
     this.config = { ...this.config, ...config };
     if (this.config.provider !== "browser" && typeof window !== "undefined" && !this.audioContext) {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      this.audioContext = new AudioContextClass();
     }
   }
 
@@ -156,7 +159,7 @@ export class WebSpeechProvider {
         source.playbackRate.value = playbackRate;
         // Attempt to preserve pitch in modern browsers
         if ("preservesPitch" in source) {
-          (source as any).preservesPitch = true;
+          (source as unknown as { preservesPitch: boolean }).preservesPitch = true;
         }
       }
 

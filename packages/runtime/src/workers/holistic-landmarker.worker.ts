@@ -190,10 +190,6 @@ self.onmessage = async (event: MessageEvent<MainToWorkerMessage>) => {
             classification.confidence >= 0.8
           ) {
             lastDebugSign = classification.sign;
-            console.log(
-              `[ikiraro:calibrate] sign=${classification.sign} confidence=${classification.confidence.toFixed(2)}`,
-              classification.vector,
-            );
           }
           postMessage({
             type: "result",

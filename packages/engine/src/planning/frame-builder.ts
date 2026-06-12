@@ -4,8 +4,9 @@ import type {
   MotionType,
   ArmTarget,
   SignToken,
-  SpatialMemory,
+  CoarticulationMode,
 } from "../types";
+
 import { LanguageRegistry } from "../language-registry";
 
 const DEFAULT_ARM_TARGET: ArmTarget = { rArmX: 0.76, rArmZ: -0.52, rForeZ: -1.5, rForeY: 0.48 };
@@ -16,12 +17,6 @@ const DEFAULT_ARM_TARGET: ArmTarget = { rArmX: 0.76, rArmZ: -0.52, rForeZ: -1.5,
  * and plugin-driven motion selection.
  */
 export class FrameBuilder {
-  private spatialMemory: SpatialMemory = {
-    self: { x: 0, y: 0, z: 0 },
-    entities: new Map(),
-    createdAt: new Map(),
-  };
-
   /**
    * Main entry point: transforms a Plan into Frames.
    */
@@ -51,17 +46,20 @@ export class FrameBuilder {
     };
   }
 
-  private buildTokenFrames(token: SignToken, intent: string): FrameItem[] {
+  private buildTokenFrames(
+    token: Exclude<SignToken, { type: "pause" }>,
+    intent: string,
+  ): FrameItem[] {
     const lang = LanguageRegistry.getActive();
     const frames: FrameItem[] = [];
 
-    // Facial expression logic (moved from slop Compiler)
+    // Facial expression logic based on sign intent and emphasis
     let facial = token.facialExpression ?? "neutral";
     if (intent === "question") facial = "inquisitive";
     else if (token.emphasis === "high") facial = "assertive";
 
     const baseDuration = token.durationMs;
-    const coarticulation = token.coarticulationHint ?? "blend";
+    const coarticulation: CoarticulationMode = token.coarticulationHint ?? "blend";
 
     if (token.type === "lexeme") {
       const pose = lang.getLexemePose(token.lexemeId);
@@ -111,8 +109,9 @@ export class FrameBuilder {
         });
       }
     } else if (token.type === "pointing") {
-      // Basic pointing resolution (previously in slop FrameQueue)
+      // Resolve pointing targets to concrete arm positions and motions
       const target = token.target.toUpperCase();
+
       let armTarget: ArmTarget = DEFAULT_ARM_TARGET;
       let motion: MotionType = "forward-push";
 

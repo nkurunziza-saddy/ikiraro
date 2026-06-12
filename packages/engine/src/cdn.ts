@@ -16,7 +16,8 @@ export {
   pauseToken,
 } from "./planning/tokens";
 export { buildPlanFromUnits, createEnvelope } from "./planning/tokenizer";
-export { buildFrameQueue } from "./planning/frame-queue";
+export { FrameBuilder, frameBuilder } from "./planning/frame-builder";
+
 export type { FrameItem } from "./types";
 export * from "./planning/pose-library";
 export { resolveLexemePose, LEXEME_POSES } from "./planning/lexeme-poses";

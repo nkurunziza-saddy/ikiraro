@@ -19,6 +19,7 @@ type VideoElementWithVFC = HTMLVideoElement & {
 export class VisionSystem {
   private _status: VisionStatus = "idle";
   private handlers: Map<keyof VisionEventMap, Set<(data: any) => void>> = new Map();
+
   private videoEl: HTMLVideoElement | null = null;
   private stream: MediaStream | null = null;
   private animationFrameId: number | null = null;
@@ -178,7 +179,13 @@ export class VisionSystem {
     }
     this.busy = true;
     try {
-      const bitmap = await createImageBitmap(this.videoEl);
+      const { videoWidth: w, videoHeight: h } = this.videoEl;
+      const canvas = new OffscreenCanvas(w, h);
+      const ctx = canvas.getContext("2d")!;
+      ctx.translate(w, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(this.videoEl, 0, 0);
+      const bitmap = await createImageBitmap(canvas);
       if (this._status !== "active") {
         bitmap.close();
         this.busy = false;

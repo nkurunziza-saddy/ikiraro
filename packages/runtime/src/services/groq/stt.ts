@@ -4,26 +4,38 @@ import { Groq } from "./client";
 import { Schema } from "effect";
 import { STT_RESPONSE_SCHEMA } from "./schemas";
 import type { SttModel, SpeechIntake } from "@ikiraro/engine/types";
+
 const DEFAULT_GROQ_STT_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
+
+/**
+ * Groq implementation of the STT service.
+ * Leverages the fast Whisper models on Groq for sub-second transcription.
+ */
 export const SttGroqLive = Layer.effect(
   SttService,
   Effect.gen(function* (_) {
     const groq = yield* _(Groq);
+
     return {
       transcribe: (audio: File, model: SttModel, prompt?: string) =>
         Effect.gen(function* (_) {
           const url = groq.baseUrl ? `${groq.baseUrl}/audio/transcriptions` : DEFAULT_GROQ_STT_URL;
+
           const formData = new FormData();
           formData.append("file", audio);
           formData.append("model", model);
           formData.append("language", "en");
           formData.append("temperature", "0");
           formData.append("response_format", "verbose_json");
+
+          // Request both word and segment level timestamps for better synchronization
           formData.append("timestamp_granularities[]", "word");
           formData.append("timestamp_granularities[]", "segment");
+
           if (prompt) {
             formData.append("prompt", prompt);
           }
+
           const response = yield* _(
             Effect.tryPromise({
               try: () =>
@@ -35,6 +47,7 @@ export const SttGroqLive = Layer.effect(
               catch: (e) => (e instanceof Error ? e : new Error(String(e))),
             }),
           );
+
           if (!response.ok) {
             const errorText = yield* _(
               Effect.tryPromise({
@@ -46,6 +59,7 @@ export const SttGroqLive = Layer.effect(
               Effect.fail(new Error(errorText || `Groq STT returned ${response.status}`)),
             );
           }
+
           const rawPayload = yield* _(
             Effect.tryPromise({
               try: () => response.json() as Promise<unknown>,
@@ -55,7 +69,10 @@ export const SttGroqLive = Layer.effect(
 
           const payload = yield* _(
             Schema.decodeUnknown(STT_RESPONSE_SCHEMA)(rawPayload),
-            Effect.mapError(() => new Error("Invalid STT response format")),
+            Effect.mapError((err) => {
+              console.error("[Ikiraro:STT] Schema validation failed:", err);
+              return new Error("Invalid STT response format");
+            }),
           );
 
           return {
@@ -66,10 +83,10 @@ export const SttGroqLive = Layer.effect(
             prompt: prompt ?? "",
             words:
               payload.words?.map((w) => ({
-                word: w.word,
-                start: w.start,
-                end: w.end,
-                confidence: w.confidence,
+                word: w.word ?? "",
+                start: w.start ?? 0,
+                end: w.end ?? 0,
+                confidence: w.confidence ?? 1.0,
               })) ?? [],
             segments:
               payload.segments?.map((s, i) => ({

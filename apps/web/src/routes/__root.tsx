@@ -1,10 +1,9 @@
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ThemeProvider } from "@/components/theme-provider";
+import { GlobalErrorBoundary } from "@/components/error-boundary";
 import { preloadAvatarModel } from "@ikiraro/renderer";
 import appCss from "../index.css?url";
-import { GlobalErrorBoundary } from "@/components/error-boundary";
-import Header from "@/components/header";
 
 preloadAvatarModel("/models/avatar.glb");
 
@@ -28,8 +27,8 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       },
 
       // Theme & Browser Config
-      { name: "theme-color", content: "#000000" },
-      { name: "msapplication-TileColor", content: "#000000" },
+      { name: "theme-color", content: "#EDEBE5" },
+      { name: "msapplication-TileColor", content: "#EDEBE5" },
       { name: "msapplication-config", content: "/browserconfig.xml" },
 
       // Open Graph
@@ -82,19 +81,18 @@ function RootDocument() {
       <body className="overflow-x-hidden">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:font-bold focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
         >
           Skip to content
         </a>
         <GlobalErrorBoundary>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="light"
             enableSystem
             disableTransitionOnChange
           >
             <div className="flex min-h-svh flex-col">
-              <Header />
               <main id="main-content" className="flex-1 outline-none" tabIndex={-1}>
                 <Outlet />
               </main>

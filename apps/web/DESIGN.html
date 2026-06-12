@@ -1,0 +1,525 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .root {
+    background: #EDEBE5;
+    padding: 3rem 2rem;
+    font-family: 'Inter', sans-serif;
+    color: #3a3530;
+  }
+
+  .page-center {
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .section { margin-bottom: 3.5rem; }
+
+  .meta {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: #aaa49a;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #dedad2;
+    margin: 3rem 0;
+  }
+
+  .dict-word {
+    font-size: 20px;
+    font-weight: 500;
+    color: #3a3530;
+    letter-spacing: -0.03em;
+  }
+
+  .dict-pronunciation {
+    font-size: 13px;
+    color: #aaa49a;
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .dict-def {
+    margin-top: 0.9rem;
+    padding-left: 0;
+  }
+
+  .dict-item {
+    font-size: 13px;
+    color: #6e6760;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .dict-sub {
+    font-size: 12.5px;
+    color: #aaa49a;
+    font-style: italic;
+    padding-left: 1.1rem;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .body-text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #5a5249;
+    font-weight: 300;
+    letter-spacing: 0.005em;
+  }
+
+  .body-text strong {
+    font-weight: 500;
+    color: #3a3530;
+  }
+
+  .card {
+    background: #F8F7F3;
+    border: 1px solid #dedad2;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .card-body { padding: 2rem; }
+
+  .squircle-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+  }
+
+  .shape {
+    width: 100px;
+    height: 100px;
+    background: #8a8078;
+    transition: border-radius 0.45s cubic-bezier(0.34, 1.02, 0.64, 1);
+  }
+
+  .card-footer {
+    border-top: 1px solid #e8e4dc;
+    padding: 0.75rem 1rem;
+    display: flex;
+    gap: 4px;
+  }
+
+  .tab {
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    font-weight: 400;
+    padding: 5px 14px;
+    border-radius: 100px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    color: #8a8078;
+    background: transparent;
+    transition: all 0.18s ease;
+    letter-spacing: 0.01em;
+  }
+
+  .tab:hover { color: #4a4540; background: #eceae4; }
+
+  .tab.on {
+    background: #F8F7F3;
+    color: #3a3530;
+    border-color: #dedad2;
+    font-weight: 500;
+  }
+
+  .install-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #F8F7F3;
+    border: 1px solid #e0dcd4;
+    border-radius: 10px;
+    padding: 11px 14px;
+    margin-bottom: 6px;
+    cursor: default;
+    transition: border-color 0.18s ease, background 0.18s ease;
+  }
+
+  .install-row:hover {
+    border-color: #c8c2b8;
+    background: #fff;
+  }
+
+  .install-left {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+    font-weight: 400;
+    color: #5a5249;
+    letter-spacing: 0.01em;
+  }
+
+  .fw-icon {
+    width: 15px;
+    height: 15px;
+    opacity: 0.4;
+    flex-shrink: 0;
+  }
+
+  .copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #b0a89e;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+  }
+
+  .copy-btn:hover { color: #5a5249; background: #eceae4; }
+
+  .swatch-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .swatch-block {
+    width: 48px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .swatch-label {
+    font-size: 10px;
+    color: #aaa49a;
+    text-align: center;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+
+  .nav-row {
+    display: flex;
+    gap: 2rem;
+    padding: 0.5rem 0;
+  }
+
+  .nav-link {
+    font-size: 13.5px;
+    font-weight: 400;
+    color: #8a8078;
+    text-decoration: none;
+    cursor: default;
+    transition: color 0.18s;
+    letter-spacing: 0.005em;
+  }
+
+  .nav-link:hover { color: #3a3530; }
+  .nav-link.active { color: #3a3530; font-weight: 500; }
+
+  .token-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: #dedad2;
+    border: 1px solid #dedad2;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .token-cell {
+    background: #F8F7F3;
+    padding: 12px 14px;
+  }
+
+  .token-key {
+    font-size: 11px;
+    color: #aaa49a;
+    margin-bottom: 3px;
+    letter-spacing: 0.04em;
+  }
+
+  .token-val {
+    font-size: 12.5px;
+    color: #4a4540;
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #3a3530;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4rem;
+  }
+
+  .section-desc {
+    font-size: 13px;
+    color: #8a8078;
+    font-weight: 300;
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+  }
+
+  .badge-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 1rem; }
+
+  .badge {
+    font-size: 11.5px;
+    font-weight: 400;
+    color: #7a7268;
+    background: #F8F7F3;
+    border: 1px solid #dedad2;
+    border-radius: 100px;
+    padding: 4px 12px;
+    transition: border-color 0.18s;
+  }
+
+  .badge:hover { border-color: #c4beb5; }
+
+  .highlight-card {
+    background: #F8F7F3;
+    border: 1px solid #dedad2;
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .highlight-number {
+    font-size: 36px;
+    font-weight: 300;
+    color: #3a3530;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .highlight-unit {
+    font-size: 14px;
+    color: #aaa49a;
+    font-weight: 300;
+    margin-left: 4px;
+  }
+
+  .highlight-label {
+    font-size: 12px;
+    color: #aaa49a;
+    margin-top: 4px;
+    font-weight: 300;
+  }
+</style>
+
+<h2 class="sr-only">Refined style guide — corne.rs aesthetic with Inter, original touches</h2>
+
+<div class="root">
+<div class="page-center">
+
+  <div class="section">
+    <div class="meta">Style guide · corne.rs × Inter</div>
+    <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;">
+      <span class="dict-word">lisse</span>
+      <span class="dict-pronunciation">/lēs/ adj. &nbsp;[F. lisse, smooth]</span>
+    </div>
+    <div class="dict-def">
+      <div class="dict-item">1 having an even, unbroken surface; smooth to the touch.</div>
+      <div class="dict-item">2 a sleek; without break or rough patch.</div>
+      <div class="dict-sub">b (of a curve) continuous; without abrupt change.</div>
+      <div class="dict-item">3 fig. polished, frictionless; flowing without interruption.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="meta">Typography</div>
+    <p class="body-text">
+      <strong>Inter</strong> at weight 300 for body, 400 for UI, 500 for headings only. The thinness does the work — restraint at the weight level reads as sophistication. No size needs to go above 20px.
+    </p>
+    <div class="badge-row">
+      <span class="badge">300 light · body</span>
+      <span class="badge">400 regular · UI</span>
+      <span class="badge">500 medium · headings</span>
+      <span class="badge">–0.03em display</span>
+      <span class="badge">1.75–1.8 leading</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="meta">Color</div>
+    <div class="swatch-row">
+      <div class="swatch">
+        <div class="swatch-block" style="background:#EDEBE5;"></div>
+        <span class="swatch-label">#EDEBE5<br>page</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#F8F7F3;"></div>
+        <span class="swatch-label">#F8F7F3<br>card</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#E8E4DC;"></div>
+        <span class="swatch-label">#E8E4DC<br>hover</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#DEDAD2;"></div>
+        <span class="swatch-label">#DEDAD2<br>border</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#AAA49A;"></div>
+        <span class="swatch-label">#AAA49A<br>muted</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#6E6760;"></div>
+        <span class="swatch-label">#6E6760<br>secondary</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#3A3530;"></div>
+        <span class="swatch-label">#3A3530<br>primary</span>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#8A8078;"></div>
+        <span class="swatch-label">#8A8078<br>shape</span>
+      </div>
+    </div>
+    <p class="body-text" style="margin-top:1.25rem; font-size:12.5px; color:#aaa49a; font-weight:300;">Every shade has a sand undertone. No pure grays, no accent colors. The warmth is the identity.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-title">Corner shape</div>
+    <div class="section-desc">Higher radius values produce rounder corners — at maximum, a full circle.</div>
+    <div class="card">
+      <div class="card-body">
+        <div class="squircle-stage">
+          <div class="shape" id="shape" style="border-radius:20px;"></div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="tab" onclick="setR(0,'a')" id="a">Radius: 0</button>
+        <button class="tab on" onclick="setR(20,'b')" id="b">Radius: 20</button>
+        <button class="tab" onclick="setR(50,'c')" id="c">Radius: 50</button>
+        <button class="tab" onclick="setR(9999,'d')" id="d">Circle</button>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-title">Install</div>
+    <div class="section-desc">Framework bindings ship separately. Pick yours.</div>
+
+    <div class="install-row">
+      <div class="install-left">
+        <svg class="fw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+        npm install @lisse/react
+      </div>
+      <button class="copy-btn" onclick="doCopy(this,'npm install @lisse/react')" aria-label="Copy">
+        <i class="ti ti-copy" style="font-size:14px;"></i>
+      </button>
+    </div>
+    <div class="install-row">
+      <div class="install-left">
+        <svg class="fw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/></svg>
+        npm install @lisse/vue
+      </div>
+      <button class="copy-btn" onclick="doCopy(this,'npm install @lisse/vue')" aria-label="Copy">
+        <i class="ti ti-copy" style="font-size:14px;"></i>
+      </button>
+    </div>
+    <div class="install-row">
+      <div class="install-left">
+        <svg class="fw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L4 6v6c0 5.25 3.5 9.74 8 11 4.5-1.26 8-5.75 8-11V6l-8-4z"/></svg>
+        npm install @lisse/svelte
+      </div>
+      <button class="copy-btn" onclick="doCopy(this,'npm install @lisse/svelte')" aria-label="Copy">
+        <i class="ti ti-copy" style="font-size:14px;"></i>
+      </button>
+    </div>
+    <div class="install-row">
+      <div class="install-left">
+        <svg class="fw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 12h6"/></svg>
+        npm install @lisse/core
+      </div>
+      <button class="copy-btn" onclick="doCopy(this,'npm install @lisse/core')" aria-label="Copy">
+        <i class="ti ti-copy" style="font-size:14px;"></i>
+      </button>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="meta">Navigation</div>
+    <div class="nav-row">
+      <span class="nav-link active">What?</span>
+      <span class="nav-link">Playground</span>
+      <span class="nav-link">Docs</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="meta">Tokens</div>
+    <div class="token-grid">
+      <div class="token-cell">
+        <div class="token-key">Border radius · card</div>
+        <div class="token-val">16px</div>
+      </div>
+      <div class="token-cell">
+        <div class="token-key">Border radius · pill</div>
+        <div class="token-val">100px</div>
+      </div>
+      <div class="token-cell">
+        <div class="token-key">Border radius · row</div>
+        <div class="token-val">10px</div>
+      </div>
+      <div class="token-cell">
+        <div class="token-key">Border width</div>
+        <div class="token-val">1px solid</div>
+      </div>
+      <div class="token-cell">
+        <div class="token-key">Transition</div>
+        <div class="token-val">180ms ease</div>
+      </div>
+      <div class="token-cell">
+        <div class="token-key">Shape easing</div>
+        <div class="token-val">cubic-bezier(.34,1,.64,1)</div>
+      </div>
+      <div class="token-cell">
+        <div class="token-key">Content width</div>
+        <div class="token-val">440px centered</div>
+      </div>
+      <div class="token-cell">
+        <div class="token-key">Shadow</div>
+        <div class="token-val">none — ever</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+  function setR(r, id) {
+    document.getElementById('shape').style.borderRadius = r === 9999 ? '50%' : r + 'px';
+    ['a','b','c','d'].forEach(k => document.getElementById(k).classList.toggle('on', k === id));
+  }
+
+  function doCopy(btn, text) {
+    navigator.clipboard.writeText(text).catch(() => {});
+    const i = btn.querySelector('i');
+    i.className = 'ti ti-check';
+    i.style.color = '#6e6760';
+    setTimeout(() => { i.className = 'ti ti-copy'; i.style.color = ''; }, 1400);
+  }
+</script>

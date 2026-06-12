@@ -1,24 +1,22 @@
-export type {
+import type {
   Point3D,
   HandLandmarks,
-  FeatureVector,
   ClassificationResult,
   CameraTrackingState,
   ASLModelInterface,
-  IFeatureExtractor,
-  ISignMatcher,
-  ITemporalSmoother,
   ILandmarkSmoother,
-  IGestureDetector,
-  ITransitionDetector,
-  VisionPipelineConfig,
-  HandshapeDefinition,
-  ClassifierConfig,
+  SignToken,
 } from "../types";
-export interface WordBufferOptions {
-  pauseThresholdMs: number;
-  minSignDurationMs: number;
-}
+
+export type {
+  Point3D,
+  HandLandmarks,
+  ClassificationResult,
+  CameraTrackingState,
+  ASLModelInterface,
+  ILandmarkSmoother,
+};
+
 export interface BufferState {
   currentWord: string;
   sentence: string[];
@@ -26,17 +24,16 @@ export interface BufferState {
 }
 export interface WordBufferContext {
   isTransitioning?: boolean;
-  gesture?: "double-letter-slide" | "double-letter-bounce" | "none";
   confidence?: number;
+  velocity?: import("../types").Point3D;
+  isPlateauReached?: boolean;
 }
-import type { SignToken } from "../types";
+
 /**
  * Extension seam for the LinguisticBuffer.
  *
  * Each strategy receives every sign detection and decides when to commit a token.
  * Built-in adapters: FingerspellStrategy (single letters), LexemeStrategy (whole words).
- * Add a new strategy to handle a new sign type (numbers, compounds, classifiers, etc.)
- * and pass it via LinguisticBufferConfig.strategies.
  */
 export interface ILinguisticStrategy {
   readonly name: string;
@@ -53,7 +50,17 @@ export interface LinguisticBufferConfig {
   pauseThresholdMs: number;
 }
 
+/**
+ * Seam for sign recognition from hand landmarks.
+ * Implement this to plug in different detection models (surgical, ML, etc.)
+ */
+export interface SignRecognizer {
+  process(worldLandmarks: HandLandmarks, imageLandmarks?: HandLandmarks): ClassificationResult;
+  reset(): void;
+}
+
 export type VisionStatus = "idle" | "starting" | "active" | "error";
+
 export interface VisionEventMap {
   "status-change": VisionStatus;
   "tracking-update": import("../types").CameraTrackingState;

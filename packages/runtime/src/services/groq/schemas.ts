@@ -24,6 +24,10 @@ export const GROQ_CHAT_RESPONSE_SCHEMA = Schema.Struct({
 export type GlossOutput = Schema.Schema.Type<typeof GLOSS_OUTPUT_SCHEMA>;
 export type GroqChatResponse = Schema.Schema.Type<typeof GROQ_CHAT_RESPONSE_SCHEMA>;
 
+/**
+ * Resilient Whisper transcription schema.
+ * Makes internal fields optional to handle variations in API responses across providers.
+ */
 export const STT_RESPONSE_SCHEMA = Schema.Struct({
   text: Schema.optional(Schema.String),
   language: Schema.optional(Schema.String),
@@ -31,20 +35,20 @@ export const STT_RESPONSE_SCHEMA = Schema.Struct({
   words: Schema.optional(
     Schema.Array(
       Schema.Struct({
-        word: Schema.String,
-        start: Schema.Number,
-        end: Schema.Number,
-        confidence: Schema.Number,
+        word: Schema.optional(Schema.String),
+        start: Schema.optional(Schema.Number),
+        end: Schema.optional(Schema.Number),
+        confidence: Schema.optional(Schema.Number),
       }),
     ),
   ),
   segments: Schema.optional(
     Schema.Array(
       Schema.Struct({
-        id: Schema.Number,
-        start: Schema.Number,
-        end: Schema.Number,
-        text: Schema.String,
+        id: Schema.optional(Schema.Number),
+        start: Schema.optional(Schema.Number),
+        end: Schema.optional(Schema.Number),
+        text: Schema.optional(Schema.String),
       }),
     ),
   ),
