@@ -19,12 +19,12 @@ conditions, and update your row when done.
 |------|-------|----------|--------|------------|--------|
 | 001 | CI baseline: green typecheck, non-mutating lint, PR workflow | P1 | S | — | DONE |
 | 002 | SDK publish manifest: stop depending on private packages | P1 | S | 001 | DONE |
-| 003 | Publish @ikiraro/engine as compiled JS + d.ts | P2 | M | 001, 002 | TODO |
-| 004 | Engine numeric guards (NaN loop recursion, landmark bounds, zero-division) | P2 | S | 001 | TODO |
-| 005 | Vision event stack unsubscribe semantics | P2 | S | 001 | TODO |
-| 006 | Vision frame loop: reuse canvas, surface errors | P2 | S | 001 | TODO |
-| 007 | TTS error propagation: speak() rejects on cloud failure | P2 | S | 001 | TODO |
-| 008 | Characterization tests: vision pipeline + kinematics controller | P1 | L | 001 (coordinates with 004) | TODO |
+| 003 | Publish @ikiraro/engine as compiled JS + d.ts | P2 | M | 001, 002 | DONE |
+| 004 | Engine numeric guards (NaN loop recursion, landmark bounds, zero-division) | P2 | S | 001 | DONE |
+| 005 | Vision event stack unsubscribe semantics | P2 | S | 001 | DONE |
+| 006 | Vision frame loop: reuse canvas, surface errors | P2 | S | 001 | DONE |
+| 007 | TTS error propagation: speak() rejects on cloud failure | P2 | S | 001 | DONE |
+| 008 | Characterization tests: vision pipeline + kinematics controller | P1 | L | 001 (coordinates with 004) | DONE |
 | 009 | Kinematics controller loop refactor | P3 | S | **008 (hard)** | TODO |
 | 010 | Remove dead dependencies (zod, valibot, i18next, dotenv) | P3 | S | 001 | TODO |
 | 011 | Docs restoration spike (design plan) | P3 | M | — | TODO |
