@@ -14,6 +14,12 @@ Ikiraro moves the entire pipeline into the browser using WebAssembly for ML infe
 
 ---
 
+## Documentation
+
+For full API reference, architecture details, and advanced guides, visit the [docs/](docs/) directory.
+
+---
+
 ## Packages
 
 The SDK is split into four focused packages. Each can be used independently; `@ikiraro/sdk` wires them together.

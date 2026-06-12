@@ -27,7 +27,7 @@ conditions, and update your row when done.
 | 008 | Characterization tests: vision pipeline + kinematics controller | P1 | L | 001 (coordinates with 004) | DONE |
 | 009 | Kinematics controller loop refactor | P3 | S | **008 (hard)** | DONE |
 | 010 | Remove dead dependencies (zod, valibot, i18next, dotenv) | P3 | S | 001 | DONE |
-| 011 | Docs restoration spike (design plan) | P3 | M | — | TODO |
+| 011 | Docs restoration spike (design plan) | P3 | M | — | DONE |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 

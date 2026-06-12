@@ -61,4 +61,4 @@ By using velocity-based plateau detection, the SDK identifies and commits signs 
 
 ## Documentation
 
-For full API reference and advanced guides, visit [ikiraro.org/docs](https://ikiraro.org/docs).
+For full API reference and advanced guides, visit [the docs folder](https://github.com/nkurunziza-saddy/ikiraro/tree/main/docs).
