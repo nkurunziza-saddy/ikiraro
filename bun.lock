@@ -131,12 +131,10 @@
       "bin": {
         "ikiraro-sdk": "./bin/add-skill.js",
       },
-      "dependencies": {
+      "devDependencies": {
         "@ikiraro/engine": "workspace:*",
         "@ikiraro/renderer": "workspace:*",
         "@ikiraro/runtime": "workspace:*",
-      },
-      "devDependencies": {
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
         "tsup": "^8.5.0",

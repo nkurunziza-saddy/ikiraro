@@ -18,7 +18,7 @@ conditions, and update your row when done.
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
 | 001 | CI baseline: green typecheck, non-mutating lint, PR workflow | P1 | S | — | DONE |
-| 002 | SDK publish manifest: stop depending on private packages | P1 | S | 001 | TODO |
+| 002 | SDK publish manifest: stop depending on private packages | P1 | S | 001 | DONE |
 | 003 | Publish @ikiraro/engine as compiled JS + d.ts | P2 | M | 001, 002 | TODO |
 | 004 | Engine numeric guards (NaN loop recursion, landmark bounds, zero-division) | P2 | S | 001 | TODO |
 | 005 | Vision event stack unsubscribe semantics | P2 | S | 001 | TODO |

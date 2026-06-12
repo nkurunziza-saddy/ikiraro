@@ -50,12 +50,10 @@
     "check-types": "tsc --noEmit",
     "dev": "tsup --watch"
   },
-  "dependencies": {
+  "devDependencies": {
     "@ikiraro/engine": "workspace:*",
     "@ikiraro/renderer": "workspace:*",
-    "@ikiraro/runtime": "workspace:*"
-  },
-  "devDependencies": {
+    "@ikiraro/runtime": "workspace:*",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "tsup": "^8.5.0",
