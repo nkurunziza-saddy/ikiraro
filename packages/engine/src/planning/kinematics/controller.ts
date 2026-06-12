@@ -50,6 +50,30 @@ const SIGNING_REST = {
   lHandX: -0.18,
 } as const;
 
+// Joints driven by the base layer = exactly the keys of SIGNING_REST.
+const BASE_JOINTS = Object.keys(SIGNING_REST) as Array<keyof typeof SIGNING_REST>;
+
+// Joints driven by the motion layer (MotionDelta has a `<joint>Delta` field for each).
+// NOTE: rForeX/lForeX are deliberately absent — MotionDelta cannot drive them.
+const MOTION_JOINTS = [
+  "rArmX",
+  "rArmY",
+  "rArmZ",
+  "rForeY",
+  "rForeZ",
+  "rHandX",
+  "rHandY",
+  "rHandZ",
+  "lArmX",
+  "lArmY",
+  "lArmZ",
+  "lForeY",
+  "lForeZ",
+  "lHandX",
+  "lHandY",
+  "lHandZ",
+] as const satisfies ReadonlyArray<keyof JointStateRecord>;
+
 /**
  * Stateful kinematic engine that manages physical continuity for the avatar.
  * It uses dual-layer spring tracking:
@@ -118,21 +142,10 @@ export class KinematicController implements IKinematicController {
     const t = target;
 
     // Snap base state
-    this.baseState.rArmX.value = t.rArmX ?? SIGNING_REST.rArmX;
-    this.baseState.rArmY.value = t.rArmY ?? SIGNING_REST.rArmY;
-    this.baseState.rArmZ.value = t.rArmZ ?? SIGNING_REST.rArmZ;
-    this.baseState.rForeX.value = t.rForeX ?? SIGNING_REST.rForeX;
-    this.baseState.rForeY.value = t.rForeY ?? SIGNING_REST.rForeY;
-    this.baseState.rForeZ.value = t.rForeZ ?? SIGNING_REST.rForeZ;
-    this.baseState.rHandX.value = t.rHandX ?? SIGNING_REST.rHandX;
-
-    this.baseState.lArmX.value = t.lArmX ?? SIGNING_REST.lArmX;
-    this.baseState.lArmY.value = t.lArmY ?? SIGNING_REST.lArmY;
-    this.baseState.lArmZ.value = t.lArmZ ?? SIGNING_REST.lArmZ;
-    this.baseState.lForeX.value = t.lForeX ?? SIGNING_REST.lForeX;
-    this.baseState.lForeY.value = t.lForeY ?? SIGNING_REST.lForeY;
-    this.baseState.lForeZ.value = t.lForeZ ?? SIGNING_REST.lForeZ;
-    this.baseState.lHandX.value = t.lHandX ?? SIGNING_REST.lHandX;
+    for (const key of BASE_JOINTS) {
+      this.baseState[key].value =
+        (t as Record<string, number | undefined>)[key] ?? SIGNING_REST[key];
+    }
 
     // Reset all velocities
     for (const key in this.baseState) {
@@ -150,252 +163,30 @@ export class KinematicController implements IKinematicController {
     // ─── 1. Update Base Pose Layer ──────────────────────────────────────────
     // Smoothly follows the high-level intent; falls back to signing rest when unspecified.
     const t = this.currentTarget;
-    this.updateSpring(
-      this.baseState,
-      "rArmX",
-      t.rArmX ?? SIGNING_REST.rArmX,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-    this.updateSpring(
-      this.baseState,
-      "rArmY",
-      t.rArmY ?? SIGNING_REST.rArmY,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-    this.updateSpring(
-      this.baseState,
-      "rArmZ",
-      t.rArmZ ?? SIGNING_REST.rArmZ,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-    this.updateSpring(
-      this.baseState,
-      "rForeX",
-      t.rForeX ?? SIGNING_REST.rForeX,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-    this.updateSpring(
-      this.baseState,
-      "rForeY",
-      t.rForeY ?? SIGNING_REST.rForeY,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-    this.updateSpring(
-      this.baseState,
-      "rForeZ",
-      t.rForeZ ?? SIGNING_REST.rForeZ,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-    this.updateSpring(
-      this.baseState,
-      "rHandX",
-      t.rHandX ?? SIGNING_REST.rHandX,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-
-    this.updateSpring(
-      this.baseState,
-      "lArmX",
-      t.lArmX ?? SIGNING_REST.lArmX,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-    this.updateSpring(
-      this.baseState,
-      "lArmY",
-      t.lArmY ?? SIGNING_REST.lArmY,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-    this.updateSpring(
-      this.baseState,
-      "lArmZ",
-      t.lArmZ ?? SIGNING_REST.lArmZ,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-    this.updateSpring(
-      this.baseState,
-      "lForeX",
-      t.lForeX ?? SIGNING_REST.lForeX,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-    this.updateSpring(
-      this.baseState,
-      "lForeY",
-      t.lForeY ?? SIGNING_REST.lForeY,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-    this.updateSpring(
-      this.baseState,
-      "lForeZ",
-      t.lForeZ ?? SIGNING_REST.lForeZ,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
-    this.updateSpring(
-      this.baseState,
-      "lHandX",
-      t.lHandX ?? SIGNING_REST.lHandX,
-      dt,
-      this.baseStiffness,
-      this.baseDamping,
-    );
+    for (const key of BASE_JOINTS) {
+      this.updateSpring(
+        this.baseState,
+        key,
+        (t as Record<string, number | undefined>)[key] ?? SIGNING_REST[key],
+        dt,
+        this.baseStiffness,
+        this.baseDamping,
+      );
+    }
 
     // ─── 2. Update Motion Delta Layer ───────────────────────────────────────
     // Smooths the high-frequency trajectory.
     const d = this.activeDelta;
-    this.updateSpring(
-      this.motionState,
-      "rArmX",
-      d?.rArmXDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "rArmY",
-      d?.rArmYDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "rArmZ",
-      d?.rArmZDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "rForeY",
-      d?.rForeYDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "rForeZ",
-      d?.rForeZDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "rHandX",
-      d?.rHandXDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "rHandY",
-      d?.rHandYDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "rHandZ",
-      d?.rHandZDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-
-    this.updateSpring(
-      this.motionState,
-      "lArmX",
-      d?.lArmXDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "lArmY",
-      d?.lArmYDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "lArmZ",
-      d?.lArmZDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "lForeY",
-      d?.lForeYDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "lForeZ",
-      d?.lForeZDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "lHandX",
-      d?.lHandXDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "lHandY",
-      d?.lHandYDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
-    this.updateSpring(
-      this.motionState,
-      "lHandZ",
-      d?.lHandZDelta ?? 0,
-      dt,
-      this.motionStiffness,
-      this.motionDamping,
-    );
+    for (const key of MOTION_JOINTS) {
+      this.updateSpring(
+        this.motionState,
+        key,
+        (d as Record<string, number | undefined> | null)?.[`${key}Delta`] ?? 0,
+        dt,
+        this.motionStiffness,
+        this.motionDamping,
+      );
+    }
 
     return this.synthesize();
   }

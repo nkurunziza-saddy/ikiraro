@@ -25,7 +25,7 @@ conditions, and update your row when done.
 | 006 | Vision frame loop: reuse canvas, surface errors | P2 | S | 001 | DONE |
 | 007 | TTS error propagation: speak() rejects on cloud failure | P2 | S | 001 | DONE |
 | 008 | Characterization tests: vision pipeline + kinematics controller | P1 | L | 001 (coordinates with 004) | DONE |
-| 009 | Kinematics controller loop refactor | P3 | S | **008 (hard)** | TODO |
+| 009 | Kinematics controller loop refactor | P3 | S | **008 (hard)** | DONE |
 | 010 | Remove dead dependencies (zod, valibot, i18next, dotenv) | P3 | S | 001 | TODO |
 | 011 | Docs restoration spike (design plan) | P3 | M | — | TODO |
 
