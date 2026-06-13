@@ -83,7 +83,7 @@ export class LandmarkSmoother implements ILandmarkSmoother {
     }
     const smoothed: HandLandmarks = [];
     for (let i = 0; i < current.length; i++) {
-      smoothed.push(this.filters[i]?.filter(current[i]!));
+      smoothed.push(this.filters[i]!.filter(current[i]!));
     }
     this.lastSmoothed = smoothed;
     return smoothed;

@@ -78,7 +78,7 @@ function SDKPlayground() {
 
   useEffect(() => {
     if (snapshot.lastEnvelope) {
-      setLogs((prev) => [snapshot.lastEnvelope?.normalizedText, ...prev].slice(0, 20));
+      setLogs((prev) => [snapshot.lastEnvelope?.normalizedText ?? "", ...prev].slice(0, 20));
     }
   }, [snapshot.lastEnvelope]);
 

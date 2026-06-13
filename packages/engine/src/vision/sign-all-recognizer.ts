@@ -32,9 +32,9 @@ export function handDistance(a: HandLandmarks, b: HandLandmarks): number {
   const count = Math.min(a.length, b.length);
   for (let i = 0; i < count; i++) {
     const w = TIPS.has(i) ? TIP_WEIGHT : 1;
-    const dx = a[i]?.x - b[i]?.x;
-    const dy = a[i]?.y - b[i]?.y;
-    const dz = (a[i]?.z - b[i]?.z) * Z_WEIGHT;
+    const dx = a[i]!.x - b[i]!.x;
+    const dy = a[i]!.y - b[i]!.y;
+    const dz = (a[i]!.z - b[i]!.z) * Z_WEIGHT;
     sum += w * (dx * dx + dy * dy + dz * dz);
     totalWeight += w;
   }
@@ -110,8 +110,8 @@ export class SignAllRecognizer implements SignRecognizer {
 
   private getVelocity(): Point3D {
     if (this.history.length < 2) return { x: 0, y: 0, z: 0 };
-    const curr = this.history[this.history.length - 1]?.[0]!;
-    const prev = this.history[this.history.length - 2]?.[0]!;
+    const curr = this.history[this.history.length - 1]![0]!;
+    const prev = this.history[this.history.length - 2]![0]!;
     return { x: curr.x - prev.x, y: curr.y - prev.y, z: curr.z - prev.z };
   }
 

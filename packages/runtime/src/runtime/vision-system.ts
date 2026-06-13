@@ -82,7 +82,7 @@ export class VisionSystem {
       });
       this.videoEl.srcObject = this.stream;
       await new Promise<void>((resolve) => {
-        if (this.videoEl?.readyState >= HTMLMediaElement.HAVE_METADATA) {
+        if (this.videoEl && this.videoEl.readyState >= HTMLMediaElement.HAVE_METADATA) {
           resolve();
         } else {
           this.videoEl!.onloadedmetadata = () => resolve();

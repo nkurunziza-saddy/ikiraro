@@ -38,7 +38,8 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@ikiraro/engine": "workspace:*"
+    "@ikiraro/engine": "workspace:*",
+    "@ikiraro/runtime": "workspace:*"
   },
   "peerDependencies": {
     "@react-three/drei": ">=10.0.0",

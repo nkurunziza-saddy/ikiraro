@@ -27,6 +27,11 @@ export class AudioQueue {
     this.cancelFn = cancelFn;
   }
 
+  setDriver(driver: { speak: (text: string) => Promise<void>; cancel: () => void }) {
+    this.speakFn = driver.speak;
+    this.cancelFn = driver.cancel;
+  }
+
   static getInstance(speakFn?: (text: string) => Promise<void>, cancelFn?: () => void): AudioQueue {
     if (!AudioQueue.instance) {
       if (!speakFn || !cancelFn)
