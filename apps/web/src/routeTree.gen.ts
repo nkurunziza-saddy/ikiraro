@@ -9,19 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WhatRouteImport } from './routes/what'
 import { Route as PlaygroundRouteImport } from './routes/playground'
-import { Route as InstallRouteImport } from './routes/install'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as IndexRouteImport } from './routes/index'
 
+const WhatRoute = WhatRouteImport.update({
+  id: '/what',
+  path: '/what',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlaygroundRoute = PlaygroundRouteImport.update({
   id: '/playground',
   path: '/playground',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InstallRoute = InstallRouteImport.update({
-  id: '/install',
-  path: '/install',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsRoute = DocsRouteImport.update({
@@ -38,51 +38,51 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
-  '/install': typeof InstallRoute
   '/playground': typeof PlaygroundRoute
+  '/what': typeof WhatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
-  '/install': typeof InstallRoute
   '/playground': typeof PlaygroundRoute
+  '/what': typeof WhatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
-  '/install': typeof InstallRoute
   '/playground': typeof PlaygroundRoute
+  '/what': typeof WhatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/docs' | '/install' | '/playground'
+  fullPaths: '/' | '/docs' | '/playground' | '/what'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/docs' | '/install' | '/playground'
-  id: '__root__' | '/' | '/docs' | '/install' | '/playground'
+  to: '/' | '/docs' | '/playground' | '/what'
+  id: '__root__' | '/' | '/docs' | '/playground' | '/what'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DocsRoute: typeof DocsRoute
-  InstallRoute: typeof InstallRoute
   PlaygroundRoute: typeof PlaygroundRoute
+  WhatRoute: typeof WhatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/what': {
+      id: '/what'
+      path: '/what'
+      fullPath: '/what'
+      preLoaderRoute: typeof WhatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/playground': {
       id: '/playground'
       path: '/playground'
       fullPath: '/playground'
       preLoaderRoute: typeof PlaygroundRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/install': {
-      id: '/install'
-      path: '/install'
-      fullPath: '/install'
-      preLoaderRoute: typeof InstallRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs': {
@@ -105,8 +105,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DocsRoute: DocsRoute,
-  InstallRoute: InstallRoute,
   PlaygroundRoute: PlaygroundRoute,
+  WhatRoute: WhatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

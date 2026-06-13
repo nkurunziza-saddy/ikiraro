@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { useDeferredValue, useEffect, useRef, useState } from "react";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipProvider } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useIkiraro } from "../lib/ikiraro";
 import { cn } from "../lib/utils";
 
@@ -138,18 +138,21 @@ function SDKPlayground() {
 
           <div className="flex gap-1 px-3 py-2 shrink-0">
             {TABS.map((tab) => (
-              <Tooltip key={tab.id} content={tab.label} side="bottom">
-                <button
-                  onClick={() => setActiveTab(tab.id)}
-                  className={cn(
-                    "flex-1 flex items-center justify-center h-8 rounded-md transition-all duration-[180ms] active:scale-[0.98]",
-                    activeTab === tab.id
-                      ? "bg-background border border-border text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                  )}
-                >
-                  <tab.icon className="size-[15px]" />
-                </button>
+              <Tooltip key={tab.id} delayDuration={300}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      "flex-1 flex items-center justify-center h-8 rounded-md transition-all duration-[180ms] active:scale-[0.98]",
+                      activeTab === tab.id
+                        ? "bg-background border border-border text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                    )}
+                  >
+                    <tab.icon className="size-[15px]" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">{tab.label}</TooltipContent>
               </Tooltip>
             ))}
           </div>
@@ -400,18 +403,21 @@ function SDKPlayground() {
           {/* Input bar */}
           <div className="px-10 pb-10 shrink-0">
             <div className="max-w-2xl mx-auto flex items-center gap-2 bg-card border border-border rounded-[10px] p-1.5 transition-colors duration-[180ms] focus-within:border-muted-foreground/40">
-              <Tooltip content={isMuted ? "Unmute voice" : "Mute voice"}>
-                <button
-                  onClick={() => setIsMuted(!isMuted)}
-                  className={cn(
-                    "size-9 flex items-center justify-center rounded-[8px] transition-all duration-[180ms] active:scale-[0.98]",
-                    isMuted
-                      ? "text-muted-foreground hover:bg-muted hover:text-foreground"
-                      : "text-foreground bg-muted",
-                  )}
-                >
-                  {isMuted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
-                </button>
+              <Tooltip delayDuration={300}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => setIsMuted(!isMuted)}
+                    className={cn(
+                      "size-9 flex items-center justify-center rounded-[8px] transition-all duration-[180ms] active:scale-[0.98]",
+                      isMuted
+                        ? "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        : "text-foreground bg-muted",
+                    )}
+                  >
+                    {isMuted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>{isMuted ? "Unmute voice" : "Mute voice"}</TooltipContent>
               </Tooltip>
 
               <input
@@ -422,23 +428,26 @@ function SDKPlayground() {
                 className="flex-1 h-9 bg-transparent border-none px-2 text-[13px] font-light focus:outline-none placeholder:text-muted-foreground/50"
               />
 
-              <Tooltip content="Translate">
-                <button
-                  onClick={handleSend}
-                  disabled={isTranslating || !text.trim()}
-                  className={cn(
-                    "size-9 flex items-center justify-center rounded-[8px] transition-all duration-[180ms] active:scale-[0.98]",
-                    text.trim() && !isTranslating
-                      ? "bg-foreground text-card"
-                      : "text-muted-foreground/40",
-                  )}
-                >
-                  {isTranslating ? (
-                    <div className="size-3.5 border border-current border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Send className="size-4" />
-                  )}
-                </button>
+              <Tooltip delayDuration={300}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={handleSend}
+                    disabled={isTranslating || !text.trim()}
+                    className={cn(
+                      "size-9 flex items-center justify-center rounded-[8px] transition-all duration-[180ms] active:scale-[0.98]",
+                      text.trim() && !isTranslating
+                        ? "bg-foreground text-card"
+                        : "text-muted-foreground/40",
+                    )}
+                  >
+                    {isTranslating ? (
+                      <div className="size-3.5 border border-current border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Send className="size-4" />
+                    )}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Translate</TooltipContent>
               </Tooltip>
             </div>
           </div>
