@@ -1,12 +1,12 @@
-import { articulate } from "./core";
-import { SessionPlugin } from "./plugins/session";
-import { CompositionPlugin } from "./plugins/composition";
-import { TranslationPlugin } from "./plugins/translation";
-import { SpeechPlugin } from "./plugins/speech";
-import { VisionPlugin } from "./plugins/vision";
-import { KeyboardPlugin } from "./plugins/keyboard";
 import type { HandProcessor } from "@ikiraro/engine/vision";
 import type { IkiraroConfig } from "../sdk";
+import { articulate } from "./core";
+import { CompositionPlugin } from "./plugins/composition";
+import { KeyboardPlugin } from "./plugins/keyboard";
+import { SessionPlugin } from "./plugins/session";
+import { SpeechPlugin } from "./plugins/speech";
+import { TranslationPlugin } from "./plugins/translation";
+import { VisionPlugin } from "./plugins/vision";
 import type { IkiraroPlugin } from "./types";
 export interface IkiraroDefaultConfig {
   sdk: IkiraroConfig;

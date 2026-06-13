@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock requestAnimationFrame for node test environment
 const origRaf = globalThis.requestAnimationFrame;
@@ -11,11 +11,13 @@ afterEach(() => {
   globalThis.requestAnimationFrame = origRaf;
   globalThis.cancelAnimationFrame = origCaf;
 });
+
 import "./index"; // Initialize LanguageRegistry
-import { RendererDirector } from "./renderer-director";
 import { FrameBuilder } from "./frame-builder";
-import type { SignCanvas } from "./renderer-types";
 import { resolveHandshape } from "./pose-library";
+import { RendererDirector } from "./renderer-director";
+import type { SignCanvas } from "./renderer-types";
+
 const builder = new FrameBuilder();
 describe("RendererDirector", () => {
   const mockCanvas: SignCanvas = {
@@ -55,7 +57,7 @@ describe("RendererDirector", () => {
 
     (mockCanvas.setPose as any).mockClear();
 
-    director.seek(queue[0]!.duration * 0.9);
+    director.seek(queue[0]?.duration * 0.9);
 
     const poseA = resolveHandshape("A");
     const poseB = resolveHandshape("B");
@@ -63,7 +65,7 @@ describe("RendererDirector", () => {
     expect(mockCanvas.setPose).not.toHaveBeenCalledWith(poseA);
     expect(mockCanvas.setPose).not.toHaveBeenCalledWith(poseB);
 
-    const lastCall = (mockCanvas.setPose as any).mock.calls.at(-1)![0];
+    const lastCall = (mockCanvas.setPose as any).mock.calls.at(-1)?.[0];
     expect(lastCall.thumb.splay).toBeCloseTo(0.15);
   });
   it("should handle pipeline interruptions cleanly", () => {

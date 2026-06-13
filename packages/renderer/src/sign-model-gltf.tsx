@@ -1,16 +1,15 @@
-import { type RefObject, useMemo, useRef } from "react";
-import { useFrame, useGraph } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
-import * as THREE from "three";
-import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
+import { springStep, springStepStable } from "@ikiraro/engine/math";
 import {
-  REST_POSE,
+  computeMotionDelta,
   type Handshape,
   KinematicController,
-  computeMotionDelta,
+  REST_POSE,
 } from "@ikiraro/engine/planning";
-
-import { springStep } from "@ikiraro/engine/math";
+import { useGLTF } from "@react-three/drei";
+import { useFrame, useGraph } from "@react-three/fiber";
+import { type RefObject, useMemo, useRef } from "react";
+import * as THREE from "three";
+import * as SkeletonUtils from "three/examples/jsm/utils/SkeletonUtils.js";
 import type { SignFrameState } from "./avatar-viewer";
 
 interface SignModelGLTFProps {
@@ -286,9 +285,20 @@ export function SignModelGLTF({
         lerp(rest.splay, cp.splay, ek),
       ];
 
+      // k=2400/c=98: settles a handshape change in ~80ms, matching the 67ms
+      // median transition measured in real fingerspelling (Google ASL
+      // Fingerspelling data). Substepped — at this stiffness a plain step
+      // rings visibly on 30fps frames.
       for (let i = 0; i < 4; i++) {
         const idx = base + i;
-        const [nextVal, nextVel] = springStep(s[idx]!, s[19 + idx]!, targets[i]!, dt, 240, 32);
+        const [nextVal, nextVel] = springStepStable(
+          s[idx]!,
+          s[19 + idx]!,
+          targets[i]!,
+          dt,
+          2400,
+          98,
+        );
         s[idx] = nextVal;
         s[19 + idx] = nextVel;
       }
@@ -314,7 +324,14 @@ export function SignModelGLTF({
     ];
     for (let i = 0; i < 3; i++) {
       const idx = 16 + i;
-      const [nextVal, nextVel] = springStep(s[idx]!, s[19 + idx]!, thumbTargets[i]!, dt, 200, 28);
+      const [nextVal, nextVel] = springStepStable(
+        s[idx]!,
+        s[19 + idx]!,
+        thumbTargets[i]!,
+        dt,
+        2400,
+        98,
+      );
       s[idx] = nextVal;
       s[19 + idx] = nextVel;
     }

@@ -32,7 +32,6 @@ export function getAudioFileExtension(mimeType: string | null | undefined): stri
     case "audio/wave":
     case "audio/x-wav":
       return "wav";
-    case "audio/webm":
     default:
       return "webm";
   }

@@ -1,4 +1,4 @@
-import type { ShortcutSpec, AccessibilityShortcutManagerOptions } from "./types";
+import type { AccessibilityShortcutManagerOptions, ShortcutSpec } from "./types";
 
 type FocusChangeListener = (index: number | null) => void;
 type HelpToggleListener = (visible: boolean) => void;

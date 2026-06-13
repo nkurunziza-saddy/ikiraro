@@ -89,7 +89,8 @@ export type MotionType =
   | "d-arc"
   | "n-dip"
   | "k-push"
-  | "wave";
+  | "wave"
+  | "fs-pulse";
 
 export type ArmTarget = {
   rArmX?: number;

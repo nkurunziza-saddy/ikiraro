@@ -36,12 +36,13 @@ export class DefaultRhythmEngine implements IRhythmEngine {
           scale: this.doubleTapPulse(this.pulseProgress(p)),
         };
 
-      case "shake":
+      case "shake": {
         const q = this.pulseProgress(p, 0.14, 0.88);
         return {
           p: q,
           scale: this.envelopeScale(q, 0.18, 0.82),
         };
+      }
 
       case "wave":
       case "circle":
@@ -49,12 +50,13 @@ export class DefaultRhythmEngine implements IRhythmEngine {
       case "z-trace":
       case "j-trace":
       case "d-arc":
-      case "n-dip":
+      case "n-dip": {
         const b = this.boundedStrokeProgress(p);
         return {
           p: b,
           scale: this.envelopeScale(b, 0.15, 0.85),
         };
+      }
 
       default:
         return { p, scale: 1.0 };

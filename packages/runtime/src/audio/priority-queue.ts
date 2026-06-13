@@ -1,5 +1,5 @@
-import type { AudioPriority, QueuedMessage } from "./types";
 import { AccessibilityModeManager } from "./mode-manager";
+import type { AudioPriority, QueuedMessage } from "./types";
 
 const PRIORITY_RANK: Record<AudioPriority, number> = {
   critical: 3,

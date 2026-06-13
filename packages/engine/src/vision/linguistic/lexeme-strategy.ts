@@ -1,6 +1,6 @@
-import type { ILinguisticStrategy, WordBufferContext } from "../types";
-import type { SignToken } from "../../types";
 import { lexemeToken } from "../../planning/tokens";
+import type { SignToken } from "../../types";
+import type { ILinguisticStrategy, WordBufferContext } from "../types";
 export class LexemeStrategy implements ILinguisticStrategy {
   readonly name = "lexeme";
   private lastLexeme = "";

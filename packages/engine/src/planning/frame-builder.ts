@@ -1,13 +1,12 @@
+import { LanguageRegistry } from "../language-registry";
 import type {
-  SignPlan,
+  ArmTarget,
+  CoarticulationMode,
   FrameItem,
   MotionType,
-  ArmTarget,
+  SignPlan,
   SignToken,
-  CoarticulationMode,
 } from "../types";
-
-import { LanguageRegistry } from "../language-registry";
 
 const DEFAULT_ARM_TARGET: ArmTarget = { rArmX: 0.76, rArmZ: -0.52, rForeZ: -1.5, rForeY: 0.48 };
 
@@ -87,7 +86,7 @@ export class FrameBuilder {
           value: char,
           label: char,
           duration: perLetter,
-          motion: lang.fingerspellMotions[char] ?? "none",
+          motion: lang.fingerspellMotions[char] ?? "fs-pulse",
           facialExpression: facial,
           coarticulation: "blend",
         });

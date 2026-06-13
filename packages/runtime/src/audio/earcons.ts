@@ -1,5 +1,5 @@
-import type { EarconType } from "./types";
 import { AccessibilityModeManager } from "./mode-manager";
+import type { EarconType } from "./types";
 
 interface ToneSpec {
   frequency: number;

@@ -1,5 +1,5 @@
-import { Context, Effect } from "effect";
-import type { SpeechIntake, SttModel, SemanticIntent } from "../types";
+import { Context, type Effect } from "effect";
+import type { SemanticIntent, SpeechIntake, SttModel } from "../types";
 
 export interface SttService {
   readonly transcribe: (

@@ -1,13 +1,13 @@
-import { Effect, Layer } from "effect";
 import {
   buildPlanFromGloss,
   createEnvelope,
-  SttService,
   GlossService,
+  SttService,
 } from "@ikiraro/engine/planning";
 import type { SttModel } from "@ikiraro/engine/types";
-import { SttGroqLive } from "./services/groq/stt";
+import { Effect, Layer } from "effect";
 import { GlossGroqLive } from "./services/groq/gloss";
+import { SttGroqLive } from "./services/groq/stt";
 
 export interface IkiraroConfig {
   readonly groqApiKey: string;

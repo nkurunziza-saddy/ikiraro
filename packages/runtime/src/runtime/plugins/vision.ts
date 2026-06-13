@@ -1,6 +1,6 @@
+import type { HandProcessor, VisionEventMap } from "@ikiraro/engine/vision";
 import type { IkiraroPlugin, PluginContext } from "../types";
 import { VisionSystem } from "../vision-system";
-import type { HandProcessor, VisionEventMap } from "@ikiraro/engine/vision";
 /**
  * Adapts the VisionSystem into an Ikiraro Plugin.
  * Bridges camera tracking events into the runtime event bus.

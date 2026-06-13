@@ -1,7 +1,6 @@
-import type { IkiraroPlugin, PluginContext, IkiraroEvent } from "../types";
 import type { TranslationEnvelope } from "@ikiraro/engine/types";
 import { createTranslationPlanners, type TranslationPlanner } from "../translation-planner";
-import type { TranslationRequest } from "../types";
+import type { IkiraroEvent, IkiraroPlugin, PluginContext, TranslationRequest } from "../types";
 export interface TranslationState {
   lastEnvelope?: TranslationEnvelope;
   isTranslating: boolean;
@@ -19,7 +18,7 @@ export class TranslationPlugin implements IkiraroPlugin<TranslationState> {
     this.planners = createTranslationPlanners(ctx.config.sdk);
     ctx.subscribe("translation:cmd:request", async (event) => {
       const state = ctx.getPluginState();
-      if (state && state.isTranslating) return;
+      if (state?.isTranslating) return;
       await this.handleTranslationRequest(event.payload, ctx);
     });
     return async () => {

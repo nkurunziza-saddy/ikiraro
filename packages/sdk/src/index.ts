@@ -5,72 +5,66 @@
  * For non-React or custom-framework integrations, import from @ikiraro/runtime directly.
  */
 
-// Core factory and runtime
-export { createIkiraro, IkiraroRuntime } from "@ikiraro/runtime";
-
-export type { IkiraroDefaultConfig, IkiraroConfig } from "@ikiraro/runtime";
-
-// React hooks and clients
-export { createIkiraroClient } from "@ikiraro/runtime";
-export type { IkiraroReactClient } from "@ikiraro/runtime";
-export { useHandTracking } from "@ikiraro/runtime";
-
-// React components
-export {
-  AvatarViewer,
-  preloadAvatarModel,
-  AslHandSvg,
-  AudioVisualizer,
-  HandOverlay,
-} from "@ikiraro/renderer";
-export { WebSpeechProvider } from "@ikiraro/renderer";
-export type { SpeakOptions } from "@ikiraro/renderer";
-
-// Runtime types
-export type { RuntimeSnapshot, TranslationRequest, CaptureStatus } from "@ikiraro/runtime";
+export type { PlaybackOptions, RendererState, SignCanvas } from "@ikiraro/engine/planning";
+// Advanced / custom renderers
+export { RendererDirector } from "@ikiraro/engine/planning";
 export type {
-  TranslationEnvelope,
+  CommunicationMode,
+  IkiraroToken,
   SignPlan,
   SignToken,
-  CommunicationMode,
   SttModel,
   TranslationContext,
-  IkiraroToken,
+  TranslationEnvelope,
 } from "@ikiraro/engine/types";
-
+export type { SpeakOptions } from "@ikiraro/renderer";
+// React components
+export {
+  AslHandSvg,
+  AudioVisualizer,
+  AvatarViewer,
+  HandOverlay,
+  preloadAvatarModel,
+  WebSpeechProvider,
+} from "@ikiraro/renderer";
+// Runtime types
+// Plugins
+export type {
+  AccessibilityMode,
+  AccessibilityShortcutManagerOptions,
+  AudioPriority,
+  CaptureStatus,
+  CompositionState,
+  EarconType,
+  EventRegistry,
+  IkiraroConfig,
+  IkiraroDefaultConfig,
+  IkiraroEvent,
+  IkiraroPlugin,
+  IkiraroReactClient,
+  PluginContext,
+  PluginTeardown,
+  RuntimeSnapshot,
+  SessionState,
+  ShortcutSpec,
+  SpeechState,
+  TranslationRequest,
+  TranslationState,
+} from "@ikiraro/runtime";
+// Core factory and runtime
+// React hooks and clients
 // Accessibility
 export {
   AccessibilityModeManager,
-  accessibilityMode,
-  AudioQueue,
-  EarconPlayer,
   AccessibilityShortcutManager,
+  AudioQueue,
+  accessibilityMode,
+  createIkiraro,
+  createIkiraroClient,
+  EarconPlayer,
+  IkiraroRuntime,
+  KeyboardPlugin,
   useAccessibilityMode,
+  useHandTracking,
+  VisionPlugin,
 } from "@ikiraro/runtime";
-export type {
-  AccessibilityMode,
-  AudioPriority,
-  EarconType,
-  ShortcutSpec,
-  AccessibilityShortcutManagerOptions,
-} from "@ikiraro/runtime";
-
-// Plugins
-export type {
-  IkiraroPlugin,
-  PluginContext,
-  PluginTeardown,
-  EventRegistry,
-  IkiraroEvent,
-} from "@ikiraro/runtime";
-export type {
-  SessionState,
-  CompositionState,
-  TranslationState,
-  SpeechState,
-} from "@ikiraro/runtime";
-export { KeyboardPlugin, VisionPlugin } from "@ikiraro/runtime";
-
-// Advanced / custom renderers
-export { RendererDirector } from "@ikiraro/engine/planning";
-export type { SignCanvas, RendererState, PlaybackOptions } from "@ikiraro/engine/planning";

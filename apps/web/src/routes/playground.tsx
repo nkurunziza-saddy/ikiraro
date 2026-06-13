@@ -1,31 +1,28 @@
+import { AudioVisualizer, AvatarViewer, HandOverlay, WebSpeechProvider } from "@ikiraro/renderer";
+import { useAccessibilityMode } from "@ikiraro/runtime/accessibility";
+import { AudioQueue } from "@ikiraro/runtime/audio";
+import { useHandTracking } from "@ikiraro/runtime/hand-tracking";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useDeferredValue, useEffect } from "react";
 import {
-  Mic,
-  Send,
+  Activity,
+  AlertCircle,
   Camera as CameraIcon,
   CameraOff,
-  Activity,
-  Zap,
   ChevronRight,
-  AlertCircle,
-  Volume2,
-  VolumeX,
   History,
+  Mic,
+  Send,
   Settings,
   Terminal,
+  Volume2,
+  VolumeX,
+  Zap,
 } from "lucide-react";
-
-import { AvatarViewer, HandOverlay, WebSpeechProvider, AudioVisualizer } from "@ikiraro/renderer";
-
-import { useHandTracking } from "@ikiraro/runtime/hand-tracking";
-import { AudioQueue } from "@ikiraro/runtime/audio";
-import { useAccessibilityMode } from "@ikiraro/runtime/accessibility";
-
+import { useDeferredValue, useEffect, useRef, useState } from "react";
+import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipProvider } from "@/components/ui/tooltip";
 import { useIkiraro } from "../lib/ikiraro";
 import { cn } from "../lib/utils";
-import { Tooltip, TooltipProvider } from "@/components/ui/tooltip";
-import { Separator } from "@/components/ui/separator";
 
 export const Route = createFileRoute("/playground")({
   component: SDKPlayground,
@@ -60,6 +57,7 @@ function SDKPlayground() {
     stop: stopCamera,
   } = camera;
   const { mode: accessMode, setMode: setAccessMode } = useAccessibilityMode();
+  const videoElRef = useRef<HTMLVideoElement | null>(null);
 
   const [text, setText] = useState("");
   const [activeTab, setActiveTab] = useState<Tab>("stream");
@@ -80,9 +78,24 @@ function SDKPlayground() {
 
   useEffect(() => {
     if (snapshot.lastEnvelope) {
-      setLogs((prev) => [snapshot.lastEnvelope!.normalizedText, ...prev].slice(0, 20));
+      setLogs((prev) => [snapshot.lastEnvelope?.normalizedText, ...prev].slice(0, 20));
     }
   }, [snapshot.lastEnvelope]);
+
+  // Sign recognition as an input source: each word committed by the vision
+  // pipeline lands in the same input field as typed text, with spoken feedback.
+  const lastCommittedRef = useRef<object | null>(null);
+  useEffect(() => {
+    const token = tracking.committedToken;
+    if (!token || token === lastCommittedRef.current) return;
+    lastCommittedRef.current = token;
+    const word =
+      token.type === "fingerspell" ? token.text : token.type === "number" ? token.value : "";
+    if (!word) return;
+    setText((prev) => (prev ? `${prev} ${word}` : word));
+    setLogs((prev) => [`✋ signed: ${word}`, ...prev].slice(0, 20));
+    if (!isMuted) audioQueue.speak(word, "normal");
+  }, [tracking.committedToken, isMuted]);
 
   const handleSend = () => {
     if (!text.trim()) return;
@@ -148,7 +161,10 @@ function SDKPlayground() {
               <div className="flex flex-col">
                 <div className="aspect-video bg-[#1c1a18] relative overflow-hidden group">
                   <video
-                    ref={videoRef}
+                    ref={(el) => {
+                      videoElRef.current = el;
+                      videoRef(el);
+                    }}
                     className={cn(
                       "w-full h-full object-cover transition-opacity duration-300 scale-x-[-1]",
                       isCameraActive ? "opacity-50 group-hover:opacity-80" : "opacity-0",
@@ -157,7 +173,7 @@ function SDKPlayground() {
                     playsInline
                     muted
                   />
-                  {isCameraActive && <HandOverlay tracking={tracking} />}
+                  {isCameraActive && <HandOverlay tracking={tracking} video={videoElRef.current} />}
                   {!isCameraActive && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground/30">
                       <CameraOff className="size-6 stroke-[1.5]" />
@@ -211,7 +227,9 @@ function SDKPlayground() {
                   <div className="h-px w-full bg-border rounded-full overflow-hidden">
                     <div
                       className="h-full bg-foreground transition-all duration-500 ease-out"
-                      style={{ width: `${(tracking.classification?.confidence ?? 0) * 100}%` }}
+                      style={{
+                        width: `${(tracking.classification?.confidence ?? 0) * 100}%`,
+                      }}
                     />
                   </div>
                 </div>

@@ -1,6 +1,6 @@
-import { SignAllRecognizer } from "./sign-all-recognizer";
+import type { ClassificationResult, HandLandmarks, SignToken } from "../types";
 import { LinguisticBuffer } from "./linguistic-buffer";
-import type { HandLandmarks, SignToken, ClassificationResult } from "../types";
+import { SignAllRecognizer } from "./sign-all-recognizer";
 import type { BufferState, LinguisticBufferConfig, SignRecognizer } from "./types";
 
 /**

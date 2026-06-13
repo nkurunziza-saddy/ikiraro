@@ -79,4 +79,4 @@ function ToolbarSeparator({ className, ...props }: ToolbarPrimitive.Separator.Pr
   );
 }
 
-export { Toolbar, ToolbarButton, ToolbarLink, ToolbarInput, ToolbarGroup, ToolbarSeparator };
+export { Toolbar, ToolbarButton, ToolbarGroup, ToolbarInput, ToolbarLink, ToolbarSeparator };

@@ -1,7 +1,7 @@
 import type { CameraTrackingState, HandProcessor } from "@ikiraro/engine/vision";
-import type { MainToWorkerMessage, WorkerToMainMessage } from "./hand-tracking-types";
-import HolisticWorker from "../workers/holistic-landmarker.worker?worker";
 import { globalResourceRegistry } from "../runtime/resource-registry";
+import HolisticWorker from "../workers/holistic-landmarker.worker?worker";
+import type { MainToWorkerMessage, WorkerToMainMessage } from "./hand-tracking-types";
 
 /**
  * Worker-based implementation of HandProcessor (now powered by Holistic Landmarker).

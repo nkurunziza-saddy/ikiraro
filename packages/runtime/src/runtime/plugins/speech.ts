@@ -1,6 +1,6 @@
-import type { IkiraroPlugin, PluginContext, IkiraroEvent } from "../types";
 import { SpeechCaptureAdapter } from "../../capture/speech-capture";
 import type { CaptureStatus } from "../../capture/types";
+import type { IkiraroEvent, IkiraroPlugin, PluginContext } from "../types";
 export interface SpeechState {
   status: CaptureStatus;
   level: number;

@@ -1,4 +1,4 @@
-import type { MotionDelta, ITrajectory } from "./types";
+import type { ITrajectory, MotionDelta } from "./types";
 import { ZERO_DELTA } from "./types";
 
 export class ArcTrajectory implements ITrajectory {
@@ -213,6 +213,24 @@ export class ZTraceTrajectory implements ITrajectory {
       ...ZERO_DELTA,
       rArmYDelta: Math.sin(p * Math.PI * 3) * -0.22,
       rArmXDelta: (p - 0.5) * 0.12,
+    };
+  }
+}
+
+/**
+ * Per-letter fingerspelling micro-pulse. Real fingerspelling carries one small
+ * vertical wrist dip per letter (Google ASL Fingerspelling data, 613 sequences:
+ * 0.73 pulse cycles/letter, amplitude 0.11-0.27 rad of arm swing). Peak here is
+ * sized so that ~0.11 rad survives the kinematic motion-spring's attenuation
+ * at typical letter rates.
+ */
+export class FsPulseTrajectory implements ITrajectory {
+  evaluate(p: number): MotionDelta {
+    const dip = Math.sin(p * Math.PI);
+    return {
+      ...ZERO_DELTA,
+      rArmZDelta: dip * 0.07,
+      rForeZDelta: dip * -0.1,
     };
   }
 }

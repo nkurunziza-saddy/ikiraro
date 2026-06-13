@@ -1,13 +1,16 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+import { mirrorX, normalizeHand } from "./normalize";
 import { SignAllRecognizer } from "./sign-all-recognizer";
 
 const hand = (n = 21) => Array.from({ length: n }, (_, i) => ({ x: i * 0.01, y: i * 0.02, z: 0 }));
 
-// Synthetic normalized datasets
-// "FLAT": points on a line
+// Synthetic shapes (distinct after normalization)
+// "FLAT": points on a vertical line
 const flatHand = Array.from({ length: 21 }, (_, i) => ({ x: 0, y: i * 0.1, z: 0 }));
-// "FIST": all points clustered
-const fistHand = Array.from({ length: 21 }, (_, i) => ({ x: i * 0.001, y: i * 0.001, z: 0 }));
+// "CURL": rises like FLAT then folds back down with a sideways offset
+const curlHand = Array.from({ length: 21 }, (_, i) =>
+  i <= 9 ? { x: 0, y: i * 0.1, z: 0 } : { x: 0.35, y: (20 - i) * 0.08, z: 0 },
+);
 
 describe("SignAllRecognizer", () => {
   it("returns no-match shape for empty array", () => {
@@ -67,51 +70,49 @@ describe("SignAllRecognizer", () => {
 
   // --- Characterization ---
 
-  it("characterization: exact dataset match returns high confidence", () => {
-    const tempRecognizer = new SignAllRecognizer([]);
-    const normFlat = (tempRecognizer as any).normalizeAndAlign(flatHand);
-    const normFist = (tempRecognizer as any).normalizeAndAlign(fistHand);
+  const dataset = [
+    { name: "FLAT", landmarks: normalizeHand(flatHand) },
+    { name: "CURL", landmarks: normalizeHand(curlHand) },
+  ];
 
-    const dataset = [
-      { name: "FLAT", landmarks: normFlat },
-      { name: "FIST", landmarks: normFist },
-    ];
+  it("exact dataset match returns high confidence", () => {
     const recognizer = new SignAllRecognizer(dataset);
+    const result = recognizer.process(curlHand);
 
-    const result = recognizer.process(flatHand);
-
-    expect(result.sign).toBe("FLAT");
-    expect(result.confidence).toBeGreaterThanOrEqual(0.84);
+    expect(result.sign).toBe("CURL");
+    expect(result.confidence).toBeGreaterThanOrEqual(0.9);
   });
 
-  it("characterization: scale/translate invariance", () => {
-    const tempRecognizer = new SignAllRecognizer([]);
-    const normFlat = (tempRecognizer as any).normalizeAndAlign(flatHand);
-    const normFist = (tempRecognizer as any).normalizeAndAlign(fistHand);
-
-    const dataset = [
-      { name: "FLAT", landmarks: normFlat },
-      { name: "FIST", landmarks: normFist },
-    ];
+  it("scale/translate invariance", () => {
     const recognizer = new SignAllRecognizer(dataset);
-
-    // Translated and scaled
-    const input = flatHand.map((p) => ({ x: p.x * 0.5 + 10, y: p.y * 0.5 - 20, z: p.z * 0.5 }));
+    const input = curlHand.map((p) => ({ x: p.x * 0.5 + 10, y: p.y * 0.5 - 20, z: p.z * 0.5 }));
     const result = recognizer.process(input);
 
-    expect(result.sign).toBe("FLAT");
-    expect(result.confidence).toBeGreaterThanOrEqual(0.84);
+    expect(result.sign).toBe("CURL");
+    expect(result.confidence).toBeGreaterThanOrEqual(0.9);
   });
 
-  it("characterization: noise far from dataset yields null", () => {
-    const tempRecognizer = new SignAllRecognizer([]);
-    const normFlat = (tempRecognizer as any).normalizeAndAlign(flatHand);
-    const normFist = (tempRecognizer as any).normalizeAndAlign(fistHand);
+  it("mirror (chirality) invariance", () => {
+    const recognizer = new SignAllRecognizer(dataset);
+    const result = recognizer.process(mirrorX(curlHand));
 
-    const dataset = [
-      { name: "FLAT", landmarks: normFlat },
-      { name: "FIST", landmarks: normFist },
+    expect(result.sign).toBe("CURL");
+    expect(result.confidence).toBeGreaterThanOrEqual(0.9);
+  });
+
+  it("rejects when two letters are indistinguishable (margin)", () => {
+    const ambiguous = [
+      { name: "P1", landmarks: normalizeHand(curlHand) },
+      { name: "P2", landmarks: normalizeHand(curlHand).map((p) => ({ ...p, x: p.x + 0.001 })) },
     ];
+    const recognizer = new SignAllRecognizer(ambiguous);
+    const result = recognizer.process(curlHand);
+
+    expect(result.sign).toBeNull();
+    expect(result.candidates.length).toBeGreaterThan(1);
+  });
+
+  it("noise far from dataset yields null", () => {
     const recognizer = new SignAllRecognizer(dataset);
 
     // completely different shape (e.g. zig zag)

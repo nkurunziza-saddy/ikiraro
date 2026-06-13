@@ -1,8 +1,8 @@
 import type { FrameItem, MotionType } from "../types";
-import type { SignCanvas, RendererState, PlaybackOptions } from "./renderer-types";
-import { resolveHandshape, mixHandshapes } from "./pose-library";
-import { resolveLexemePose } from "./lexeme-poses";
 import { coarticulationBlend } from "./coarticulation";
+import { resolveLexemePose } from "./lexeme-poses";
+import { mixHandshapes, resolveHandshape } from "./pose-library";
+import type { PlaybackOptions, RendererState, SignCanvas } from "./renderer-types";
 
 /**
  * The RendererDirector coordinates the playback of a SignPlan.

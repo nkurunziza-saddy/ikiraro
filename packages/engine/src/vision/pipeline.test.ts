@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { HandLandmarks, SignToken } from "../types";
 import { SignDetectionPipeline } from "./pipeline";
 import type {
-  SignRecognizer,
-  ILinguisticStrategy,
-  WordBufferContext,
   ClassificationResult,
+  ILinguisticStrategy,
+  SignRecognizer,
+  WordBufferContext,
 } from "./types";
-import type { SignToken, HandLandmarks } from "../types";
 
 const makeStrategy = (): ILinguisticStrategy & { pending: string | null } => {
   const strategy = {

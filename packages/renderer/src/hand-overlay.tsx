@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
 import type { CameraTrackingState } from "@ikiraro/engine/vision";
+import { useEffect, useRef } from "react";
+
 const CONNECTIONS: Array<[number, number]> = [
   [0, 1],
   [1, 2],
@@ -31,7 +32,16 @@ const SIGNING_GUIDE = {
   width: 0.72,
   height: 0.76,
 } as const;
-export function HandOverlay({ tracking }: { tracking: CameraTrackingState }) {
+export function HandOverlay({
+  tracking,
+  video,
+}: {
+  tracking: CameraTrackingState;
+  /** The mirrored (scale-x-[-1]) video element this overlay sits on. Needed to
+   * replicate its object-cover crop; without it landmarks are mapped to the
+   * full box and drift off the hand whenever camera and box aspects differ. */
+  video?: HTMLVideoElement | null;
+}) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const colorsRef = useRef<{
     primary: string;
@@ -93,6 +103,22 @@ export function HandOverlay({ tracking }: { tracking: CameraTrackingState }) {
     } = colorsRef.current;
     const { width, height } = dimensionsRef.current;
     context.clearRect(0, 0, width, height);
+
+    // Map normalized landmark coords through the same object-cover transform
+    // the <video> uses. No x-flip here: VisionSystem already mirrors the
+    // capture canvas before detection, so landmarks arrive in the same selfie
+    // space as the scale-x-[-1] video; flipping again would mirror the skeleton.
+    let dispW = width;
+    let dispH = height;
+    if (video && video.videoWidth > 0 && video.videoHeight > 0) {
+      const scale = Math.max(width / video.videoWidth, height / video.videoHeight);
+      dispW = video.videoWidth * scale;
+      dispH = video.videoHeight * scale;
+    }
+    const cropX = (dispW - width) / 2;
+    const cropY = (dispH - height) / 2;
+    const mapX = (x: number) => x * dispW - cropX;
+    const mapY = (y: number) => y * dispH - cropY;
     const guideX = SIGNING_GUIDE.x * width;
     const guideY = SIGNING_GUIDE.y * height;
     const guideWidth = SIGNING_GUIDE.width * width;
@@ -129,8 +155,8 @@ export function HandOverlay({ tracking }: { tracking: CameraTrackingState }) {
       const start = tracking.landmarks[startIndex];
       const end = tracking.landmarks[endIndex];
       if (start && end) {
-        context.moveTo((1 - start.x) * width, start.y * height);
-        context.lineTo((1 - end.x) * width, end.y * height);
+        context.moveTo(mapX(start.x), mapY(start.y));
+        context.lineTo(mapX(end.x), mapY(end.y));
       }
     }
     context.stroke();
@@ -143,15 +169,15 @@ export function HandOverlay({ tracking }: { tracking: CameraTrackingState }) {
         context.strokeStyle = color;
         context.lineWidth = 2;
         context.beginPath();
-        context.arc((1 - point.x) * width, point.y * height, 5, 0, Math.PI * 2);
+        context.arc(mapX(point.x), mapY(point.y), 5, 0, Math.PI * 2);
         context.fill();
         context.stroke();
       }
     }
     if (isDetected && tracking.landmarks[9]) {
       const center = tracking.landmarks[9];
-      const x = (1 - center.x) * width;
-      const y = center.y * height - 48;
+      const x = mapX(center.x);
+      const y = mapY(center.y) - 48;
       context.fillStyle = foregroundColor;
       context.beginPath();
       context.roundRect(x - 24, y - 22, 48, 48, 12);
@@ -164,6 +190,6 @@ export function HandOverlay({ tracking }: { tracking: CameraTrackingState }) {
       context.font = "bold 10px DM Sans Variable";
       context.fillText(`${Math.round(confidence * 100)}%`, x, y + 18);
     }
-  }, [confidence, detectedSign, tracking]);
+  }, [confidence, detectedSign, tracking, video]);
   return <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full" />;
 }

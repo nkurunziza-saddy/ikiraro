@@ -153,7 +153,7 @@ export class WebSpeechProvider {
     const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
 
     return new Promise((resolve) => {
-      const source = this.audioContext!.createBufferSource();
+      const source = this.audioContext?.createBufferSource();
       source.buffer = audioBuffer;
 
       if (options?.targetDurationMs && options.targetDurationMs > 0) {
@@ -167,7 +167,7 @@ export class WebSpeechProvider {
         }
       }
 
-      source.connect(this.audioContext!.destination);
+      source.connect(this.audioContext?.destination);
       source.onended = () => {
         this.currentSource = null;
         resolve();

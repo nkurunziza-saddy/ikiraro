@@ -1,5 +1,6 @@
 import { getDistance } from "../math";
 import type { HandLandmarks } from "./types";
+
 const FINGER_SEGMENTS: Array<[number, number]> = [
   [1, 2],
   [2, 3],

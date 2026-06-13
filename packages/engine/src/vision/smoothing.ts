@@ -1,4 +1,5 @@
-import type { HandLandmarks, Point3D, ILandmarkSmoother } from "./types";
+import type { HandLandmarks, ILandmarkSmoother, Point3D } from "./types";
+
 class LowPassFilter {
   y: number = 0;
   initialized: boolean = false;
@@ -82,7 +83,7 @@ export class LandmarkSmoother implements ILandmarkSmoother {
     }
     const smoothed: HandLandmarks = [];
     for (let i = 0; i < current.length; i++) {
-      smoothed.push(this.filters[i]!.filter(current[i]!));
+      smoothed.push(this.filters[i]?.filter(current[i]!));
     }
     this.lastSmoothed = smoothed;
     return smoothed;

@@ -1,5 +1,5 @@
-import * as React from "react";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 type TabsVariant = "pill" | "line";
@@ -137,4 +137,4 @@ function TabsContent({ className, ...props }: TabsPrimitive.Panel.Props) {
   );
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent };
+export { Tabs, TabsContent, TabsList, TabsTrigger };

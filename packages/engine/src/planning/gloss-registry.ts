@@ -27,7 +27,7 @@ export const GLOSS_REGISTRY: Record<string, GlossRegistryEntry> = {
 export const GLOSS_REGISTRY_KEYS = Object.keys(GLOSS_REGISTRY);
 
 export function isKnownGloss(token: string): boolean {
-  return Object.prototype.hasOwnProperty.call(GLOSS_REGISTRY, token.toUpperCase());
+  return Object.hasOwn(GLOSS_REGISTRY, token.toUpperCase());
 }
 
 export function getGlossDurationMs(token: string): number {

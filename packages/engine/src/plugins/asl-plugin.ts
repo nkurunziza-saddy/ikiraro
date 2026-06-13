@@ -1,6 +1,6 @@
-import type { SignLanguagePlugin } from "../types";
-import { ASL_HAND_POSES } from "../planning/pose-library";
 import { LEXEME_POSES } from "../planning/lexeme-poses";
+import { ASL_HAND_POSES } from "../planning/pose-library";
+import type { SignLanguagePlugin } from "../types";
 
 export const ASLPlugin: SignLanguagePlugin = {
   id: "asl",

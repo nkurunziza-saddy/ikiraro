@@ -1,7 +1,7 @@
-import type { LinguisticBufferConfig, WordBufferContext, BufferState } from "./types";
 import type { SignToken } from "../types";
 import { FingerspellStrategy } from "./linguistic/fingerspell-strategy";
 import { LexemeStrategy } from "./linguistic/lexeme-strategy";
+import type { BufferState, LinguisticBufferConfig, WordBufferContext } from "./types";
 
 /**
  * The LinguisticBuffer is a 'Deep' fusion layer.
@@ -12,6 +12,7 @@ export class LinguisticBuffer {
   private tokens: SignToken[] = [];
   private currentSign: string | null = null;
   private lastSignTime = 0;
+  private signHeldSince = 0;
   private config: LinguisticBufferConfig;
 
   // SOTA Plateau Detection thresholds
@@ -50,14 +51,16 @@ export class LinguisticBuffer {
       return null;
     }
 
-    // If we are stationary and holding the same sign, a plateau is reached.
-    const isPlateauReached =
-      isStationary &&
-      sign === this.currentSign &&
-      now - this.lastSignTime > this.PLATEAU_STABILITY_MS;
-
-    this.currentSign = sign;
+    // Track how long the same sign has been held continuously. (lastSignTime
+    // updates every frame for the pause timeout, so it cannot measure holds.)
+    if (sign !== this.currentSign) {
+      this.currentSign = sign;
+      this.signHeldSince = now;
+    }
     this.lastSignTime = now;
+
+    // If we are stationary and have held the same sign, a plateau is reached.
+    const isPlateauReached = isStationary && now - this.signHeldSince > this.PLATEAU_STABILITY_MS;
 
     // Inject plateau state into context for strategies
     const enrichedContext = { ...context, isPlateauReached };

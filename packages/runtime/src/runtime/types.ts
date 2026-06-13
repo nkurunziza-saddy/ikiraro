@@ -1,9 +1,9 @@
 import type {
-  TranslationEnvelope,
-  IkiraroToken,
   CommunicationMode,
+  IkiraroToken,
   SttModel,
   TranslationContext,
+  TranslationEnvelope,
 } from "@ikiraro/engine/types";
 import type { CaptureStatus } from "../capture/types";
 /**
@@ -21,10 +21,11 @@ export interface RuntimeSnapshot {
   speechLevel: number;
   error: string | null;
 }
+
 import type { CompositionState } from "./plugins/composition";
-import type { TranslationState } from "./plugins/translation";
 import type { SessionState } from "./plugins/session";
 import type { SpeechState } from "./plugins/speech";
+import type { TranslationState } from "./plugins/translation";
 /** Shared payload for translation:cmd:request and translation:started. */
 export type TranslationRequest = {
   mode: CommunicationMode;

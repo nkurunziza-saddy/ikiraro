@@ -1,13 +1,14 @@
 /// <reference lib="webworker" />
+
+import type { SignToken } from "@ikiraro/engine/types";
+import type { CameraTrackingState, Point3D } from "@ikiraro/engine/vision";
+import { evaluateHandGeometry, SignDetectionPipeline } from "@ikiraro/engine/vision";
 import {
+  FaceLandmarker,
   FilesetResolver,
   HandLandmarker,
-  FaceLandmarker,
   PoseLandmarker,
 } from "@mediapipe/tasks-vision";
-import { SignDetectionPipeline, evaluateHandGeometry } from "@ikiraro/engine/vision";
-import type { CameraTrackingState, Point3D } from "@ikiraro/engine/vision";
-import type { SignToken } from "@ikiraro/engine/types";
 import type { MainToWorkerMessage, WorkerToMainMessage } from "../capture/hand-tracking-types";
 
 declare const self: DedicatedWorkerGlobalScope;
@@ -30,7 +31,7 @@ let handLandmarker: HandLandmarker | null = null;
 let faceLandmarker: FaceLandmarker | null = null;
 let poseLandmarker: PoseLandmarker | null = null;
 
-let pipeline = new SignDetectionPipeline(undefined, { pauseThresholdMs: 700 });
+const pipeline = new SignDetectionPipeline(undefined, { pauseThresholdMs: 700 });
 let initPromise: Promise<void> | null = null;
 
 const debugMode = import.meta.env.DEV;
@@ -178,7 +179,11 @@ self.onmessage = async (event: MessageEvent<MainToWorkerMessage>) => {
           isInSigningZone &&
           (handednessScore === null || handednessScore >= MIN_HANDEDNESS_SCORE);
 
-        const classifyWith = worldLandmarks ?? imageLandmarks;
+        // Classify with IMAGE landmarks: the recognizer's letter templates are
+        // built from image-space training data (sid220/asl-now-fingerspelling),
+        // and matching across spaces (metric world vs normalized image) costs
+        // accuracy — z scale and conventions differ systematically.
+        const classifyWith = imageLandmarks ?? worldLandmarks;
         if (classifyWith && isUsable) {
           const committedToken = pipeline.process(classifyWith, imageLandmarks);
           const classification = pipeline.lastClassification;

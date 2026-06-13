@@ -1,5 +1,5 @@
-import type { Handshape } from "./pose-library";
 import type { ArmTarget, MotionType } from "../types";
+import type { Handshape } from "./pose-library";
 
 export interface SignCanvas {
   setPose(pose: Handshape): void;

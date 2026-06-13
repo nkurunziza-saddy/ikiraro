@@ -39,12 +39,12 @@ export class SpeechCaptureAdapter implements CaptureAdapter {
     }
     return new Promise((resolve) => {
       this.recorder!.onstop = () => {
-        const blob = new Blob(this.chunks, { type: this.recorder!.mimeType });
+        const blob = new Blob(this.chunks, { type: this.recorder?.mimeType });
         this.cleanup();
         this.setStatus("idle");
         resolve(blob);
       };
-      this.recorder!.stop();
+      this.recorder?.stop();
     });
   }
   reset(): void {
@@ -79,7 +79,7 @@ export class SpeechCaptureAdapter implements CaptureAdapter {
     const dataArray = new Uint8Array(bufferLength);
     const update = () => {
       if (this.status !== "capturing") return;
-      this.analyser!.getByteFrequencyData(dataArray);
+      this.analyser?.getByteFrequencyData(dataArray);
       let sum = 0;
       for (let i = 0; i < bufferLength; i++) {
         sum += dataArray[i]!;

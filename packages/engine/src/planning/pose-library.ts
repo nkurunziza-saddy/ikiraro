@@ -20,8 +20,9 @@ export type Handshape = {
   pinky: FingerAngles;
   thumb: ThumbAngles;
 };
-import aslHandshapes from "./handshapes/asl.json";
+
 import { LanguageRegistry } from "../language-registry";
+import aslHandshapes from "./handshapes/asl.json";
 
 export const ASL_HAND_POSES: Record<string, Handshape> = aslHandshapes as Record<string, Handshape>;
 

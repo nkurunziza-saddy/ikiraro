@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import "./index";
 import { FrameBuilder } from "./frame-builder";
 import { computeMotionDelta } from "./motion-paths";
+
 const builder = new FrameBuilder();
 describe("motion paths", () => {
   it("keeps HELLO as a one-way salute instead of a returning arc", () => {

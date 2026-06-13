@@ -1,7 +1,7 @@
+import { LanguageRegistry } from "../language-registry";
 import type { ArmTarget, MotionType } from "../types";
 import type { Handshape } from "./pose-library";
 import { ASL_HAND_POSES } from "./pose-library";
-import { LanguageRegistry } from "../language-registry";
 export type LexemePose = {
   handshape: Handshape;
   armTarget?: ArmTarget;

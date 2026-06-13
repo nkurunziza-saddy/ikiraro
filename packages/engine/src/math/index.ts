@@ -1,6 +1,6 @@
 import type { Point3D } from "../types";
 export function getDistance(p1: Point3D, p2: Point3D): number {
-  return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2) + Math.pow(p2.z - p1.z, 2));
+  return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2 + (p2.z - p1.z) ** 2);
 }
 export function subtract(p1: Point3D, p2: Point3D): Point3D {
   return { x: p1.x - p2.x, y: p1.y - p2.y, z: p1.z - p2.z };

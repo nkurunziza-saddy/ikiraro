@@ -1,5 +1,5 @@
+import { springStepStable } from "../../math/smoothing";
 import type { ArmTarget } from "../../types";
-import { springStep } from "../../math/smoothing";
 import type { MotionDelta } from "../trajectories/types";
 import type { IKinematicController, KinematicPose } from "./types";
 
@@ -91,11 +91,15 @@ export class KinematicController implements IKinematicController {
   private currentTarget: ArmTarget = {};
   private activeDelta: MotionDelta | null = null;
 
-  // Configuration - tuned for natural sign language cadence
+  // Configuration - tuned for natural sign language cadence.
+  // Motion layer must pass the ~5.5 Hz fingerspelling pulse (Google ASL
+  // Fingerspelling data: 0.73 cycles/letter at ~5.5 letters/s); k=900 puts the
+  // spring's natural frequency at ~30 rad/s so the pulse is attenuated, not
+  // erased. Stable with semi-implicit Euler for dt ≤ 50ms (ω·dt ≤ 1.5).
   private baseStiffness = 110;
   private baseDamping = 24;
-  private motionStiffness = 240;
-  private motionDamping = 34;
+  private motionStiffness = 900;
+  private motionDamping = 60;
 
   constructor() {
     this.initializeStates();
@@ -155,8 +159,9 @@ export class KinematicController implements IKinematicController {
   }
 
   solve(dtMs: number): KinematicPose {
-    // Cap dt to prevent numerical instability during large jumps (e.g. tab backgrounding)
-    const dt = Math.min(dtMs, 100) / 1000;
+    // Cap dt to prevent numerical instability during large jumps (e.g. tab
+    // backgrounding). 50ms keeps ω·dt ≤ 1.5 for the stiffest spring (k=900).
+    const dt = Math.min(dtMs, 50) / 1000;
 
     if (dt <= 0) return this.synthesize();
 
@@ -238,7 +243,14 @@ export class KinematicController implements IKinematicController {
     damping: number,
   ) {
     const s = state[key];
-    const [nextVal, nextVel] = springStep(s.value, s.velocity, target, dt, stiffness, damping);
+    const [nextVal, nextVel] = springStepStable(
+      s.value,
+      s.velocity,
+      target,
+      dt,
+      stiffness,
+      damping,
+    );
     s.value = nextVal;
     s.velocity = nextVel;
   }

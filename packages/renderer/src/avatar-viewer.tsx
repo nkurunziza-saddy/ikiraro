@@ -1,13 +1,10 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import type { Handshape, SignCanvas } from "@ikiraro/engine/planning";
+import { REST_POSE, RendererDirector } from "@ikiraro/engine/planning";
+import type { ArmTarget, MotionType, TranslationEnvelope } from "@ikiraro/engine/types";
 import { ContactShadows, Environment, PerspectiveCamera, useGLTF } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { RendererDirector } from "@ikiraro/engine/planning";
-import type { SignCanvas } from "@ikiraro/engine/planning";
-import type { TranslationEnvelope } from "@ikiraro/engine/types";
-import type { ArmTarget, MotionType } from "@ikiraro/engine/types";
-import { REST_POSE } from "@ikiraro/engine/planning";
-import type { Handshape } from "@ikiraro/engine/planning";
 import { SignModelGLTF } from "./sign-model-gltf";
 
 interface AvatarViewerProps {

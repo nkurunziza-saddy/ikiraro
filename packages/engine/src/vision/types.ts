@@ -1,20 +1,20 @@
 import type {
-  Point3D,
-  HandLandmarks,
-  ClassificationResult,
-  CameraTrackingState,
   ASLModelInterface,
+  CameraTrackingState,
+  ClassificationResult,
+  HandLandmarks,
   ILandmarkSmoother,
+  Point3D,
   SignToken,
 } from "../types";
 
 export type {
-  Point3D,
-  HandLandmarks,
-  ClassificationResult,
-  CameraTrackingState,
   ASLModelInterface,
+  CameraTrackingState,
+  ClassificationResult,
+  HandLandmarks,
   ILandmarkSmoother,
+  Point3D,
 };
 
 export interface BufferState {
@@ -65,7 +65,7 @@ export interface VisionEventMap {
   "status-change": VisionStatus;
   "tracking-update": import("../types").CameraTrackingState;
   "hand-found": { landmarks: import("../types").HandLandmarks };
-  "hand-lost": void;
+  "hand-lost": undefined;
   "sign-detected": { sign: string; confidence: number };
   "word-committed": import("../types").SignToken;
   "buffer-update": { currentWord: string; sentenceText: string };

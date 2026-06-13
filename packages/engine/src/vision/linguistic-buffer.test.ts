@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { SignToken } from "../types";
 import { LinguisticBuffer } from "./linguistic-buffer";
 import type { ILinguisticStrategy, WordBufferContext } from "./types";
-import type { SignToken } from "../types";
 
 const makeStrategy = (): ILinguisticStrategy & { pending: string | null } => {
   const strategy = {

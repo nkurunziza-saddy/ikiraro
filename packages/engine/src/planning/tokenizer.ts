@@ -1,3 +1,4 @@
+import { LanguageRegistry } from "../language-registry";
 import type {
   CommunicationMode,
   SemanticIntent,
@@ -6,19 +7,18 @@ import type {
   SpeechIntake,
   TranslationEnvelope,
 } from "../types";
-import { LanguageRegistry } from "../language-registry";
+import { frameBuilder } from "./frame-builder";
 import { isKnownGloss } from "./gloss-registry";
 import { normalizeText } from "./normalizer";
 import {
+  fingerspellToken,
   INTER_UNIT_PAUSE_MS,
   INTER_WORD_PAUSE_MS,
-  fingerspellToken,
   lexemeToken,
   numberToken,
   pauseToken,
   pointingToken,
 } from "./tokens";
-import { frameBuilder } from "./frame-builder";
 
 function pushLexeme(tokens: SignToken[], glosses: string[], hasWH: { v: boolean }, clean: string) {
   const lang = LanguageRegistry.getActive();
@@ -85,7 +85,7 @@ export function buildPlanFromGloss(intent: SemanticIntent, intake?: SpeechIntake
   }
   const hasWHValue = hasWH.v;
 
-  if (intake && intake.durationSeconds) {
+  if (intake?.durationSeconds) {
     const totalSpeechMs = intake.durationSeconds * 1000;
     const totalBaseMs = tokens.reduce((acc, t) => acc + t.durationMs, 0);
 

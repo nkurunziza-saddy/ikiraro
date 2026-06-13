@@ -1,4 +1,4 @@
-import { useMemo, memo } from "react";
+import { memo, useMemo } from "react";
 /**
  * High-leverage visualizer for sensory input levels.
  * Instead of raw streams, it takes a normalized level (0-1) from a CaptureAdapter.

@@ -1,29 +1,30 @@
 import type { MotionType } from "../../types";
-import type { ITrajectory, MotionDelta } from "./types";
-import { ZERO_DELTA } from "./types";
-import { DefaultRhythmEngine } from "./rhythm-engine";
 import {
   ArcTrajectory,
-  SaluteTrajectory,
-  ForwardPushTrajectory,
-  OutwardSweepTrajectory,
-  WaveTrajectory,
-  CircleTrajectory,
-  TapTrajectory,
-  TwoHandTapTrajectory,
-  ShakeTrajectory,
-  WristTwistTrajectory,
-  PullBackTrajectory,
   ChestPatTrajectory,
-  MusicSweepTrajectory,
+  CircleTrajectory,
+  DArcTrajectory,
+  ForwardPushTrajectory,
+  FsPulseTrajectory,
   GPushTrajectory,
   HSlideTrajectory,
-  DArcTrajectory,
-  NDipTrajectory,
   JTraceTrajectory,
-  ZTraceTrajectory,
   KPushTrajectory,
+  MusicSweepTrajectory,
+  NDipTrajectory,
+  OutwardSweepTrajectory,
+  PullBackTrajectory,
+  SaluteTrajectory,
+  ShakeTrajectory,
+  TapTrajectory,
+  TwoHandTapTrajectory,
+  WaveTrajectory,
+  WristTwistTrajectory,
+  ZTraceTrajectory,
 } from "./implementations";
+import { DefaultRhythmEngine } from "./rhythm-engine";
+import type { ITrajectory, MotionDelta } from "./types";
+import { ZERO_DELTA } from "./types";
 
 export class TrajectoryEngine {
   private trajectories = new Map<MotionType, ITrajectory>();
@@ -54,6 +55,7 @@ export class TrajectoryEngine {
     this.trajectories.set("j-trace", new JTraceTrajectory());
     this.trajectories.set("z-trace", new ZTraceTrajectory());
     this.trajectories.set("k-push", new KPushTrajectory());
+    this.trajectories.set("fs-pulse", new FsPulseTrajectory());
   }
 
   computeDelta(motion: MotionType, progress: number): MotionDelta {

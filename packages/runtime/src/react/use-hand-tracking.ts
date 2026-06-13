@@ -1,7 +1,8 @@
-import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { VisionSystem } from "../runtime/vision-system";
 import type { CameraTrackingState, VisionStatus } from "@ikiraro/engine/vision";
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { WorkerHandProcessor } from "../capture/worker-hand-processor";
+import { VisionSystem } from "../runtime/vision-system";
+
 const EMPTY_TRACKING: CameraTrackingState = {
   landmarks: [],
   classification: null,

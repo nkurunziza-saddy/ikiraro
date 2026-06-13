@@ -1,8 +1,9 @@
-import { Effect, Layer, Schema } from "effect";
-import { GlossService, GLOSS_REGISTRY_KEYS } from "@ikiraro/engine/planning";
-import { GLOSS_OUTPUT_SCHEMA, GROQ_CHAT_RESPONSE_SCHEMA } from "./schemas";
+import { GLOSS_REGISTRY_KEYS, GlossService } from "@ikiraro/engine/planning";
 import type { SemanticIntent } from "@ikiraro/engine/types";
+import { Effect, Layer, Schema } from "effect";
 import { Groq } from "./client";
+import { GLOSS_OUTPUT_SCHEMA, GROQ_CHAT_RESPONSE_SCHEMA } from "./schemas";
+
 const DEFAULT_GROQ_GLOSS_URL = "https://api.groq.com/openai/v1/chat/completions";
 const DEFAULT_GLOSS_MODEL = "llama-3.3-70b-versatile";
 

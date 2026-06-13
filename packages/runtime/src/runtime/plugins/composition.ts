@@ -1,6 +1,6 @@
 import type { IkiraroToken } from "@ikiraro/engine/types";
-import type { IkiraroPlugin, PluginContext, IkiraroEvent } from "../types";
 import { TimeWindowTokenFusionPolicy, type TokenFusionPolicy } from "../token-fusion-policy";
+import type { IkiraroEvent, IkiraroPlugin, PluginContext } from "../types";
 export interface CompositionState {
   tokens: IkiraroToken[];
   text: string;

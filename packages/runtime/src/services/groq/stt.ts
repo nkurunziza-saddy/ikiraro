@@ -1,9 +1,8 @@
-import { Effect, Layer } from "effect";
 import { SttService } from "@ikiraro/engine/planning";
+import type { SpeechIntake, SttModel } from "@ikiraro/engine/types";
+import { Effect, Layer, Schema } from "effect";
 import { Groq } from "./client";
-import { Schema } from "effect";
 import { STT_RESPONSE_SCHEMA } from "./schemas";
-import type { SttModel, SpeechIntake } from "@ikiraro/engine/types";
 
 const DEFAULT_GROQ_STT_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
 
