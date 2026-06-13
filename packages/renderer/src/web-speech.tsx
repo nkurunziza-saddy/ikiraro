@@ -2,10 +2,21 @@ import { type AudioQueue, EarconPlayer } from "@ikiraro/runtime";
 import type React from "react";
 import { createContext, useContext, useEffect, useRef } from "react";
 
+export type TTSProvider = "browser" | "openai" | "elevenlabs";
+
+export interface TTSConfig {
+  provider: TTSProvider;
+  apiKey?: string;
+  voiceId?: string;
+  model?: string;
+}
+
 export interface SpeakOptions {
-  pitch?: number;
   rate?: number;
+  pitch?: number;
   volume?: number;
+  voiceName?: string;
+  lang?: string;
   voice?: SpeechSynthesisVoice;
   /**
    * If provided, the audio playback speed will be adjusted (playbackRate)
@@ -17,8 +28,14 @@ export interface SpeakOptions {
 class WebSpeechProvider {
   private static instance: WebSpeechProvider;
   private synth: SpeechSynthesis | null = null;
+  private currentUtterance: SpeechSynthesisUtterance | null = null;
+
+  // Cloud TTS properties
+  private config: TTSConfig = { provider: "browser" };
   private audioContext: AudioContext | null = null;
   private currentSource: AudioBufferSourceNode | null = null;
+  private cloudSpeaking = false;
+  private queueActive = false;
 
   private constructor() {
     if (typeof window !== "undefined") {
@@ -33,20 +50,117 @@ class WebSpeechProvider {
     return WebSpeechProvider.instance;
   }
 
+  setConfig(config: Partial<TTSConfig>) {
+    this.config = { ...this.config, ...config };
+    if (this.config.provider !== "browser" && typeof window !== "undefined" && !this.audioContext) {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      this.audioContext = new AudioContextClass();
+    }
+  }
+
+  static isSupported(): boolean {
+    return typeof window !== "undefined" && "speechSynthesis" in window;
+  }
+
+  getVoices(): SpeechSynthesisVoice[] {
+    return this.synth?.getVoices() ?? [];
+  }
+
   /**
-   * Speak text using the browser's native Speech Synthesis API.
-   * Note: This is a fallback if no ElevenLabs/OpenAI TTS is configured.
+   * Speak text using configured provider (Browser, OpenAI, or ElevenLabs).
    */
   async speak(text: string, options: SpeakOptions = {}): Promise<void> {
-    // If it looks like an ElevenLabs/OpenAI byte stream or URL, we might handle it differently.
-    // For now, we assume this provider is only for native SpeechSynthesis.
+    this.cancel();
+
+    if (this.config.provider === "elevenlabs" && this.config.apiKey) {
+      return this.speakElevenLabs(text, options);
+    }
+    if (this.config.provider === "openai" && this.config.apiKey) {
+      return this.speakOpenAI(text, options);
+    }
+
     return this.speakBrowser(text, options);
   }
 
+  private async speakElevenLabs(text: string, options: SpeakOptions): Promise<void> {
+    this.cloudSpeaking = true;
+    try {
+      const voiceId = this.config.voiceId || "pNInz6obpgDQGcFmaJgB"; // Adam
+      const modelId = this.config.model || "eleven_multilingual_v2";
+
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "xi-api-key": this.config.apiKey!,
+        },
+        body: JSON.stringify({
+          text,
+          model_id: modelId,
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+        }),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        console.error(`[Ikiraro:TTS] ElevenLabs ${res.status}:`, errText);
+        throw new Error(`ElevenLabs TTS failed (HTTP ${res.status})`);
+      }
+
+      const arrayBuffer = await res.arrayBuffer();
+      if (!this.cloudSpeaking) return;
+      await this.playAudioBuffer(arrayBuffer, options);
+    } catch (err) {
+      console.error("[Ikiraro:TTS] ElevenLabs speech failed:", err);
+      throw err;
+    } finally {
+      this.cloudSpeaking = false;
+    }
+  }
+
+  private async speakOpenAI(text: string, options: SpeakOptions): Promise<void> {
+    this.cloudSpeaking = true;
+    try {
+      const voice = this.config.voiceId || "alloy";
+      const model = this.config.model || "tts-1";
+
+      const res = await fetch("https://api.openai.com/v1/audio/speech", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.config.apiKey}`,
+        },
+        body: JSON.stringify({ model, input: text, voice }),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        console.error(`[Ikiraro:TTS] OpenAI ${res.status}:`, errText);
+        throw new Error(`OpenAI TTS failed (HTTP ${res.status})`);
+      }
+
+      const arrayBuffer = await res.arrayBuffer();
+      if (!this.cloudSpeaking) return;
+      await this.playAudioBuffer(arrayBuffer, options);
+    } catch (err) {
+      console.error("[Ikiraro:TTS] OpenAI speech failed:", err);
+      throw err;
+    } finally {
+      this.cloudSpeaking = false;
+    }
+  }
+
   cancel() {
+    this.queueActive = false;
+    this.cloudSpeaking = false;
     this.synth?.cancel();
+    this.currentUtterance = null;
     if (this.currentSource) {
-      this.currentSource.stop();
+      try {
+        this.currentSource.stop();
+      } catch {
+        // Source might already be stopped
+      }
       this.currentSource = null;
     }
   }
@@ -57,8 +171,6 @@ class WebSpeechProvider {
 
   /**
    * Experimental: Play pre-rendered audio buffer (e.g. from an API).
-   * This allows for high-quality TTS like ElevenLabs while still being
-   * managed by the Ikiraro AudioQueue.
    */
   async playBuffer(arrayBuffer: ArrayBuffer, options?: SpeakOptions): Promise<void> {
     if (!this.audioContext) {
@@ -82,12 +194,10 @@ class WebSpeechProvider {
 
       if (options?.targetDurationMs && options.targetDurationMs > 0) {
         const audioDurationMs = audioBuffer.duration * 1000;
-        // Calculate required playback rate to make audio match the target duration
         const playbackRate = audioDurationMs / options.targetDurationMs;
         source.playbackRate.value = playbackRate;
-        // Attempt to preserve pitch in modern browsers
         if ("preservesPitch" in source) {
-          (source as unknown as { preservesPitch: boolean }).preservesPitch = true;
+          (source as any).preservesPitch = true;
         }
       }
 
@@ -109,16 +219,60 @@ class WebSpeechProvider {
       }
 
       const utterance = new SpeechSynthesisUtterance(text);
-      if (options.pitch) utterance.pitch = options.pitch;
-      if (options.rate) utterance.rate = options.rate;
-      if (options.volume) utterance.volume = options.volume;
-      if (options.voice) utterance.voice = options.voice;
+      utterance.rate = options.rate ?? 1.0;
+      utterance.pitch = options.pitch ?? 1.0;
+      utterance.volume = options.volume ?? 1.0;
+      utterance.lang = options.lang ?? "en-US";
 
-      utterance.onend = () => resolve();
-      utterance.onerror = (e) => reject(e);
+      if (options.voiceName) {
+        const voice = this.getVoices().find((v) => v.name === options.voiceName);
+        if (voice) utterance.voice = voice;
+      } else if (options.voice) {
+        utterance.voice = options.voice;
+      }
 
+      utterance.onend = () => {
+        this.currentUtterance = null;
+        resolve();
+      };
+      utterance.onerror = (e) => {
+        this.currentUtterance = null;
+        reject(e);
+      };
+
+      this.currentUtterance = utterance;
       this.synth.speak(utterance);
     });
+  }
+
+  async speakQueue(texts: string[], options: SpeakOptions = {}): Promise<void> {
+    this.queueActive = true;
+    try {
+      for (const text of texts) {
+        if (!this.queueActive) break;
+        await this.speak(text, options);
+      }
+    } finally {
+      this.queueActive = false;
+    }
+  }
+
+  isSpeaking(): boolean {
+    return this.cloudSpeaking || (this.synth?.speaking ?? false);
+  }
+
+  onBoundary(callback: (event: SpeechSynthesisEvent) => void): void {
+    if (this.currentUtterance) {
+      this.currentUtterance.onboundary = callback;
+    }
+  }
+
+  dispose(): void {
+    this.cancel();
+    if (this.audioContext && this.audioContext.state !== "closed") {
+      this.audioContext.close();
+    }
+    WebSpeechProvider.instance = null as any;
   }
 }
 
@@ -141,7 +295,6 @@ export const useWebSpeech = () => {
 
 /**
  * Hook to bridge the Ikiraro Runtime's AudioQueue with the browser's Speech API.
- * Should be mounted once at the root of the app.
  */
 export const useAudioQueueBridge = (queue: AudioQueue) => {
   const speech = useWebSpeech();
