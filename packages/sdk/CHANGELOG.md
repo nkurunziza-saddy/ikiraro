@@ -1,5 +1,17 @@
 # @ikiraro/sdk
 
+## 0.4.3
+
+### Patch Changes
+
+- bug fixes
+
+## 0.4.2
+
+### Patch Changes
+
+- 5150bf9: WebSpeechProvider.speak() and speakQueue() now reject when cloud TTS (ElevenLabs/OpenAI) fails instead of resolving silently. Wrap fire-and-forget calls in .catch().
+
 ## 0.3.5
 
 ### Patch Changes

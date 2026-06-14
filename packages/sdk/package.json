@@ -1,6 +1,6 @@
 {
   "name": "@ikiraro/sdk",
-  "version": "0.4.1",
+  "version": "0.4.3",
   "description": "Ikiraro SDK — sign language translation and rendering",
   "keywords": [
     "accessibility",

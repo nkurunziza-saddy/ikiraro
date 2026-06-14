@@ -47,7 +47,12 @@ describe("RendererDirector", () => {
       clauses: [
         {
           tokens: [
-            { type: "fingerspell", text: "AB", durationMs: 400, coarticulationHint: "blend" },
+            {
+              type: "fingerspell",
+              text: "AB",
+              durationMs: 400,
+              coarticulationHint: "blend",
+            },
           ],
         },
       ],
@@ -57,7 +62,7 @@ describe("RendererDirector", () => {
 
     (mockCanvas.setPose as any).mockClear();
 
-    director.seek(queue[0]?.duration * 0.9);
+    director.seek(queue[0]!.duration * 0.9);
 
     const poseA = resolveHandshape("A");
     const poseB = resolveHandshape("B");
