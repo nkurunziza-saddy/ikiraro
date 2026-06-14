@@ -47,3 +47,4 @@ tmp
 temp
 # Kaggle ASL fingerspelling landmark data (large, not for git)
 train_landmarks/
+plans/
