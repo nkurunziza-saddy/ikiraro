@@ -1,17 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
   <defs></defs>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
   </style>
-  <rect width="256" height="256" fill="#7d200e" rx="10.24" ry="10.24"/>
+  <rect width="256" height="256" fill="#1f1f1f" rx="40.96" ry="40.96"/>
   <text 
     x="128" 
     y="128" 
-    font-family="'Inter', sans-serif" 
+    font-family="'Poppins', sans-serif" 
     font-size="123" 
-    font-weight="600" 
-    fill="#fcebe8" 
+    font-weight="700" 
+    fill="#d1d1d1" 
     text-anchor="middle" 
     dominant-baseline="central"
-  >K</text>
+  >I</text>
 </svg>
