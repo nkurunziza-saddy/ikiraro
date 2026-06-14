@@ -192,7 +192,9 @@ export function SignModelGLTF({
 
     // ─── 2. Breathing ───────────────────────────────────────────────────────
     const breathPhase = t * 1.45;
-    const breath = Math.sin(breathPhase) * 0.55 + Math.sin(breathPhase * 2 + 0.4) * 0.12;
+    const idleBreathGain = activeRef.current ? 1 : 0.18;
+    const breath =
+      (Math.sin(breathPhase) * 0.18 + Math.sin(breathPhase * 2 + 0.4) * 0.04) * idleBreathGain;
 
     // ─── 3. Postural sway ───────────────────────────────────────────────────
     const swayML = Math.sin(t * 0.18 + 0.7) * 0.65 + Math.sin(t * 0.41 + 2.3) * 0.18;
@@ -201,7 +203,7 @@ export function SignModelGLTF({
     // ─── 4. Torso chain ─────────────────────────────────────────────────────
     setDelta("Hips", swayAP * 0.01 * idleGain, swayML * 0.02 * idleGain, swayML * 0.006 * idleGain);
     if (b.Hips) {
-      b.Hips.position.y = (b.Hips.userData.restY as number) + breath * 0.045 * idleGain;
+      b.Hips.position.y = (b.Hips.userData.restY as number) + breath * 0.012 * idleGain;
     }
     setDelta("Spine", breath * 0.02 + 0.012, 0, swayML * -0.005 * idleGain);
     setDelta("Spine1", breath * 0.014, 0, swayML * 0.006 * idleGain);

@@ -1,8 +1,7 @@
 import { preloadAvatarModel } from "@ikiraro/renderer";
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { GlobalErrorBoundary } from "@/components/error-boundary";
-import { ThemeProvider } from "@/components/theme-provider";
+import { GlobalErrorBoundary, ThemeProvider } from "@/components";
 import appCss from "../index.css?url";
 
 preloadAvatarModel("/models/avatar.glb");

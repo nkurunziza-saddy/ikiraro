@@ -1,6 +1,5 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChatExchangeProps {
@@ -18,18 +17,15 @@ export const chatExchangeDemo: ChatExchangeProps = {
 export function ChatExchange({ user, assistant, className }: ChatExchangeProps) {
   return (
     <div className={cn("relative w-full", className)}>
-      <div className="flex w-full  flex-col gap-2">
+      <div className="flex w-full flex-col gap-2">
         {user && (
-          <div className="ml-auto max-w-64 rounded-2xl rounded-br-md bg-primary px-3 py-2 text-sm leading-snug text-primary-foreground shadow-sm">
+          <div className="ml-auto max-w-64 rounded-2xl rounded-br-xs bg-foreground px-2.5 py-1.5 text-[13px] text-background">
             {user}
           </div>
         )}
         {assistant && (
           <div className="flex items-start gap-2">
-            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-sm">
-              <Sparkles className="size-3.5" aria-hidden="true" />
-            </div>
-            <div className="max-w-64 rounded-2xl rounded-bl-md bg-muted px-3 py-2 text-sm leading-snug text-card-foreground shadow-sm">
+            <div className="max-w-64 rounded-2xl rounded-bl-xs border border-border/60 bg-muted px-2.5 py-1.5 text-[13px] text-foreground">
               {assistant}
             </div>
           </div>

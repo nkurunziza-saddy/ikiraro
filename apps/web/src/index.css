@@ -50,12 +50,12 @@
 }
 
 :root {
-  /* warm cream palette — parchment, espresso, ochre */
-  --background: oklch(0.975 0.01 85); /* Natural paper/cream */
+  /* clean white palette */
+  --background: oklch(1 0 0); /* Pure white */
   --foreground: oklch(0.145 0 0); /* dark espresso — soft, not black */
-  --card: oklch(0.985 0.005 85); /* barely-cream card surface */
+  --card: oklch(1 0 0); /* Pure white card surface */
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(0.985 0.005 85);
+  --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.496 0.265 301.924);
   --primary-foreground: oklch(0.977 0.014 308.299);

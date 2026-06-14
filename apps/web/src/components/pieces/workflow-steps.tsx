@@ -1,6 +1,7 @@
 "use client";
 
-import { Check, Loader2 } from "lucide-react";
+import { RiCheckLine, RiLoader2Line } from "@remixicon/react";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface WorkflowStep {
@@ -25,36 +26,38 @@ export const workflowStepsDemo: WorkflowStepsProps = {
 export function WorkflowSteps({ steps = [], className }: WorkflowStepsProps) {
   return (
     <div className={cn("relative w-full", className)}>
-      <div className="flex w-full  flex-col gap-1.5 rounded-md border border-border bg-card p-3 shadow-sm">
-        {steps.map((s, i) => (
-          <div key={i} className="flex items-center gap-2">
-            <span
-              className={cn(
-                "flex size-5 shrink-0 items-center justify-center rounded-full",
-                s.status === "done" && "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
-                s.status === "active" && "bg-violet-500/15 text-violet-600 dark:text-violet-400",
-                s.status === "pending" && "bg-muted text-muted-foreground",
-              )}
-              aria-hidden="true"
-            >
-              {s.status === "done" && <Check className="size-3" />}
-              {s.status === "active" && <Loader2 className="size-3 animate-spin" />}
-              {s.status === "pending" && (
-                <span className="size-1 rounded-full bg-muted-foreground" />
-              )}
-            </span>
-            <span
-              className={cn(
-                "truncate text-xs",
-                s.status === "pending" ? "text-muted-foreground" : "text-card-foreground",
-                s.status === "active" && "font-medium",
-              )}
-            >
-              {s.label}
-            </span>
-          </div>
-        ))}
-      </div>
+      <Card className="w-full">
+        <CardContent className="flex flex-col gap-1.5">
+          {steps.map((s, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <span
+                className={cn(
+                  "flex size-5 shrink-0 items-center justify-center rounded-full",
+                  s.status === "done" && "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
+                  s.status === "active" && "bg-violet-500/15 text-violet-600 dark:text-violet-400",
+                  s.status === "pending" && "bg-muted text-muted-foreground",
+                )}
+                aria-hidden="true"
+              >
+                {s.status === "done" && <RiCheckLine className="size-3" />}
+                {s.status === "active" && <RiLoader2Line className="size-3 animate-spin" />}
+                {s.status === "pending" && (
+                  <span className="size-1 rounded-full bg-muted-foreground" />
+                )}
+              </span>
+              <span
+                className={cn(
+                  "truncate text-xs",
+                  s.status === "pending" ? "text-muted-foreground" : "text-card-foreground",
+                  s.status === "active" && "font-medium",
+                )}
+              >
+                {s.label}
+              </span>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
     </div>
   );
 }

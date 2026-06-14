@@ -1,12 +1,12 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 type Tone = "primary" | "foreground" | "violet" | "emerald" | "sky" | "amber";
 
 interface TokenStreamProps {
   tokens?: string[];
-  tokensPerSecond?: number;
   tone?: Tone;
   className?: string;
 }
@@ -22,35 +22,30 @@ const chipClasses: Record<Tone, string> = {
 
 export const tokenStreamDemo: TokenStreamProps = {
   tokens: ["The", " quick", " brown", " fox", " jumps", " over"],
-  tokensPerSecond: 142,
   tone: "violet",
 };
 
-export function TokenStream({
-  tokens = [],
-  tokensPerSecond = 0,
-  tone = "violet",
-  className,
-}: TokenStreamProps) {
+export function TokenStream({ tokens = [], tone = "violet", className }: TokenStreamProps) {
   return (
     <div className={cn("relative w-full", className)}>
-      <div className="flex w-full  flex-col gap-1.5 rounded-md border border-border bg-card p-3 shadow-sm">
-        <div className="flex items-center justify-between font-mono text-xs text-muted-foreground">
-          <span>stream</span>
-          <span>{tokensPerSecond} tok/s</span>
-        </div>
-        <div className="flex flex-wrap gap-0.5">
-          {tokens.map((t, i) => (
-            <span key={i} className={cn("rounded-sm px-1 font-mono text-xs", chipClasses[tone])}>
-              {t.replace(/ /g, "\u00a0")}
-            </span>
-          ))}
-          <span
-            className="inline-block h-3.5 w-0.5 animate-pulse bg-foreground align-middle"
-            aria-hidden="true"
-          />
-        </div>
-      </div>
+      <Card className="w-full">
+        <CardContent className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between font-mono text-xs text-muted-foreground">
+            <span>stream</span>
+          </div>
+          <div className="flex flex-wrap gap-0.5">
+            {tokens.map((t, i) => (
+              <span key={i} className={cn("rounded-sm px-1 font-mono text-xs", chipClasses[tone])}>
+                {t.replace(/ /g, "\u00a0")}
+              </span>
+            ))}
+            <span
+              className="inline-block h-3.5 w-0.5 animate-pulse bg-foreground align-middle"
+              aria-hidden="true"
+            />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

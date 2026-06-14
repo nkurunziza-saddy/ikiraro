@@ -1,5 +1,6 @@
 "use client";
 
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface TokenOption {
@@ -39,8 +40,8 @@ export function TopKLogits({
 
   return (
     <div className={cn("relative w-full", className)}>
-      <div className="flex w-full  flex-col overflow-hidden rounded-md border border-border bg-card shadow-sm">
-        <div className="flex items-center justify-between border-b border-border px-3 py-1.5">
+      <Card className="w-full overflow-hidden">
+        <div className="flex items-center justify-between border-b border-border/40 px-3 py-1.5 bg-muted/20">
           <span className="font-mono text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {title}
           </span>
@@ -49,17 +50,15 @@ export function TopKLogits({
           </span>
         </div>
         {context && (
-          <div className="border-b border-border px-3 py-2 font-mono text-xs leading-relaxed text-card-foreground">
-            <span className="text-muted-foreground/60">&ldquo;</span>
+          <div className="border-b border-border/40 px-3 py-2 font-mono text-xs leading-relaxed text-foreground">
             {context}
             <span
               className="ml-0.5 inline-block h-3 w-0.5 -translate-y-px bg-foreground align-middle animate-pulse"
               aria-hidden="true"
             />
-            <span className="text-muted-foreground/60">&rdquo;</span>
           </div>
         )}
-        <ul className="flex flex-col divide-y divide-border">
+        <ul className="flex flex-col divide-y divide-border/40">
           {tokens.map((t, i) => {
             const pctWidth = top > 0 ? (t.probability / top) * 100 : 0;
             const pct = (t.probability * 100).toFixed(1);
@@ -76,18 +75,16 @@ export function TopKLogits({
                 />
                 <div className="relative flex items-center justify-between gap-3 font-mono text-xs">
                   <span className="flex min-w-0 items-center">
-                    <span className="text-muted-foreground/60">&ldquo;</span>
                     <span
                       className={cn(
                         "truncate",
                         isTop
                           ? "font-semibold text-emerald-700 dark:text-emerald-400"
-                          : "text-card-foreground",
+                          : "text-foreground",
                       )}
                     >
                       {t.token}
                     </span>
-                    <span className="text-muted-foreground/60">&rdquo;</span>
                   </span>
                   <span className="shrink-0 tabular-nums text-muted-foreground">{pct}%</span>
                 </div>
@@ -95,7 +92,7 @@ export function TopKLogits({
             );
           })}
         </ul>
-      </div>
+      </Card>
     </div>
   );
 }

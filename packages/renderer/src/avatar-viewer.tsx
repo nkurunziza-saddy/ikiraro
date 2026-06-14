@@ -13,6 +13,8 @@ interface AvatarViewerProps {
   className?: string;
   /** When true the canvas is not rendered — use in audio-first (blind) mode. */
   hidden?: boolean;
+  /** Camera zoom multiplier. 1 is the default view, values below 1 zoom out, above 1 zoom in. */
+  zoom?: number;
 }
 
 export type SignFrameState = {
@@ -21,7 +23,13 @@ export type SignFrameState = {
   armTarget: ArmTarget | null;
 };
 
-export function AvatarViewer({ envelope, modelUrl, className, hidden = false }: AvatarViewerProps) {
+export function AvatarViewer({
+  envelope,
+  modelUrl,
+  className,
+  hidden = false,
+  zoom = 1,
+}: AvatarViewerProps) {
   const [pose, setPose] = useState<Handshape>(REST_POSE);
   const [active, setActive] = useState(false);
   const [overlay, setOverlayText] = useState<{ label: string; sublabel?: string } | null>(null);
@@ -102,7 +110,13 @@ export function AvatarViewer({ envelope, modelUrl, className, hidden = false }: 
         }}
       >
         {/* Framed on signing space: shoulders → just above head, arms visible */}
-        <PerspectiveCamera makeDefault position={[0, 0.08, 2.2]} fov={42} near={0.01} far={10} />
+        <PerspectiveCamera
+          makeDefault
+          position={[0, 0.08, 2.2 / Math.max(0.2, zoom)]}
+          fov={42 / Math.max(0.2, zoom)}
+          near={0.01}
+          far={10}
+        />
 
         <ambientLight intensity={0.22} color="#f8ece2" />
         <directionalLight
