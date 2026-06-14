@@ -21,7 +21,7 @@ Install `@ikiraro/sdk` — it re-exports the stable public surface of all three.
 The SDK ships with this skill. After installing, run the one-liner to register it in your project:
 
 ```bash
-npx ikiraro-sdk          # copies skill → .agents/skills/ikiraro-sdk/
+npx ikiraro-sdk          # copies skill → .agents/skills/ikiraro-sdk/ and .claude/skills/ikiraro-sdk/
 ```
 
 ---
@@ -46,7 +46,7 @@ bun add effect three @react-three/fiber @react-three/drei
 # optional — only needed if you use useHandTracking / camera sign input
 bun add @mediapipe/tasks-vision
 
-# Install this skill into your project
+# Install this Claude Code skill into your project
 npx ikiraro-sdk
 ```
 

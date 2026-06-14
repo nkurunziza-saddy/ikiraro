@@ -6,6 +6,18 @@ The official SDK for the Ikiraro sign language platform. This package provides t
 
 ```bash
 npm install @ikiraro/sdk
+# Required peers
+npm install effect three @react-three/fiber @react-three/drei
+# Optional (for camera tracking)
+npm install @mediapipe/tasks-vision
+```
+
+### Install the Agent Skill
+
+If you are working with an AI coding assistant (like Claude or Gemini), install the SDK skill to give the agent context about the codebase:
+
+```bash
+npx ikiraro-sdk
 ```
 
 ## Core Components

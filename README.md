@@ -26,7 +26,7 @@ The SDK is split into four focused packages. Each can be used independently; `@i
 
 | Package | Role | Key exports |
 |---|---|---|
-| `@ikiraro/sdk` | Public API · recommended entry point | `createIkiraroClient`, `useIkiraro` |
+| `@ikiraro/sdk` | **Facade API · recommended entry point**. Re-exports the below. | `createIkiraroClient`, `useIkiraro`, `AvatarViewer` |
 | `@ikiraro/engine` | ML inference · sign recognition | `SignAllRecognizer`, `LinguisticBuffer`, `FrameBuilder` |
 | `@ikiraro/runtime` | Orchestration · plugin lifecycle | `IkiraroRuntime`, `AudioQueue`, `useAccessibilityMode` |
 | `@ikiraro/renderer` | WebGL avatar · visual output | `AvatarViewer`, `HandOverlay`, `AudioVisualizer` |
@@ -35,16 +35,28 @@ The SDK is split into four focused packages. Each can be used independently; `@i
 
 ## Installation
 
-```bash
-# Full pipeline (recommended)
-bun add @ikiraro/sdk @ikiraro/renderer @ikiraro/runtime
+The `@ikiraro/sdk` package is a curated facade over the internal engine, runtime, and renderer packages. You only need to install the SDK and its peer dependencies.
 
-# Engine only (for custom rendering or server-side use)
-bun add @ikiraro/engine
+```bash
+# Install the SDK
+bun add @ikiraro/sdk
+
+# Required peers for 3D rendering
+bun add effect three @react-three/fiber @react-three/drei
+
+# Optional — only needed if you use useHandTracking (camera sign input)
+bun add @mediapipe/tasks-vision
 
 # npm / pnpm also work
 npm install @ikiraro/sdk
-pnpm add @ikiraro/sdk
+```
+
+### Install the Agent Skill
+
+If you are working with an AI coding assistant (like Claude or Gemini), install the SDK skill to give the agent context about the codebase:
+
+```bash
+npx ikiraro-sdk
 ```
 
 ---
@@ -54,8 +66,7 @@ pnpm add @ikiraro/sdk
 ### React
 
 ```tsx
-import { createIkiraroClient } from "@ikiraro/sdk";
-import { AvatarViewer } from "@ikiraro/renderer";
+import { createIkiraroClient, AvatarViewer } from "@ikiraro/sdk";
 
 const { useIkiraro } = createIkiraroClient({
   sdk: { groqApiKey: "gsk_…" },
@@ -70,7 +81,7 @@ export function SignApp() {
       <AvatarViewer
         envelope={snapshot.lastEnvelope}
         modelUrl="/models/avatar.glb"
-        style={{ width: "100%", height: "400px" }}
+        className="w-full h-[400px]"
       />
 
       {/* Text input */}
@@ -96,8 +107,7 @@ export function SignApp() {
 ### With hand tracking (vision input)
 
 ```tsx
-import { useHandTracking } from "@ikiraro/runtime/hand-tracking";
-import { HandOverlay } from "@ikiraro/renderer";
+import { useHandTracking, HandOverlay } from "@ikiraro/sdk";
 
 function VisionInput() {
   const { videoRef, tracking, isActive, start, stop } = useHandTracking();
@@ -304,9 +314,9 @@ const queue = AudioQueue.getInstance(
   () => tts.cancel(),           // cancel function
 );
 
-queue.speak(text, "normal");    // priority: "critical" | "normal" | "low"
-queue.cancel();
-queue.clear();
+queue.speak(text, "normal");    // priority: "critical" | "high" | "normal" | "low"
+await queue.speakAsync(text);   // wait for completion
+queue.stop();                   // cancel current + clear queue
 ```
 
 ### `useAccessibilityMode()`
