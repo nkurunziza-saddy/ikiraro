@@ -32,7 +32,10 @@ export function AvatarViewer({
 }: AvatarViewerProps) {
   const [pose, setPose] = useState<Handshape>(REST_POSE);
   const [active, setActive] = useState(false);
-  const [overlay, setOverlayText] = useState<{ label: string; sublabel?: string } | null>(null);
+  const [overlay, setOverlayText] = useState<{
+    label: string;
+    sublabel?: string;
+  } | null>(null);
 
   // Updated on every RAF tick via setMotion — avoid state to prevent re-renders.
   const signFrameRef = useRef<SignFrameState>({
