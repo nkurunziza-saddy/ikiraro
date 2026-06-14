@@ -155,7 +155,7 @@ export function createEnvelope(
     plan,
     rendererQueue: frameBuilder.build(plan),
     rawInput: options.rawInput ?? plan.sourceText,
-    normalizedText: plan.normalizedText,
+    normalizedText: options.rawInput ? normalizeText(options.rawInput) : plan.normalizedText,
     intent: options.intent,
   };
 }

@@ -49,7 +49,7 @@ export function Viewport({
         <AvatarViewer
           envelope={activeEnvelope}
           modelUrl={modelUrl}
-          zoom={0.75}
+          zoom={0.9}
           className="w-full h-full absolute inset-0"
         />
         <AnimatePresence>
@@ -77,7 +77,11 @@ export function Viewport({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.8, ease: [0.23, 1, 0.32, 1] as any }}
+        transition={{
+          delay: 0.5,
+          duration: 0.8,
+          ease: [0.23, 1, 0.32, 1] as any,
+        }}
         className="absolute bottom-4 md:bottom-0 left-0 w-full px-4 md:px-8 pb-4 md:pb-8 pt-24 bg-gradient-to-t from-background via-background/90 to-transparent pointer-events-none"
       >
         <div className="max-w-2xl mx-auto flex flex-col items-center gap-4 pointer-events-auto">

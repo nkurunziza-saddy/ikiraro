@@ -25,8 +25,8 @@ export class VisionSystem {
   private animationFrameId: number | null = null;
   private videoFrameCallbackId: number | null = null;
   private busy = false;
-  private captureCanvas: OffscreenCanvas | null = null;
-  private captureCtx: OffscreenCanvasRenderingContext2D | null = null;
+  private captureCanvas: HTMLCanvasElement | null = null;
+  private captureCtx: CanvasRenderingContext2D | null = null;
   private lastFpsTime = 0;
   private frameCount = 0;
   private lastVideoTime = -1;
@@ -195,7 +195,9 @@ export class VisionSystem {
         this.captureCanvas.width !== w ||
         this.captureCanvas.height !== h
       ) {
-        this.captureCanvas = new OffscreenCanvas(w, h);
+        this.captureCanvas = document.createElement("canvas");
+        this.captureCanvas.width = w;
+        this.captureCanvas.height = h;
         this.captureCtx = this.captureCanvas.getContext("2d");
       }
       const ctx = this.captureCtx;
