@@ -7,7 +7,7 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { GlobalErrorBoundary, ThemeProvider } from "@/components";
 import appCss from "../index.css?url";
 
@@ -102,14 +102,14 @@ function RootDocument() {
           >
             <div className="flex min-h-svh flex-col">
               <main id="main-content" className="flex-1 outline-none" tabIndex={-1}>
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="popLayout">
                   <motion.div
                     key={location.pathname}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{
-                      duration: 0.2,
+                      duration: 0.15,
                       ease: [0.23, 1, 0.32, 1] as any,
                     }}
                   >

@@ -6,12 +6,14 @@ import {
   RiVolumeMuteLine,
   RiVolumeUpLine,
 } from "@remixicon/react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Button,
   InputGroup,
   InputGroupAddon,
   InputGroupText,
   InputGroupTextarea,
+  TextEffect,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -50,17 +52,34 @@ export function Viewport({
           zoom={0.75}
           className="w-full h-full absolute inset-0"
         />
-        {activeEnvelope && (
-          <div className="absolute bottom-32 left-0 w-full px-12 text-center pointer-events-none">
-            <p className="text-[26px] font-light tracking-tight text-foreground">
-              {activeEnvelope.normalizedText}
-            </p>
-          </div>
-        )}
+        <AnimatePresence>
+          {activeEnvelope && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] as any }}
+              className="absolute bottom-32 left-0 w-full px-6 md:px-12 text-center pointer-events-none"
+            >
+              <TextEffect
+                preset="fade-in-blur"
+                per="word"
+                className="text-[20px] md:text-[26px] font-light tracking-tight text-foreground"
+              >
+                {activeEnvelope.normalizedText}
+              </TextEffect>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Floating Chat Input */}
-      <div className="absolute bottom-0 left-0 w-full px-8 pb-8 pt-24 bg-gradient-to-t from-background via-background/90 to-transparent pointer-events-none">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.8, ease: [0.23, 1, 0.32, 1] as any }}
+        className="absolute bottom-4 md:bottom-0 left-0 w-full px-4 md:px-8 pb-4 md:pb-8 pt-24 bg-gradient-to-t from-background via-background/90 to-transparent pointer-events-none"
+      >
         <div className="max-w-2xl mx-auto flex flex-col items-center gap-4 pointer-events-auto">
           <div className="flex w-full items-end gap-3">
             <InputGroup>
@@ -73,11 +92,11 @@ export function Viewport({
                     handleSend();
                   }
                 }}
-                placeholder="Type a message to translate..."
+                placeholder="Type a message..."
                 disabled={isTranslating}
-                className="flex-1"
+                className="flex-1 min-h-[44px]"
               />
-              <InputGroupAddon align="block-end">
+              <InputGroupAddon align="block-end" className="hidden sm:flex">
                 <Tooltip>
                   <TooltipTrigger
                     render={
@@ -126,19 +145,40 @@ export function Viewport({
                   <TooltipContent>Send</TooltipContent>
                 </Tooltip>
               </InputGroupAddon>
+
+              {/* Mobile-only send button */}
+              <div className="flex sm:hidden items-center px-2 pb-2">
+                <Button
+                  aria-label="Send message"
+                  className="rounded-full size-8"
+                  size="icon"
+                  onClick={handleSend}
+                  disabled={isTranslating}
+                >
+                  <RiArrowRightLine className="size-4" />
+                </Button>
+              </div>
             </InputGroup>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {snapshot.error && (
-        <div className="fixed bottom-12 right-12 z-50 animate-in fade-in slide-in-from-right-4 duration-200">
-          <div className="bg-background border border-destructive/20 text-destructive text-[14px] font-light px-4 py-3 flex items-center gap-3 rounded-lg">
-            <RiAlertLine className="size-4 opacity-70" />
-            {snapshot.error}
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {snapshot.error && (
+          <motion.div
+            initial={{ opacity: 0, x: 20, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 20, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] as any }}
+            className="fixed bottom-12 right-12 z-50"
+          >
+            <div className="bg-background border border-destructive/20 text-destructive text-[14px] font-light px-4 py-3 flex items-center gap-3 rounded-lg shadow-xl shadow-destructive/5 backdrop-blur-sm">
+              <RiAlertLine className="size-4 opacity-70" />
+              {snapshot.error}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

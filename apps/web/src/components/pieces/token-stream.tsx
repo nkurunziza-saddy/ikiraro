@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -34,11 +35,20 @@ export function TokenStream({ tokens = [], tone = "violet", className }: TokenSt
             <span>stream</span>
           </div>
           <div className="flex flex-wrap gap-0.5">
-            {tokens.map((t, i) => (
-              <span key={i} className={cn("rounded-sm px-1 font-mono text-xs", chipClasses[tone])}>
-                {t.replace(/ /g, "\u00a0")}
-              </span>
-            ))}
+            <AnimatePresence mode="popLayout">
+              {tokens.map((t, i) => (
+                <motion.span
+                  key={`${t}-${i}`}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] as any }}
+                  className={cn("rounded-sm px-1 font-mono text-xs", chipClasses[tone])}
+                >
+                  {t.replace(/ /g, "\u00a0")}
+                </motion.span>
+              ))}
+            </AnimatePresence>
             <span
               className="inline-block h-3.5 w-0.5 animate-pulse bg-foreground align-middle"
               aria-hidden="true"

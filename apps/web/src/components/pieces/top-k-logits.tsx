@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -65,12 +66,14 @@ export function TopKLogits({
             const isTop = i === 0;
             return (
               <li key={t.token} className="relative px-3 py-1.5">
-                <div
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${pctWidth}%` }}
+                  transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] as any }}
                   className={cn(
                     "absolute inset-y-0.5 left-0",
                     isTop ? "bg-emerald-500/15" : "bg-muted/80",
                   )}
-                  style={{ width: `${pctWidth}%` }}
                   aria-hidden="true"
                 />
                 <div className="relative flex items-center justify-between gap-3 font-mono text-xs">

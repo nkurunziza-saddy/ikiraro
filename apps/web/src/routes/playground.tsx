@@ -2,9 +2,13 @@ import { WebSpeechProvider } from "@ikiraro/renderer";
 import { useAccessibilityMode } from "@ikiraro/runtime/accessibility";
 import { AudioQueue } from "@ikiraro/runtime/audio";
 import { useHandTracking } from "@ikiraro/runtime/hand-tracking";
+import { RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { createFileRoute } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "framer-motion";
 import { useDeferredValue, useEffect, useRef, useState } from "react";
 import { type PlaygroundTab, Sidebar, type TtsProvider, Viewport } from "@/components/playground";
+import { Button } from "@/components/ui";
+import { useMobile } from "@/hooks/useMobile";
 import { useIkiraro } from "../lib/ikiraro";
 
 export const Route = createFileRoute("/playground")({
@@ -21,6 +25,9 @@ const audioQueue = AudioQueue.getInstance(
 function SDKPlayground() {
   const { snapshot, translate, startSpeech, stopSpeech, onTranslated } = useIkiraro();
   const camera = useHandTracking();
+  const isMobile = useMobile();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const {
     videoRef,
     tracking,
@@ -95,45 +102,91 @@ function SDKPlayground() {
   };
 
   return (
-    <div className="flex h-screen w-full bg-background text-foreground overflow-hidden font-sans">
-      <Sidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        isCameraActive={isCameraActive}
-        isRecording={isRecording}
-        toggleCamera={toggleCamera}
-        toggleRecording={toggleRecording}
-        videoRef={(el) => {
-          videoElRef.current = el;
-          videoRef(el);
-        }}
-        videoEl={videoElRef.current}
-        tracking={tracking}
-        snapshot={snapshot}
-        activeEnvelope={activeEnvelope}
-        isTranslating={isTranslating}
-        logs={logs}
-        setLogs={setLogs}
-        accessMode={accessMode}
-        setAccessMode={setAccessMode}
-        ttsProvider={ttsProvider}
-        setTtsProvider={setTtsProvider}
-        ttsApiKey={ttsApiKey}
-        setTtsApiKey={setTtsApiKey}
-        fps={fps}
-        delegate={delegate}
-      />
-      <Viewport
-        activeEnvelope={activeEnvelope}
-        modelUrl={MODEL_URL}
-        text={text}
-        setText={setText}
-        isTranslating={isTranslating}
-        handleSend={handleSend}
-        isMuted={isMuted}
-        setIsMuted={setIsMuted}
-        snapshot={snapshot}
-      />
+    <div className="flex h-svh w-full bg-background text-foreground overflow-hidden font-sans relative">
+      <AnimatePresence mode="wait">
+        {(!isMobile || isSidebarOpen) && (
+          <motion.div
+            initial={isMobile ? { x: "-100%" } : { opacity: 0, x: -20 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={isMobile ? { x: "-100%" } : { opacity: 0, x: -20 }}
+            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] as any }}
+            className={isMobile ? "fixed inset-0 z-50 flex" : "relative"}
+          >
+            {isMobile && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsSidebarOpen(false)}
+                className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+              />
+            )}
+            <Sidebar
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              isCameraActive={isCameraActive}
+              isRecording={isRecording}
+              toggleCamera={toggleCamera}
+              toggleRecording={toggleRecording}
+              videoRef={(el) => {
+                videoElRef.current = el;
+                videoRef(el);
+              }}
+              videoEl={videoElRef.current}
+              tracking={tracking}
+              snapshot={snapshot}
+              activeEnvelope={activeEnvelope}
+              isTranslating={isTranslating}
+              logs={logs}
+              setLogs={setLogs}
+              accessMode={accessMode}
+              setAccessMode={setAccessMode}
+              ttsProvider={ttsProvider}
+              setTtsProvider={setTtsProvider}
+              ttsApiKey={ttsApiKey}
+              setTtsApiKey={setTtsApiKey}
+              fps={fps}
+              delegate={delegate}
+            />
+            {isMobile && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSidebarOpen(false)}
+                className="absolute top-4 right-4 z-[60]"
+              >
+                <RiCloseLine className="size-5" />
+              </Button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        {isMobile && (
+          <div className="absolute top-4 left-4 z-40">
+            <Button
+              variant="secondary"
+              size="icon"
+              onClick={() => setIsSidebarOpen(true)}
+              className=""
+            >
+              <RiMenuLine className="size-4" />
+            </Button>
+          </div>
+        )}
+        <Viewport
+          activeEnvelope={activeEnvelope}
+          modelUrl={MODEL_URL}
+          text={text}
+          setText={setText}
+          isTranslating={isTranslating}
+          handleSend={handleSend}
+          isMuted={isMuted}
+          setIsMuted={setIsMuted}
+          snapshot={snapshot}
+        />
+      </div>
     </div>
   );
 }
