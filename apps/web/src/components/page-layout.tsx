@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { Footer } from "./footer";
 
@@ -9,7 +10,13 @@ interface PageLayoutProps {
 
 export function PageLayout({ children, className, mainClassName }: PageLayoutProps) {
   return (
-    <article
+    <motion.article
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{
+        duration: 0.4,
+        ease: [0.23, 1, 0.32, 1] as any, // Custom ease-out
+      }}
       className={cn(
         "min-h-screen bg-background text-[15px] leading-[1.85] tracking-[-0.01em] antialiased text-muted-foreground font-light font-sans selection:bg-foreground selection:text-background flex flex-col",
         className,
@@ -24,6 +31,6 @@ export function PageLayout({ children, className, mainClassName }: PageLayoutPro
         {children}
       </main>
       <Footer />
-    </article>
+    </motion.article>
   );
 }

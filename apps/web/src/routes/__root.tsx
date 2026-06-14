@@ -1,6 +1,13 @@
 import { preloadAvatarModel } from "@ikiraro/renderer";
-import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import {
+  createRootRouteWithContext,
+  HeadContent,
+  Outlet,
+  Scripts,
+  useLocation,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { AnimatePresence, motion } from "motion/react";
 import { GlobalErrorBoundary, ThemeProvider } from "@/components";
 import appCss from "../index.css?url";
 
@@ -72,6 +79,8 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
   component: RootDocument,
 });
 function RootDocument() {
+  const location = useLocation();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -93,7 +102,20 @@ function RootDocument() {
           >
             <div className="flex min-h-svh flex-col">
               <main id="main-content" className="flex-1 outline-none" tabIndex={-1}>
-                <Outlet />
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={location.pathname}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                      duration: 0.2,
+                      ease: [0.23, 1, 0.32, 1] as any,
+                    }}
+                  >
+                    <Outlet />
+                  </motion.div>
+                </AnimatePresence>
               </main>
             </div>
 

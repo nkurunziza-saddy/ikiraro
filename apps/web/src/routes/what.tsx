@@ -1,47 +1,109 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { motion } from "motion/react";
 import { PageLayout } from "@/components";
+import { TextEffect } from "@/components/ui";
 
 export const Route = createFileRoute("/what")({
   component: RouteComponent,
 });
 
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 12 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: [0.23, 1, 0.32, 1] as any,
+    },
+  },
+};
+
 function RouteComponent() {
   return (
     <PageLayout mainClassName="pt-16 md:pt-32">
-      <div className="space-y-20 md:space-y-32">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="space-y-20 md:space-y-32"
+      >
         {/* Header: The Definition */}
-        <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8 items-start">
+        <motion.section
+          variants={item}
+          className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8 items-start"
+        >
           <header className="font-medium text-foreground tracking-tight">
-            Ikiraro
-            <div className="font-normal text-muted-foreground mt-0.5 tracking-normal">
+            <TextEffect preset="fade-in-blur" per="char">
+              Ikiraro
+            </TextEffect>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 1 }}
+              className="font-normal text-muted-foreground mt-0.5 tracking-normal"
+            >
               /i.ki.ɾa.ɾo/ <span className="italic">noun</span>
-            </div>
+            </motion.div>
           </header>
           <div className="space-y-4">
-            <p className="flex">
+            <motion.p
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="flex"
+            >
               <span className="text-muted-foreground/60 mr-3 tabular-nums font-medium">1.</span>
               <span>
                 A physical or abstract structure providing passage over an obstacle; a bridge.
               </span>
-            </p>
-            <p className="flex">
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+              className="flex"
+            >
               <span className="text-muted-foreground/60 mr-3 tabular-nums font-medium">2.</span>
               <span>
                 A unified client-side architecture for fluid sign language computation, natively
                 executed within the browser's sandbox.
               </span>
-            </p>
-            <p className="pt-6 mt-6 border-t border-border/20">
+            </motion.p>
+            <TextEffect
+              preset="fade-in-blur"
+              per="word"
+              delay={1.2}
+              className="pt-6 mt-6 border-t border-border/20"
+            >
               Ikiraro represents a departure from the "recorded video" paradigm of accessibility. It
               treats sign language as a dynamic, computational system—moving the entire pipeline of
               translation, kinematics, and recognition from the server directly to the client edge.
-            </p>
+            </TextEffect>
           </div>
-        </section>
+        </motion.section>
 
         {/* Section: The Input Stratum */}
-        <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8">
-          <header className="font-medium text-foreground tracking-tight">The Input Stratum</header>
+        <motion.section
+          variants={item}
+          className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8"
+        >
+          <header className="font-medium text-foreground tracking-tight">
+            <TextEffect preset="fade-in-blur" per="char" trigger={true}>
+              The Input Stratum
+            </TextEffect>
+          </header>
           <div>
             <p>
               Communication begins at the edge. Ikiraro ingests three distinct streams: structured
@@ -64,12 +126,17 @@ function RouteComponent() {
               </p>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Section: The Linguistic Brain */}
-        <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8">
+        <motion.section
+          variants={item}
+          className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8"
+        >
           <header className="font-medium text-foreground tracking-tight">
-            The Linguistic Brain
+            <TextEffect preset="fade-in-blur" per="char" trigger={true}>
+              The Linguistic Brain
+            </TextEffect>
           </header>
           <div className="space-y-6">
             <p>
@@ -96,11 +163,18 @@ function RouteComponent() {
               </p>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Section: The Kinematic Body */}
-        <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8">
-          <header className="font-medium text-foreground tracking-tight">The Kinematic Body</header>
+        <motion.section
+          variants={item}
+          className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8"
+        >
+          <header className="font-medium text-foreground tracking-tight">
+            <TextEffect preset="fade-in-blur" per="char" trigger={true}>
+              The Kinematic Body
+            </TextEffect>
+          </header>
           <div>
             <p>
               To replicate the motor signature of human hands, the avatar's joints are driven by
@@ -127,11 +201,18 @@ function RouteComponent() {
               </p>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Section: The Render Loop */}
-        <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8">
-          <header className="font-medium text-foreground tracking-tight">The Render Loop</header>
+        <motion.section
+          variants={item}
+          className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8"
+        >
+          <header className="font-medium text-foreground tracking-tight">
+            <TextEffect preset="fade-in-blur" per="char" trigger={true}>
+              The Render Loop
+            </TextEffect>
+          </header>
           <div>
             <p>
               Rendering sign language demands surgical precision over bone transforms. During each
@@ -160,11 +241,18 @@ function RouteComponent() {
               </p>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Section: Visual Inference */}
-        <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8">
-          <header className="font-medium text-foreground tracking-tight">Visual Inference</header>
+        <motion.section
+          variants={item}
+          className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8"
+        >
+          <header className="font-medium text-foreground tracking-tight">
+            <TextEffect preset="fade-in-blur" per="char" trigger={true}>
+              Visual Inference
+            </TextEffect>
+          </header>
           <div>
             <p>
               Recognizing signs via a standard webcam is fundamentally a challenge of geometry. The
@@ -187,12 +275,17 @@ function RouteComponent() {
               </p>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Section: Accessibility & Control */}
-        <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8">
+        <motion.section
+          variants={item}
+          className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8"
+        >
           <header className="font-medium text-foreground tracking-tight">
-            Accessibility & Control
+            <TextEffect preset="fade-in-blur" per="char" trigger={true}>
+              Accessibility & Control
+            </TextEffect>
           </header>
           <div>
             <p>
@@ -221,11 +314,18 @@ function RouteComponent() {
               </p>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Section: Applications */}
-        <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8">
-          <header className="font-medium text-foreground tracking-tight">Applications</header>
+        <motion.section
+          variants={item}
+          className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8"
+        >
+          <header className="font-medium text-foreground tracking-tight">
+            <TextEffect preset="fade-in-blur" per="char" trigger={true}>
+              Applications
+            </TextEffect>
+          </header>
           <div>
             <p>
               Ikiraro is a computational primitive designed for deep integration. Because the entire
@@ -255,8 +355,8 @@ function RouteComponent() {
               </p>
             </div>
           </div>
-        </section>
-      </div>
+        </motion.section>
+      </motion.div>
     </PageLayout>
   );
 }

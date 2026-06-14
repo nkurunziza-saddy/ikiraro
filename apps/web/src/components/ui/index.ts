@@ -5,5 +5,6 @@ export * from "./input-group";
 export * from "./select";
 export * from "./separator";
 export * from "./tabs";
+export * from "./text-effect";
 export * from "./textarea";
 export * from "./tooltip";

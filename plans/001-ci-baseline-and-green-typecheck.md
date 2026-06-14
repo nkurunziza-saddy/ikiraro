@@ -28,13 +28,13 @@
 
 ## Current state
 
-- `apps/web/src/components/ui/tabs.tsx` — vendored tabs primitive. Line 86 destructures `layoutId` from context but never uses it (it was for a framer-motion animated indicator; framer-motion was removed in commit `f034b54`):
+- `apps/web/src/components/ui/tabs.tsx` — vendored tabs primitive. Line 86 destructures `layoutId` from context but never uses it (it was for a motion/react animated indicator; motion/react was removed in commit `f034b54`):
 
   ```tsx
   // apps/web/src/components/ui/tabs.tsx:85-87
-  const { activeValue } = React.useContext(TabsRootCtx)
-  const { variant, layoutId } = React.useContext(TabsListCtx)
-  const isActive = value !== undefined && value === activeValue
+  const { activeValue } = React.useContext(TabsRootCtx);
+  const { variant, layoutId } = React.useContext(TabsListCtx);
+  const isActive = value !== undefined && value === activeValue;
   ```
 
   The context itself (line 8 `TabsListCtx`, line 57 provider) still supplies `layoutId` — that is fine to leave; only the unused destructure at line 86 errors under `tsc`:
@@ -61,16 +61,17 @@
 
 ## Commands you will need
 
-| Purpose   | Command                  | Expected on success |
-|-----------|--------------------------|---------------------|
-| Install   | `bun install --frozen-lockfile` | exit 0       |
-| Typecheck | `bun run check-types`    | exit 0, "6 successful" tasks |
-| Tests     | `bun run test`           | exit 0, engine: 12 tests pass |
-| Lint (after this plan) | `bun run lint` | exit 0, no file modifications |
+| Purpose                | Command                         | Expected on success           |
+| ---------------------- | ------------------------------- | ----------------------------- |
+| Install                | `bun install --frozen-lockfile` | exit 0                        |
+| Typecheck              | `bun run check-types`           | exit 0, "6 successful" tasks  |
+| Tests                  | `bun run test`                  | exit 0, engine: 12 tests pass |
+| Lint (after this plan) | `bun run lint`                  | exit 0, no file modifications |
 
 ## Scope
 
 **In scope** (the only files you should modify):
+
 - `apps/web/src/components/ui/tabs.tsx` (one-line fix)
 - `package.json` (root — scripts only)
 - `CONTRIBUTING.md` (the two command lines)
@@ -78,6 +79,7 @@
 - `plans/README.md` (status row)
 
 **Out of scope** (do NOT touch, even though they look related):
+
 - `.github/workflows/release.yml` — the release flow works; don't restructure it.
 - `oxlintrc.json` — no rule changes.
 - Any other lint warnings/errors oxlint may report in other files — fixing the codebase's lint debt is not this plan. If `oxlint` currently fails repo-wide, report that in your summary and make the CI lint step non-blocking (`continue-on-error: true`) with a TODO comment rather than fixing unrelated files.
@@ -94,13 +96,13 @@
 In `apps/web/src/components/ui/tabs.tsx` line 86, change:
 
 ```tsx
-const { variant, layoutId } = React.useContext(TabsListCtx)
+const { variant, layoutId } = React.useContext(TabsListCtx);
 ```
 
 to:
 
 ```tsx
-const { variant } = React.useContext(TabsListCtx)
+const { variant } = React.useContext(TabsListCtx);
 ```
 
 Do not remove `layoutId` from the `TabsListCtx` type or the provider — only the unused destructure.
@@ -204,4 +206,4 @@ Stop and report back (do not improvise) if:
 
 - Plan 002 and 003 (publishing fixes) assume this CI exists so their changes get verified on PR.
 - If a `web` deploy workflow is added later, reuse the same Bun setup steps.
-- Reviewer should scrutinize: that `lint-staged` still references `oxfmt --write` (intentional — formatting on commit is fine; a *check* that formats is not).
+- Reviewer should scrutinize: that `lint-staged` still references `oxfmt --write` (intentional — formatting on commit is fine; a _check_ that formats is not).

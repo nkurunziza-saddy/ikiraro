@@ -1,6 +1,8 @@
 import { RiExternalLinkLine } from "@remixicon/react";
 import { createFileRoute } from "@tanstack/react-router";
+import { motion } from "motion/react";
 import { PageLayout } from "@/components";
+import { TextEffect } from "@/components/ui";
 
 export const Route = createFileRoute("/docs")({
   component: DocsPage,
@@ -8,19 +10,63 @@ export const Route = createFileRoute("/docs")({
 
 const GITHUB_URL = "https://github.com/nkurunziza-saddy/ikiraro";
 
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 12 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: [0.23, 1, 0.32, 1] as any,
+    },
+  },
+};
+
 function DocsPage() {
   return (
     <PageLayout mainClassName="pt-24 md:pt-40">
-      <div className="space-y-20 md:space-y-32">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="space-y-20 md:space-y-32"
+      >
         {/* Section: Documentation */}
-        <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8 items-start">
-          <header className="font-medium text-foreground tracking-tight">Documentation</header>
+        <motion.section
+          variants={item}
+          className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8 items-start"
+        >
+          <header className="font-medium text-foreground tracking-tight">
+            <TextEffect preset="fade-in-blur" per="char">
+              Documentation
+            </TextEffect>
+          </header>
           <div className="space-y-6">
-            <p>
+            <TextEffect preset="fade-in-blur" per="word" delay={0.5}>
               The complete Ikiraro documentation is currently maintained within the repository. It
               covers everything required to integrate, configure, and extend the engine.
-            </p>
-            <div className="pt-6 flex flex-col sm:flex-row gap-6 font-medium text-[14px] tracking-tight">
+            </TextEffect>
+            <motion.div
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 1,
+                duration: 0.8,
+                ease: [0.23, 1, 0.32, 1] as any,
+              }}
+              className="pt-6 flex flex-col sm:flex-row gap-6 font-medium text-[14px] tracking-tight"
+            >
               <a
                 href={GITHUB_URL}
                 target="_blank"
@@ -29,13 +75,20 @@ function DocsPage() {
               >
                 Read Docs on GitHub <RiExternalLinkLine className="size-3.5" />
               </a>
-            </div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Section: What's Covered */}
-        <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8 items-start">
-          <header className="font-medium text-foreground tracking-tight">Topics Covered</header>
+        <motion.section
+          variants={item}
+          className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8 items-start"
+        >
+          <header className="font-medium text-foreground tracking-tight">
+            <TextEffect preset="fade-in-blur" per="char" delay={1.2}>
+              Topics Covered
+            </TextEffect>
+          </header>
           <div className="space-y-6">
             <p>
               <strong className="font-medium text-foreground mr-2.5">Installation.</strong>
@@ -69,11 +122,18 @@ function DocsPage() {
               LinguisticBuffer internals. Intended for contributors and technical researchers.
             </p>
           </div>
-        </section>
+        </motion.section>
 
         {/* Section: Contributing */}
-        <section className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8 items-start">
-          <header className="font-medium text-foreground tracking-tight">Contributing</header>
+        <motion.section
+          variants={item}
+          className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-x-16 gap-y-2 md:gap-y-8 items-start"
+        >
+          <header className="font-medium text-foreground tracking-tight">
+            <TextEffect preset="fade-in-blur" per="char" delay={2}>
+              Contributing
+            </TextEffect>
+          </header>
           <div className="space-y-6">
             <p>
               Ikiraro is open-source under the MIT License. Issues, pull requests, and architectural
@@ -85,8 +145,8 @@ function DocsPage() {
               specifically to onboard new contributors quickly.
             </p>
           </div>
-        </section>
-      </div>
+        </motion.section>
+      </motion.div>
     </PageLayout>
   );
 }
