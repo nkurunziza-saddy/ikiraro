@@ -11,10 +11,7 @@ export function isSttModel(value: string | null | undefined): value is SttModel 
 }
 
 export type TokenStability = "draft" | "stable" | "committed";
-/**
- * The IkiraroToken is the unified domain object for all conversational input.
- * It encapsulates value, source, and lifecycle data, enabling deep fusion.
- */
+/** Unified domain object for all conversational input. */
 export interface IkiraroToken {
   id: string;
   value: string;
@@ -26,6 +23,7 @@ export interface IkiraroToken {
   correlationId?: string;
   metadata?: Record<string, unknown>;
 }
+
 export const EMPHASIS_LEVELS = ["low", "normal", "high"] as const;
 export const FACIAL_EXPRESSIONS = [
   "neutral",

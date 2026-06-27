@@ -7,11 +7,10 @@ import type {
 } from "@ikiraro/engine/types";
 import type { CaptureStatus } from "../capture/types";
 /**
- * Flattened view of runtime state for convenient React consumption.
- * Prefer this over digging into `getState().plugins.*`.
+ * Flattened view of runtime state for React consumption.
  */
 export interface RuntimeSnapshot {
-  /** Session lifecycle phase. "recording" → "translating" → "finished" | "error". */
+  /** Session lifecycle phase: "idle" | "recording" | "translating" | "finished" | "error" */
   status: "idle" | "recording" | "translating" | "finished" | "error";
   isTranslating: boolean;
   lastEnvelope: TranslationEnvelope | null;
@@ -26,7 +25,8 @@ import type { CompositionState } from "./plugins/composition";
 import type { SessionState } from "./plugins/session";
 import type { SpeechState } from "./plugins/speech";
 import type { TranslationState } from "./plugins/translation";
-/** Shared payload for translation:cmd:request and translation:started. */
+
+/** Payload for translation requests. */
 export type TranslationRequest = {
   mode: CommunicationMode;
   text?: string;
@@ -36,10 +36,8 @@ export type TranslationRequest = {
   prompt?: string;
   context?: TranslationContext;
 };
-/**
- * Central map of every event name to its payload type.
- * Add a new entry here when introducing a new event — nowhere else.
- */
+
+/** Central map of event names to payload types. */
 export interface EventRegistry {
   // Runtime Core
   "runtime:ready": undefined;
@@ -95,11 +93,7 @@ export interface EventRegistry {
   "session:cmd:cancel": undefined;
 }
 /**
- * A discriminated union of all possible runtime events.
- * Narrowing on `event.type` in a switch statement will narrow `event.payload`.
- *
- * Use `IkiraroEvent<"my:event">` to type a specific event.
- * Use `IkiraroEvent` (no type param) to accept any event (e.g. in reducers).
+ * Discriminated union of all runtime events.
  */
 export type IkiraroEvent<K extends keyof EventRegistry = keyof EventRegistry> = {
   [P in K]: {
@@ -109,9 +103,7 @@ export type IkiraroEvent<K extends keyof EventRegistry = keyof EventRegistry> = 
     source: string;
   };
 }[K];
-/**
- * Context provided to plugins to interact with the runtime.
- */
+
 export interface PluginContext<S = unknown> {
   emit: <K extends keyof EventRegistry>(event: IkiraroEvent<K>) => void;
   subscribe: <K extends keyof EventRegistry>(
@@ -126,15 +118,9 @@ export type PluginTeardown =
   | void
   | (() => void | Promise<void>)
   | Array<() => void | Promise<void>>;
+
 /**
  * Interface for all Ikiraro plugins.
- *
- * Lifecycle:
- * - `setup` is called once when the runtime starts. Return a disposer (or array of disposers)
- *   to clean up subscriptions and resources when the runtime stops.
- * - `reducer` is called synchronously on every dispatched event to update plugin state.
- *
- * Plugins can be Input Adapters, Fusion Layers, or Output Directors.
  */
 export interface IkiraroPlugin<S = unknown> {
   name: string;
@@ -142,28 +128,19 @@ export interface IkiraroPlugin<S = unknown> {
   setup: (ctx: PluginContext<S>) => PluginTeardown | Promise<PluginTeardown>;
   reducer?: (state: S, event: IkiraroEvent) => S;
 }
-/**
- * Typed map of plugin name → plugin state for all stateful plugins.
- * `inspector` is optional — only present when InspectorPlugin is mounted.
- */
+/** Typed map of plugin states. */
 export interface PluginRegistry {
   session: SessionState;
   composition: CompositionState;
   translation: TranslationState;
   speech: SpeechState;
 }
-/**
- * The central state of the runtime.
- */
+
 export interface IkiraroState {
-  /** Runtime lifecycle status. Distinct from session status in RuntimeSnapshot. */
   lifecycleStatus: "idle" | "active" | "processing" | "error";
   plugins: PluginRegistry;
 }
-/**
- * Configuration for the Ikiraro Runtime.
- * Use `IkiraroDefaultConfig` and `createIkiraro()` for standard setups.
- */
+
 export interface RuntimeConfig {
   baseUrl?: string;
   sdk?: import("../sdk").IkiraroConfig;

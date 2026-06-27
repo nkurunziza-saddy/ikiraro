@@ -1,9 +1,7 @@
 import type { ArmTarget } from "../../types";
 import type { MotionDelta } from "../trajectories/types";
 
-/**
- * A snapshot of the avatar's kinematic state for the arms.
- */
+/** Snapshot of the avatar's arm kinematics. */
 export type KinematicPose = {
   rArm: { x: number; y: number; z: number };
   rFore: { x: number; y: number; z: number };
@@ -14,25 +12,15 @@ export type KinematicPose = {
 };
 
 export interface IKinematicController {
-  /**
-   * Updates the high-level intent (target position).
-   * This target will be approached smoothly over time via springs.
-   */
+  /** Updates the target position to be approached via springs. */
   setTarget(target: ArmTarget): void;
 
-  /**
-   * Sets the instantaneous additive motion delta (e.g., from an 'arc' or 'shake').
-   */
+  /** Sets additive motion delta (e.g., arc or shake). */
   setMotionDelta(delta: MotionDelta): void;
 
-  /**
-   * Advances the physical simulation.
-   * @param dt Delta time in milliseconds.
-   */
+  /** Advances the physical simulation. */
   solve(dt: number): KinematicPose;
 
-  /**
-   * Resets the controller to a specific pose (or idle).
-   */
+  /** Resets the controller. */
   reset(pose?: KinematicPose): void;
 }

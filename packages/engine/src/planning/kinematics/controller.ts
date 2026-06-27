@@ -30,9 +30,7 @@ type JointStateRecord = Record<
   SpringState
 >;
 
-// Signing rest position — average neutral arm pose used to warm-start springs
-// and as fallback when an ArmTarget leaves a joint unspecified.
-// Note: rHandY/Z and lHandY/Z are not in ArmTarget; their motion comes from MotionDelta.
+// Neutral arm pose for spring warm-start and joint fallbacks.
 const SIGNING_REST = {
   rArmX: 0.76,
   rArmY: 0,
@@ -50,11 +48,9 @@ const SIGNING_REST = {
   lHandX: -0.18,
 } as const;
 
-// Joints driven by the base layer = exactly the keys of SIGNING_REST.
 const BASE_JOINTS = Object.keys(SIGNING_REST) as Array<keyof typeof SIGNING_REST>;
 
-// Joints driven by the motion layer (MotionDelta has a `<joint>Delta` field for each).
-// NOTE: rForeX/lForeX are deliberately absent — MotionDelta cannot drive them.
+// Joints driven by MotionDelta. Note: rForeX/lForeX are not driven by motion.
 const MOTION_JOINTS = [
   "rArmX",
   "rArmY",
@@ -75,27 +71,18 @@ const MOTION_JOINTS = [
 ] as const satisfies ReadonlyArray<keyof JointStateRecord>;
 
 /**
- * Stateful kinematic engine that manages physical continuity for the avatar.
- * It uses dual-layer spring tracking:
- * 1. Base Layer: Smoothly approaches high-level targets (forehead, chest, etc.)
- * 2. Motion Layer: High-frequency smoothing for trajectory deltas (arcs, shakes)
- *
- * This restores the "mass" and "flow" that were lost when deltas were applied raw.
+ * Manages physical continuity for the avatar using dual-layer spring tracking:
+ * 1. Base Layer: Approaches high-level targets (forehead, chest, etc.)
+ * 2. Motion Layer: Smoothing for trajectory deltas (arcs, shakes)
  */
 export class KinematicController implements IKinematicController {
-  // State for high-level targets (the "skeleton")
   private baseState: JointStateRecord = {} as JointStateRecord;
-  // State for dynamic motion deltas (the "gesture")
   private motionState: JointStateRecord = {} as JointStateRecord;
 
   private currentTarget: ArmTarget = {};
   private activeDelta: MotionDelta | null = null;
 
-  // Configuration - tuned for natural sign language cadence.
-  // Motion layer must pass the ~5.5 Hz fingerspelling pulse (Google ASL
-  // Fingerspelling data: 0.73 cycles/letter at ~5.5 letters/s); k=900 puts the
-  // spring's natural frequency at ~30 rad/s so the pulse is attenuated, not
-  // erased. Stable with semi-implicit Euler for dt ≤ 50ms (ω·dt ≤ 1.5).
+  // Spring parameters tuned for natural sign cadence (~5.5 Hz pulse).
   private baseStiffness = 110;
   private baseDamping = 24;
   private motionStiffness = 900;
@@ -145,13 +132,11 @@ export class KinematicController implements IKinematicController {
     this.currentTarget = target;
     const t = target;
 
-    // Snap base state
     for (const key of BASE_JOINTS) {
       this.baseState[key].value =
         (t as Record<string, number | undefined>)[key] ?? SIGNING_REST[key];
     }
 
-    // Reset all velocities
     for (const key in this.baseState) {
       this.baseState[key as keyof JointStateRecord].velocity = 0;
       this.motionState[key as keyof JointStateRecord].velocity = 0;
@@ -159,14 +144,12 @@ export class KinematicController implements IKinematicController {
   }
 
   solve(dtMs: number): KinematicPose {
-    // Cap dt to prevent numerical instability during large jumps (e.g. tab
-    // backgrounding). 50ms keeps ω·dt ≤ 1.5 for the stiffest spring (k=900).
+    // Cap dt at 50ms to prevent instability.
     const dt = Math.min(dtMs, 50) / 1000;
 
     if (dt <= 0) return this.synthesize();
 
-    // ─── 1. Update Base Pose Layer ──────────────────────────────────────────
-    // Smoothly follows the high-level intent; falls back to signing rest when unspecified.
+    // 1. Update Base Pose Layer
     const t = this.currentTarget;
     for (const key of BASE_JOINTS) {
       this.updateSpring(
@@ -179,8 +162,7 @@ export class KinematicController implements IKinematicController {
       );
     }
 
-    // ─── 2. Update Motion Delta Layer ───────────────────────────────────────
-    // Smooths the high-frequency trajectory.
+    // 2. Update Motion Delta Layer
     const d = this.activeDelta;
     for (const key of MOTION_JOINTS) {
       this.updateSpring(

@@ -180,7 +180,7 @@ export function SignModelGLTF({
       bone.quaternion.copy(bind).multiply(tmpQuat);
     };
 
-    // ─── 1. Sign ⇄ Idle transition ─────────────────────────────────────────
+    // 1. Sign ⇄ Idle transition
     const [nextP, nextV] = springStep(s[38]!, s[39]!, activeRef.current ? 1 : 0, dt, 80, 18);
     s[38] = nextP;
     s[39] = nextV;
@@ -190,17 +190,17 @@ export function SignModelGLTF({
     // Idle motion dampens while signing.
     const idleGain = 1 - ek * 0.7;
 
-    // ─── 2. Breathing ───────────────────────────────────────────────────────
+    // 2. Breathing
     const breathPhase = t * 1.45;
     const idleBreathGain = activeRef.current ? 1 : 0.18;
     const breath =
       (Math.sin(breathPhase) * 0.18 + Math.sin(breathPhase * 2 + 0.4) * 0.04) * idleBreathGain;
 
-    // ─── 3. Postural sway ───────────────────────────────────────────────────
+    // 3. Postural sway
     const swayML = Math.sin(t * 0.18 + 0.7) * 0.65 + Math.sin(t * 0.41 + 2.3) * 0.18;
     const swayAP = Math.cos(t * 0.13) * 0.55 + Math.sin(t * 0.33 + 1.1) * 0.15;
 
-    // ─── 4. Torso chain ─────────────────────────────────────────────────────
+    // 4. Torso chain
     setDelta("Hips", swayAP * 0.01 * idleGain, swayML * 0.02 * idleGain, swayML * 0.006 * idleGain);
     if (b.Hips) {
       b.Hips.position.y = (b.Hips.userData.restY as number) + breath * 0.012 * idleGain;
@@ -211,14 +211,13 @@ export function SignModelGLTF({
     setDelta("Neck", -breath * 0.005 - 0.04, 0, 0);
     setDelta("Head", 0.035, 0, -swayML * 0.006 * idleGain);
 
-    // ─── 5. Arms: apply deep KinematicPose from engine ───────────────────────
+    // 5. Arms: apply kinematic pose
     const armSway = 0.03 * idleGain;
     const swayR = Math.sin(t * 0.55) * armSway;
     const swayL = Math.sin(t * 0.55 + 0.3) * armSway;
 
     const frame = signFrameRef?.current;
 
-    // Evaluate kinematics inside the render loop for frame-perfect smoothing
     const kinematics = kinematicsRef.current;
     if (frame) {
       kinematics.setTarget(frame.armTarget ?? {});
@@ -275,7 +274,7 @@ export function SignModelGLTF({
       setDelta("LeftHand", IDLE.lHandX, IDLE.lHandY, IDLE.lHandZ);
     }
 
-    // ─── 6. Fingers ────────────────────────────────────────────────────────
+    // 6. Fingers
     (["index", "middle", "ring", "pinky"] as const).forEach((name, fi) => {
       const cp = p[name];
       const base = fi * 4;
@@ -287,10 +286,7 @@ export function SignModelGLTF({
         lerp(rest.splay, cp.splay, ek),
       ];
 
-      // k=2400/c=98: settles a handshape change in ~80ms, matching the 67ms
-      // median transition measured in real fingerspelling (Google ASL
-      // Fingerspelling data). Substepped — at this stiffness a plain step
-      // rings visibly on 30fps frames.
+      // Settle handshape change in ~80ms.
       for (let i = 0; i < 4; i++) {
         const idx = base + i;
         const [nextVal, nextVel] = springStepStable(

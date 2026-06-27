@@ -8,7 +8,6 @@ const BLEND_WINDOWS: Record<CoarticulationMode, number> = {
 
 /**
  * Calculates the blend factor for handshape coarticulation.
- * Used by the RendererDirector to interpolate between the current and next pose.
  */
 export function coarticulationBlend(
   mode: CoarticulationMode,
@@ -19,6 +18,6 @@ export function coarticulationBlend(
   const window = BLEND_WINDOWS[mode];
   if (window === 0 || progress <= 1 - window) return null;
   const t = (progress - (1 - window)) / window;
-  // Smoothstep for natural easing
+  // Natural easing
   return t * t * (3 - 2 * t);
 }

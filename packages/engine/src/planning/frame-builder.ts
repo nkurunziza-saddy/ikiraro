@@ -11,14 +11,11 @@ import type {
 const DEFAULT_ARM_TARGET: ArmTarget = { rArmX: 0.76, rArmZ: -0.52, rForeZ: -1.5, rForeY: 0.48 };
 
 /**
- * Deep module that transforms a high-level SignPlan into a concrete queue of frames
- * for the renderer. It handles timing normalization, spatial anchor resolution,
- * and plugin-driven motion selection.
+ * Transforms a SignPlan into a concrete queue of frames for the renderer.
+ * Handles timing normalization and motion selection.
  */
 export class FrameBuilder {
-  /**
-   * Main entry point: transforms a Plan into Frames.
-   */
+  /** Transforms a Plan into Frames. */
   public build(plan: SignPlan): FrameItem[] {
     const queue: FrameItem[] = [];
     const intent = plan.clauses[0]?.intent ?? "statement";
@@ -52,7 +49,7 @@ export class FrameBuilder {
     const lang = LanguageRegistry.getActive();
     const frames: FrameItem[] = [];
 
-    // Facial expression logic based on sign intent and emphasis
+    // Facial expression based on sign intent and emphasis.
     let facial = token.facialExpression ?? "neutral";
     if (intent === "question") facial = "inquisitive";
     else if (token.emphasis === "high") facial = "assertive";
@@ -108,7 +105,6 @@ export class FrameBuilder {
         });
       }
     } else if (token.type === "pointing") {
-      // Resolve pointing targets to concrete arm positions and motions
       const target = token.target.toUpperCase();
 
       let armTarget: ArmTarget = DEFAULT_ARM_TARGET;
@@ -124,7 +120,7 @@ export class FrameBuilder {
 
       frames.push({
         type: "pointing",
-        value: "D", // Pointing handshape
+        value: "D",
         label: `Point: ${token.target}`,
         duration: baseDuration,
         motion,
@@ -138,7 +134,4 @@ export class FrameBuilder {
   }
 }
 
-/**
- * Singleton instance for the engine.
- */
 export const frameBuilder = new FrameBuilder();

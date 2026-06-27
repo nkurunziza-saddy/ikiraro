@@ -8,10 +8,7 @@ import type {
 } from "../types";
 import { getGlossDurationMs } from "./gloss-registry";
 export const DEFAULT_LEXEME_DURATION_MS = 500;
-// Calibrated against the Google ASL Fingerspelling dataset (file 5414471,
-// 952 sequences, ~70 signers @30fps): median 183ms/char and 226ms/digit over
-// hand-visible frames, 315/351ms over full clips. Values sit between the two
-// since detection dropout deflates the former and lead-in/out inflates the latter.
+// Average character/digit durations calibrated against Google ASL dataset.
 export const FINGERSPELL_PER_CHAR_MS = 200;
 export const NUMBER_PER_DIGIT_MS = 240;
 export const POINTING_DURATION_MS = 360;

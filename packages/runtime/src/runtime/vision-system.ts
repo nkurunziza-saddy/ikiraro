@@ -5,16 +5,8 @@ type VideoElementWithVFC = HTMLVideoElement & {
   cancelVideoFrameCallback(id: number): void;
 };
 /**
- * The VisionSystem orchestrates the end-to-end hand tracking pipeline.
- * It is responsible for:
- * 1. Managing the camera lifecycle (MediaStream).
- * 2. Running a frame loop at the video's native rate.
- * 3. Driving a HandProcessor (usually a Web Worker) with frame bitmaps.
- * 4. Normalizing and emitting high-level vision events.
- * 5. Bypassing browser rendering bugs via a canvas mirror.
- *
- * This class is framework-agnostic and maintains the state of the active
- * tracking session, providing high leverage to UI adapters.
+ * Orchestrates the end-to-end hand tracking pipeline.
+ * Manages camera lifecycle, frame loop, and hand processing.
  */
 export class VisionSystem {
   private _status: VisionStatus = "idle";

@@ -68,8 +68,6 @@ describe("SignAllRecognizer", () => {
     expect(result.isMoving).toBe(false);
   });
 
-  // --- Characterization ---
-
   const dataset = [
     { name: "FLAT", landmarks: normalizeHand(flatHand) },
     { name: "CURL", landmarks: normalizeHand(curlHand) },

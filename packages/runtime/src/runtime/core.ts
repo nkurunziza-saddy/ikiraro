@@ -71,13 +71,13 @@ export class IkiraroRuntime {
     }
     this.pluginDisposers = [];
 
-    // Final safety layer: dispose any leaked heavy resources
+    // Dispose any leaked heavy resources.
     await globalResourceRegistry.disposeAll();
 
     this.started = false;
   }
   /**
-   * Dispatches an event: updates core state, runs plugin reducers, then emits on the bus.
+   * Updates state, runs plugin reducers, and emits on the bus.
    */
   public dispatch(event: IkiraroEvent) {
     this.updateInternalState(event);
@@ -96,12 +96,12 @@ export class IkiraroRuntime {
   ): () => void {
     return this.bus.on(type, handler);
   }
-  /** Subscribe to every event on the bus. Use sparingly — prefer typed subscriptions. */
+  /** Subscribe to all events on the bus. Use sparingly. */
   public subscribeAll(handler: (event: IkiraroEvent) => void): () => void {
     return this.bus.onAll(handler);
   }
 
-  /** Translate a text string to signing. */
+  /** Translate text to signing. */
   translate(text: string, options: { context?: TranslationContext } = {}): void {
     this.dispatch({
       type: "session:cmd:start",
@@ -110,7 +110,7 @@ export class IkiraroRuntime {
       source: "sdk",
     });
   }
-  /** Play back a sequence of manual sign units (e.g. from the sign keyboard). */
+  /** Play manual sign units. */
   translateUnits(units: string[]): void {
     this.dispatch({
       type: "session:cmd:start",
@@ -119,7 +119,7 @@ export class IkiraroRuntime {
       source: "sdk",
     });
   }
-  /** Begin microphone capture. Call `stopSpeech()` to transcribe and translate. */
+  /** Begin microphone capture. */
   startSpeech(
     options: { sttModel?: SttModel; prompt?: string; context?: TranslationContext } = {},
   ): void {
@@ -130,7 +130,7 @@ export class IkiraroRuntime {
       source: "sdk",
     });
   }
-  /** Stop capture and submit the recording for transcription → translation. */
+  /** Stop capture and submit for transcription. */
   stopSpeech(): void {
     this.dispatch({
       type: "session:cmd:stop",
@@ -139,7 +139,7 @@ export class IkiraroRuntime {
       source: "sdk",
     });
   }
-  /** Cancel an in-progress capture or translation without committing. */
+  /** Cancel capture or translation. */
   cancel(): void {
     this.dispatch({
       type: "session:cmd:cancel",
@@ -148,17 +148,11 @@ export class IkiraroRuntime {
       source: "sdk",
     });
   }
-  /**
-   * Subscribe to completed translations. Returns an unsubscribe function.
-   * Tip: in React, prefer reading `snapshot().lastEnvelope` in a `useEffect`.
-   */
+  /** Subscribe to completed translations. */
   onTranslated(handler: (envelope: TranslationEnvelope) => void): () => void {
     return this.subscribe("translation:finished", (event) => handler(event.payload));
   }
-  /**
-   * Returns a flat snapshot of the runtime state — no nested plugin paths needed.
-   * Safe to call on every render; returns a cached reference if no state changes occurred.
-   */
+  /** Returns a flat snapshot of the runtime state. */
   snapshot(): RuntimeSnapshot {
     if (this.cachedSnapshot) return this.cachedSnapshot;
     const plugins = this.state.plugins;
@@ -174,10 +168,7 @@ export class IkiraroRuntime {
     };
     return this.cachedSnapshot;
   }
-  /**
-   * Returns the raw internal state. Plugin states are live references — do not mutate.
-   * Prefer `snapshot()` for React consumption.
-   */
+  /** Returns raw internal state. Do not mutate. */
   getState(): Readonly<IkiraroState> {
     return this.state;
   }

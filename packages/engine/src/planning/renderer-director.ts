@@ -5,18 +5,8 @@ import { mixHandshapes, resolveHandshape } from "./pose-library";
 import type { PlaybackOptions, RendererState, SignCanvas } from "./renderer-types";
 
 /**
- * The RendererDirector coordinates the playback of a SignPlan.
- * It implements the 'Director' pattern, where a logic-heavy orchestrator
- * drives a shallow 'Canvas' implementation.
- *
- * Responsibilities:
- * 1. Managing playback state (playing, paused, time, progress).
- * 2. Calculating the active frame and interpolation factor.
- * 3. Driving the Canvas adapter with high-level pose and overlay commands.
- * 4. Handling looping and playback speed.
- *
- * This separation allows the playback logic to remain identical regardless
- * of whether we are rendering SVG silhouettes, 2D Canvas, or a 3D Avatar.
+ * Coordinates the playback of a SignPlan.
+ * Manages playback state, active frame calculation, and Canvas adapter updates.
  */
 export class RendererDirector {
   private queue: FrameItem[] = [];
@@ -76,11 +66,7 @@ export class RendererDirector {
     this.updateCanvas();
     this.notify();
   }
-  /**
-   * Subscribe to state changes. Multiple subscribers are supported.
-   * Immediately calls the callback with the current state.
-   * Returns an unsubscribe function.
-   */
+  /** Subscribe to state changes. */
   subscribe(cb: (state: RendererState) => void): () => void {
     this.stateHandlers.add(cb);
     cb({ ...this.state });
@@ -171,10 +157,7 @@ export class RendererDirector {
       this.canvas.setPose(currentHandshape);
     }
   }
-  /**
-   * Permanently stops the director, cancels any active animation frames,
-   * and clears all state handlers.
-   */
+  /** Stops the director and clears state. */
   dispose() {
     this.pause();
     this.stateHandlers.clear();

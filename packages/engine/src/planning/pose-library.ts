@@ -1,7 +1,4 @@
-/**
- * Pose types and library for sign language visualization.
- * These types define the joint angles for a 3D hand model.
- */
+/** Defines joint angles for a 3D hand model. */
 export type FingerAngles = {
   mcp: number;
   pip: number;
@@ -34,9 +31,7 @@ export const REST_POSE: Handshape = {
   thumb: { splay: -0.35, flex: 0.15, curl: 0.1 },
 };
 
-/**
- * Resolves a key (letter, number, or special char) to a Handshape.
- */
+/** Resolves a key (letter, number, or char) to a Handshape. */
 export function resolveHandshape(key: string): Handshape {
   const lang = LanguageRegistry.getActive();
   const shape = lang.getHandshape(key);
@@ -44,9 +39,7 @@ export function resolveHandshape(key: string): Handshape {
 
   return REST_POSE;
 }
-/**
- * Mixes two handshapes by a factor (0 to 1).
- */
+/** Mixes two handshapes by factor [0, 1]. */
 export function mixHandshapes(a: Handshape, b: Handshape, factor: number): Handshape {
   if (factor <= 0) return a;
   if (factor >= 1) return b;

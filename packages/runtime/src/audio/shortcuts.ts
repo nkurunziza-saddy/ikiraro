@@ -77,8 +77,6 @@ export class AccessibilityShortcutManager {
     this.mounted = false;
   }
 
-  // ── State ───────────────────────────────────────────────────────────────────
-
   getFocusedIndex(): number | null {
     return this.focusedIndex;
   }
@@ -108,8 +106,6 @@ export class AccessibilityShortcutManager {
     this.helpListeners.add(listener);
     return () => this.helpListeners.delete(listener);
   }
-
-  // ── Internal ────────────────────────────────────────────────────────────────
 
   private handleKey(e: KeyboardEvent): void {
     const tag = (e.target as HTMLElement | null)?.tagName ?? "";

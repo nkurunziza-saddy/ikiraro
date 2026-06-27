@@ -11,9 +11,8 @@ interface AvatarViewerProps {
   envelope: TranslationEnvelope | null;
   modelUrl: string;
   className?: string;
-  /** When true the canvas is not rendered — use in audio-first (blind) mode. */
   hidden?: boolean;
-  /** Camera zoom multiplier. 1 is the default view, values below 1 zoom out, above 1 zoom in. */
+  /** Camera zoom multiplier. */
   zoom?: number;
 }
 
@@ -37,7 +36,7 @@ export function AvatarViewer({
     sublabel?: string;
   } | null>(null);
 
-  // Updated on every RAF tick via setMotion — avoid state to prevent re-renders.
+  // RAF-updated state — avoiding React state to prevent re-renders.
   const signFrameRef = useRef<SignFrameState>({
     motion: "none",
     progress: 0,
@@ -112,7 +111,6 @@ export function AvatarViewer({
           gl.toneMappingExposure = 1.05;
         }}
       >
-        {/* Framed on signing space: shoulders → just above head, arms visible */}
         <PerspectiveCamera
           makeDefault
           position={[0, 0.08, 2.2 / Math.max(0.2, zoom)]}

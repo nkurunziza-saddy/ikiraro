@@ -14,20 +14,13 @@ export interface IkiraroDefaultConfig {
   vision?: {
     processor: HandProcessor;
   };
-  /**
-   * Enable the physical keyboard input adapter.
-   * Captures single-character key presses as sign tokens.
-   */
+  /** Enable keyboard input adapter. */
   keyboard?: boolean;
-  /**
-   * Additional plugins to mount after the defaults.
-   * Use this to add analytics, custom input adapters, or inspector tooling.
-   */
+  /** Additional plugins to mount after defaults. */
   plugins?: IkiraroPlugin<any>[];
 }
 /**
- * Creates and starts the Ikiraro Runtime with the default plugin set.
- * This is the primary entry point for all integrations.
+ * Creates and starts the Ikiraro Runtime with default plugins.
  */
 export async function createIkiraro(config: IkiraroDefaultConfig) {
   const key = config.sdk.groqApiKey;

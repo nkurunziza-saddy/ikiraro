@@ -5,24 +5,14 @@ import type { ClassificationResult, HandLandmarks, Point3D, SignRecognizer } fro
 
 /**
  * Template-matching fingerspelling recognizer.
- *
- * - Multi-template: a letter may have several templates (style clusters);
- *   the letter's score is its best template's score.
- * - Chirality-invariant: the input is scored as-is and mirrored, best wins —
- *   this absorbs the capture pipeline's selfie mirroring and supports
- *   left-handed signers with the same template set.
- * - Margin acceptance: a match requires both an absolute score and a lead over
- *   the runner-up letter, which suppresses flicker between confusable pairs
- *   (M/N/S/T, U/R, K/V).
- *
- * Constants calibrated on held-out sid220/asl-now-fingerspelling samples —
- * see scripts/eval-recognition.ts.
+ * - Multi-template: uses style clusters; best template wins.
+ * - Chirality-invariant: scores as-is and mirrored.
+ * - Margin acceptance: requires an absolute score and a lead over runner-up.
  */
 
-// Fingertips carry most of the discriminative signal.
+// Fingertips and x/y carry most discriminative signal.
 const TIP_WEIGHT = 3;
 const TIPS = new Set([4, 8, 12, 16, 20]);
-// MediaPipe image-landmark depth is noisy; let x/y dominate.
 const Z_WEIGHT = 0.5;
 
 /** Weighted RMS distance between two normalized hands. */
@@ -44,10 +34,9 @@ export function handDistance(a: HandLandmarks, b: HandLandmarks): number {
 export class SignAllRecognizer implements SignRecognizer {
   private dataset: TrainedSign[];
 
-  // Calibrated on held-out data (eval-recognition.ts):
-  private similarityScale = 2.0; // similarity = 1 - distance * scale
-  private threshold = 0.48; // ≈ p10 of true-match scores on held-out data
-  private margin = 0.05; // ≈ p10 of true-match lead over the runner-up
+  private similarityScale = 2.0;
+  private threshold = 0.48;
+  private margin = 0.05;
 
   private history: HandLandmarks[] = [];
   private windowSize = 10;
