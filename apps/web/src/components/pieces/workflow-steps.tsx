@@ -3,7 +3,7 @@
 import { RiCheckLine, RiLoader2Line } from "@remixicon/react";
 import { AnimatePresence, motion } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 interface WorkflowStep {
   label: string;

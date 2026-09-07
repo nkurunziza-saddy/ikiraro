@@ -2,7 +2,7 @@
 import type { Transition, Variants } from "motion/react";
 import { AnimatePresence, motion } from "motion/react";
 import { useId, useMemo } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 export type TextMorphProps = {
   children: string;

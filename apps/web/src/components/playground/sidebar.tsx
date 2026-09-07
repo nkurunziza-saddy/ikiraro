@@ -32,7 +32,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 import {
   ACCESSIBILITY_OPTIONS,
   PLAYGROUND_TABS,
