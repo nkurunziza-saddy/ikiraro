@@ -32,16 +32,16 @@ _Last updated: 2026-06-12. Companion to [guides/sign-quality-workflow.md](guides
 
 ## Implemented, but not well
 
-| Area | Problem | Path forward |
-|---|---|---|
-| J, Z recognition | Motion letters; static templates fundamentally can't catch them (J 11%, Z 25%) | Temporal trajectory matching on the landmark history |
-| P, Q recognition (~25–50%) | Downward orientation collapses MediaPipe depth | Self-capture training data; orientation-conditioned templates |
-| G/H/P/Q avatar handshapes | Same depth problem in training data — still hand-authored | Self-capture via own webcam pipeline |
-| Splay channels (avatar) | Sign-ambiguous in mirrored datasets — still hand-authored | Self-capture (known handedness removes ambiguity) |
-| Lexical motion ("hello" etc.) | Procedural sine/linear joint ramps — the remaining "robotic" feel | Record-and-import pipeline → `RecordedTrajectory` (specced in workflow doc) |
-| Per-frame rejection rate (27%) | Adds recognition latency on hard letters (the word gate hides most of it) | More/better templates; per-letter thresholds; temporal voting in recognizer itself |
-| `doubleLetterHoldMs = 900` | UX choice, not measured — real signers slide, not re-strike | Double-letter timing mining from Kaggle data (needs alignment pass) |
-| `facialExpression` field | Flows through the whole pipeline but the renderer never applies it | Blocked on avatar blendshapes (below) |
+| Area                           | Problem                                                                        | Path forward                                                                       |
+| ------------------------------ | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| J, Z recognition               | Motion letters; static templates fundamentally can't catch them (J 11%, Z 25%) | Temporal trajectory matching on the landmark history                               |
+| P, Q recognition (~25–50%)     | Downward orientation collapses MediaPipe depth                                 | Self-capture training data; orientation-conditioned templates                      |
+| G/H/P/Q avatar handshapes      | Same depth problem in training data — still hand-authored                      | Self-capture via own webcam pipeline                                               |
+| Splay channels (avatar)        | Sign-ambiguous in mirrored datasets — still hand-authored                      | Self-capture (known handedness removes ambiguity)                                  |
+| Lexical motion ("hello" etc.)  | Procedural sine/linear joint ramps — the remaining "robotic" feel              | Record-and-import pipeline → `RecordedTrajectory` (specced in workflow doc)        |
+| Per-frame rejection rate (27%) | Adds recognition latency on hard letters (the word gate hides most of it)      | More/better templates; per-letter thresholds; temporal voting in recognizer itself |
+| `doubleLetterHoldMs = 900`     | UX choice, not measured — real signers slide, not re-strike                    | Double-letter timing mining from Kaggle data (needs alignment pass)                |
+| `facialExpression` field       | Flows through the whole pipeline but the renderer never applies it             | Blocked on avatar blendshapes (below)                                              |
 
 ## Not done
 

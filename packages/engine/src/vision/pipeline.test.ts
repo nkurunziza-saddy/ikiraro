@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import type { HandLandmarks, SignToken } from "../types";
 import { SignDetectionPipeline } from "./pipeline";
 import type {

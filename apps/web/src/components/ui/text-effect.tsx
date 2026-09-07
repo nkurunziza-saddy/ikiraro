@@ -161,17 +161,24 @@ const createVariantsWithTransition = (
 
   const { exit: _, ...mainTransition } = transition;
 
+  const visibleObj =
+    typeof baseVariants.visible === "object" && baseVariants.visible !== null
+      ? baseVariants.visible
+      : {};
+  const exitObj =
+    typeof baseVariants.exit === "object" && baseVariants.exit !== null ? baseVariants.exit : {};
+
   return {
     ...baseVariants,
     visible: {
-      ...baseVariants.visible,
+      ...visibleObj,
       transition: {
         ...(hasTransition(baseVariants.visible) ? baseVariants.visible.transition : {}),
         ...mainTransition,
       },
     },
     exit: {
-      ...baseVariants.exit,
+      ...exitObj,
       transition: {
         ...(hasTransition(baseVariants.exit) ? baseVariants.exit.transition : {}),
         ...mainTransition,
@@ -210,12 +217,13 @@ export function TextEffect({
 
   const baseDuration = 0.3 / speedSegment;
 
-  const customStagger = hasTransition(variants?.container?.visible ?? {})
-    ? (variants?.container?.visible as TargetAndTransition).transition?.staggerChildren
+  const visibleContainer = variants?.container?.visible;
+  const customStagger = hasTransition(visibleContainer)
+    ? visibleContainer.transition?.staggerChildren
     : undefined;
 
-  const customDelay = hasTransition(variants?.container?.visible ?? {})
-    ? (variants?.container?.visible as TargetAndTransition).transition?.delayChildren
+  const customDelay = hasTransition(visibleContainer)
+    ? visibleContainer.transition?.delayChildren
     : undefined;
 
   const computedVariants = {

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import "./index"; // Initialize LanguageRegistry
 import { ASL_HAND_POSES, mixHandshapes, REST_POSE, resolveHandshape } from "./pose-library";
 

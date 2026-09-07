@@ -6,7 +6,7 @@ import {
   RiVolumeMuteLine,
   RiVolumeUpLine,
 } from "@remixicon/react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import {
   Button,
   InputGroup,

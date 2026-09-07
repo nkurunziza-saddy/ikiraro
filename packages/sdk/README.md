@@ -35,9 +35,9 @@ import { createIkiraroClient } from "@ikiraro/sdk";
 
 export const { useIkiraro, useIkiraroPlugin } = createIkiraroClient({
   sdk: {
-    groqApiKey: process.env.VITE_GROQ_API_KEY
+    groqApiKey: process.env.VITE_GROQ_API_KEY,
   },
-  keyboard: true // Optional: Enable keyboard input
+  keyboard: true, // Optional: Enable keyboard input
 });
 ```
 
@@ -66,9 +66,11 @@ function Avatar() {
 ## Professional Features
 
 ### Orientation-Invariant Recognition
+
 Our `SignAllRecognizer` uses Procrustes alignment to ensure accurate matching regardless of the user's hand angle relative to the camera.
 
 ### SOTA Latency Reduction
+
 By using velocity-based plateau detection, the SDK identifies and commits signs the instant they are formed, bypassing traditional timeout-based delays.
 
 ## Documentation

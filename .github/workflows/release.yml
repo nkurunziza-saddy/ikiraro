@@ -22,20 +22,26 @@ jobs:
           # Fetch all history for changesets to be able to resolve git logs/commits
           fetch-depth: 0
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          bun-version: latest
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
 
       - name: Install Dependencies
-        run: bun install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Create Release Pull Request or Publish to NPM
         id: changesets
         uses: changesets/action@v1
         with:
           # This command runs when there are no changesets (i.e. publishing)
-          publish: bun run release
+          publish: pnpm run release
           title: "chore: release version"
           commit: "chore: release version"
         env:

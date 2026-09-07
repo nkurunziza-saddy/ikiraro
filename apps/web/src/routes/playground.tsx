@@ -4,7 +4,7 @@ import { AudioQueue } from "@ikiraro/runtime/audio";
 import { useHandTracking } from "@ikiraro/runtime/hand-tracking";
 import { RiCloseLine, RiMenuLine } from "@remixicon/react";
 import { createFileRoute } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useDeferredValue, useEffect, useRef, useState } from "react";
 import { type PlaygroundTab, Sidebar, type TtsProvider, Viewport } from "@/components/playground";
 import { Button } from "@/components/ui";

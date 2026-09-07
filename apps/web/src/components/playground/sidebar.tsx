@@ -8,7 +8,7 @@ import {
 } from "@ikiraro/sdk";
 import { RiCameraOffLine } from "@remixicon/react";
 import { Link } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import {
   ChatExchange,
   ModeSelector,

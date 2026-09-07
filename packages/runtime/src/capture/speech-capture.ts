@@ -93,7 +93,7 @@ export class SpeechCaptureAdapter implements CaptureAdapter {
   private cleanup() {
     if (this.animationId) cancelAnimationFrame(this.animationId);
     this.stream?.getTracks().forEach((t) => t.stop());
-    this.audioContext?.close();
+    void this.audioContext?.close().catch(() => {});
     this.stream = null;
     this.recorder = null;
     this.audioContext = null;

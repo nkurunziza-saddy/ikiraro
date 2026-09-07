@@ -87,7 +87,7 @@ const { startSpeech, stopSpeech, snapshot } = useIkiraro();
 startSpeech();
 
 // Drive a real-time audio meter while recording
-console.log(snapshot.speechLevel);  // 0–1 float
+console.log(snapshot.speechLevel); // 0–1 float
 console.log(snapshot.speechStatus); // "capturing"
 
 // Stop and fire translation automatically
@@ -110,7 +110,7 @@ cancel();
 
 <button onClick={cancel} disabled={!snapshot.isTranslating}>
   Cancel
-</button>
+</button>;
 ```
 
 ## onTranslated
@@ -122,13 +122,13 @@ const { onTranslated, isReady } = useIkiraro();
 
 useEffect(() => {
   if (!isReady) return;
-  
+
   const unsub = onTranslated((envelope) => {
     // Runs outside React render — safe for side effects
     console.log("Gloss:", envelope.plan.glossText);
     myTTS.speak(envelope.rawInput);
   });
-  
+
   return unsub;
 }, [isReady, onTranslated]);
 ```
@@ -151,7 +151,7 @@ const { snapshot } = useIkiraro();
 
 // CompositionPlugin debounces tokens with a 400 ms window
 console.log(snapshot.compositionTokens); // IkiraroToken[] — in-flight buffer
-console.log(snapshot.compositionText);   // joined string for live preview
+console.log(snapshot.compositionText); // joined string for live preview
 ```
 
 ## useIkiraroPlugin
@@ -164,7 +164,7 @@ import { useIkiraroPlugin } from "@/lib/ikiraro";
 function MyVisionWidget() {
   // Subscribe specifically to the vision plugin state without re-rendering on speech events
   const visionState = useIkiraroPlugin("vision");
-  
+
   if (!visionState?.isTracking) return null;
   return <div>Tracking Hand: {visionState.handedness}</div>;
 }

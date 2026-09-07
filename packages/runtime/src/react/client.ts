@@ -115,7 +115,7 @@ export function createIkiraroClient(config: IkiraroDefaultConfig): IkiraroReactC
     if (activeMounts <= 0) {
       activeMounts = 0;
       destroyTimeout = setTimeout(() => {
-        if (activeMounts === 0) stop();
+        if (activeMounts === 0) void stop().catch(() => {});
       }, 500);
     }
   };

@@ -77,7 +77,7 @@ export class VisionPlugin implements IkiraroPlugin {
     const unsubSign = this.vision.on("sign-detected", handleSignDetected);
     const unsubWord = this.vision.on("word-committed", handleWordCommitted);
     const unsubStart = ctx.subscribe("vision:cmd:start", (event) => {
-      this.vision.start(event.payload.videoElement);
+      void this.vision.start(event.payload.videoElement).catch(() => {});
     });
     const unsubStop = ctx.subscribe("vision:cmd:stop", () => {
       this.vision.stop();

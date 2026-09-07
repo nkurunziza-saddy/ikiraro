@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import type { SignToken } from "../types";
 import { LinguisticBuffer } from "./linguistic-buffer";
 import type { ILinguisticStrategy, WordBufferContext } from "./types";

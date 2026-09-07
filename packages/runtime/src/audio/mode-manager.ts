@@ -60,4 +60,4 @@ export class AccessibilityModeManager {
   }
 }
 
-export const accessibilityMode = AccessibilityModeManager.getInstance;
+export const accessibilityMode = () => AccessibilityModeManager.getInstance();

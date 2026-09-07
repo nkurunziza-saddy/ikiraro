@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 // Mock requestAnimationFrame for node test environment
 const origRaf = globalThis.requestAnimationFrame;

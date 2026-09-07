@@ -10,8 +10,8 @@ import { createIkiraro } from "@ikiraro/sdk";
 // Bootstrap the runtime outside of React
 const runtime = await createIkiraro({
   sdk: { groqApiKey: import.meta.env.VITE_GROQ_API_KEY },
-  keyboard: true,         // optional: mount KeyboardPlugin
-  plugins: [myPlugin],   // optional: custom plugins appended after defaults
+  keyboard: true, // optional: mount KeyboardPlugin
+  plugins: [myPlugin], // optional: custom plugins appended after defaults
 });
 
 // Subscribe to a specific event — fully typed payload
@@ -116,4 +116,4 @@ const runtime = await createIkiraro({
 // InspectorPlugin   — records all events (up to 100) for dev tooling
 ```
 
-> **Note:** Custom plugins added via `plugins[]` are appended *after* the built-in defaults. Plugin state is available via `runtime.getState().plugins` under the plugin's `name` key.
+> **Note:** Custom plugins added via `plugins[]` are appended _after_ the built-in defaults. Plugin state is available via `runtime.getState().plugins` under the plugin's `name` key.

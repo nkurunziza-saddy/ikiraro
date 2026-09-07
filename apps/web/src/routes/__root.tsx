@@ -7,7 +7,7 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { GlobalErrorBoundary, ThemeProvider } from "@/components";
 import appCss from "../index.css?url";
 

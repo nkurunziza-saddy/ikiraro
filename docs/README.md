@@ -12,9 +12,10 @@ Welcome to the Ikiraro documentation index.
 
 ## Restoration Report
 
-This repository recently underwent a docs restoration spike. 
+This repository recently underwent a docs restoration spike.
 
 **Restored Docs:**
+
 - `architecture.md`: Recovered from the deleted `architecture-map.md`.
 - `api/sdk.md`: Extracted and synthesized from the deleted TSX docs routes (`hooks.tsx`, `components.tsx`).
 - `api/runtime.md`: Extracted from the deleted TSX docs routes (`runtime.tsx`).
@@ -22,6 +23,7 @@ This repository recently underwent a docs restoration spike.
 - `guides/accessibility.md`: Extracted from the deleted TSX docs routes (`accessibility.tsx`).
 
 **Dropped Docs:**
+
 - The raw React components (`apps/web/src/routes/docs/*`) were deliberately dropped because the TanStack site is undergoing a redesign and these Markdown files serve as the new SSOT.
 - `roadmap.md` and `features.md`: These were deemed obsolete as the current implementation and tracking have moved past them.
 - `types.tsx` and `events.tsx`: Were dropped to avoid duplicating standard TypeScript typings already present in the codebase.

@@ -9,17 +9,17 @@ import { useHandTracking } from "@ikiraro/sdk";
 
 function CameraView() {
   const {
-    videoRef,       // callback ref — attach directly to <video>
-    tracking,       // CameraTrackingState
-    isReady,        // worker fully booted
-    delegate,       // "GPU" | "CPU" | null
+    videoRef, // callback ref — attach directly to <video>
+    tracking, // CameraTrackingState
+    isReady, // worker fully booted
+    delegate, // "GPU" | "CPU" | null
     fps,
     isActive,
     error,
-    start,          // async () => void — call after videoRef mounts
+    start, // async () => void — call after videoRef mounts
     stop,
-    clear,          // reset sentence buffer
-    manualCorrect,  // override classifier (for training UIs)
+    clear, // reset sentence buffer
+    manualCorrect, // override classifier (for training UIs)
   } = useHandTracking();
 
   return (
@@ -29,7 +29,7 @@ function CameraView() {
         autoPlay
         muted
         playsInline
-        className="scale-x-[-1]"   // mirror the feed
+        className="scale-x-[-1]" // mirror the feed
       />
       <button onClick={() => start()}>Start camera</button>
       <button onClick={stop}>Stop</button>
@@ -66,8 +66,8 @@ const { translate } = useIkiraro();
 function commitSentence() {
   const text = camera.tracking.sentenceText;
   if (text) {
-    translate(text);  // send to LLM → avatar
-    camera.clear();   // reset linguistic buffer
+    translate(text); // send to LLM → avatar
+    camera.clear(); // reset linguistic buffer
   }
 }
 ```

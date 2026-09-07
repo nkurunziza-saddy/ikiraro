@@ -10,6 +10,10 @@
     "type": "git",
     "url": "git+https://github.com/nkurunziza-saddy/ikiraro.git"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "type": "module",
   "exports": {
     ".": {
@@ -37,22 +41,18 @@
       "default": "./dist/cdn.js"
     }
   },
-  "files": [
-    "dist",
-    "README.md"
-  ],
   "scripts": {
     "check-types": "tsc --noEmit",
-    "test": "vitest run",
-    "build": "tsup"
+    "test": "vp test run",
+    "build": "vp pack"
   },
   "dependencies": {
     "effect": "catalog:"
   },
   "devDependencies": {
     "@ikiraro/config": "workspace:*",
-    "tsup": "^8.5.0",
     "typescript": "catalog:",
+    "vite-plus": "catalog:",
     "vitest": "catalog:"
   }
 }

@@ -96,7 +96,10 @@ export class EarconPlayer {
     const ctx = this.ctx;
 
     if (ctx.state === "suspended") {
-      ctx.resume().then(() => this.scheduleTones(ctx, spec));
+      void ctx
+        .resume()
+        .then(() => this.scheduleTones(ctx, spec))
+        .catch(() => {});
     } else {
       this.scheduleTones(ctx, spec);
     }

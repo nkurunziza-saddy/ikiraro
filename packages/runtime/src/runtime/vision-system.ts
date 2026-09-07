@@ -155,12 +155,12 @@ export class VisionSystem {
       const v = this.videoEl as VideoElementWithVFC;
       this.videoFrameCallbackId = v.requestVideoFrameCallback((now) => {
         this.videoFrameCallbackId = null;
-        this.captureAndSend(now);
+        void this.captureAndSend(now).catch(() => {});
       });
     } else {
       this.animationFrameId = requestAnimationFrame((now) => {
         this.animationFrameId = null;
-        this.captureAndSend(now);
+        void this.captureAndSend(now).catch(() => {});
       });
     }
   }

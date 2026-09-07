@@ -23,9 +23,11 @@ function AccessibilityToggle() {
 }
 
 // Conditionally hide the avatar based on mode
-{!isAvatarSuppressed && (
-  <AvatarViewer envelope={snapshot.lastEnvelope} modelUrl="/models/avatar.glb" />
-)}
+{
+  !isAvatarSuppressed && (
+    <AvatarViewer envelope={snapshot.lastEnvelope} modelUrl="/models/avatar.glb" />
+  );
+}
 ```
 
 - **standard**: All modalities active. TTS + sign avatar both play. Default.
@@ -42,10 +44,10 @@ import { accessibilityMode } from "@ikiraro/sdk";
 
 const manager = accessibilityMode(); // same as AccessibilityModeManager.getInstance()
 
-manager.getMode();              // "standard" | "audio-first" | "visual-first" | "motor"
+manager.getMode(); // "standard" | "audio-first" | "visual-first" | "motor"
 manager.setMode("audio-first");
-manager.isAvatarSuppressed();   // true when mode === "audio-first"
-manager.isTtsSuppressed();      // true when mode === "visual-first"
+manager.isAvatarSuppressed(); // true when mode === "audio-first"
+manager.isTtsSuppressed(); // true when mode === "visual-first"
 
 // Subscribe to changes
 const unsub = manager.onModeChange((mode) => {
@@ -77,9 +79,9 @@ queue.speak("SYSTEM ALERT", "critical"); // interrupts everything immediately
 await queue.speakAsync("Processing complete", "high");
 
 // Utilities
-queue.stop();           // cancel current + clear queue
-queue.repeat();         // repeat last spoken message at "high" priority
-queue.isSpeaking();     // boolean
+queue.stop(); // cancel current + clear queue
+queue.repeat(); // repeat last spoken message at "high" priority
+queue.isSpeaking(); // boolean
 queue.getLastMessage(); // string | null
 ```
 
@@ -97,13 +99,13 @@ import { EarconPlayer } from "@ikiraro/sdk";
 
 const earcons = EarconPlayer.getInstance();
 
-earcons.play("focus");    // soft blip — navigating to an item
-earcons.play("select");   // click — confirming a selection
-earcons.play("success");  // ascending tones — action completed
-earcons.play("error");    // descending tones — action failed
+earcons.play("focus"); // soft blip — navigating to an item
+earcons.play("select"); // click — confirming a selection
+earcons.play("success"); // ascending tones — action completed
+earcons.play("error"); // descending tones — action failed
 earcons.play("navigate"); // short swoosh — list navigation
-earcons.play("open");     // rising ping — opening content
-earcons.play("close");    // falling ping — closing content
+earcons.play("open"); // rising ping — opening content
+earcons.play("close"); // falling ping — closing content
 ```
 
 ## AccessibilityShortcutManager
@@ -126,12 +128,12 @@ shortcuts.register({
 
 // Register multiple at once
 shortcuts.registerMany([
-  { key: "h", label: "Home",  description: "Go to home",      action: goHome },
-  { key: "s", label: "Sign",  description: "Start signing",   action: startSign },
-  { key: "r", label: "Repeat",description: "Repeat last TTS", action: () => queue.repeat() },
+  { key: "h", label: "Home", description: "Go to home", action: goHome },
+  { key: "s", label: "Sign", description: "Start signing", action: startSign },
+  { key: "r", label: "Repeat", description: "Repeat last TTS", action: () => queue.repeat() },
 ]);
 
-shortcuts.mount();   // attach keydown listener to document
+shortcuts.mount(); // attach keydown listener to document
 shortcuts.unmount(); // remove listener
 
 // Focus tracking for screenreader-style navigation
@@ -151,12 +153,15 @@ Announce mode changes via `AudioQueue` at `critical` priority so screen readers 
 // Announce mode changes to assistive tech
 const isFirstRender = useRef(true);
 useEffect(() => {
-  if (isFirstRender.current) { isFirstRender.current = false; return; }
+  if (isFirstRender.current) {
+    isFirstRender.current = false;
+    return;
+  }
   const labels: Record<AccessibilityMode, string> = {
-    standard:      "Standard mode. All modalities active.",
+    standard: "Standard mode. All modalities active.",
     "audio-first": "Audio-first mode. Sign avatar hidden.",
-    "visual-first":"Visual-first mode. Text-to-speech disabled.",
-    motor:         "Motor mode. Single-key navigation active.",
+    "visual-first": "Visual-first mode. Text-to-speech disabled.",
+    motor: "Motor mode. Single-key navigation active.",
   };
   queue.speak(labels[mode], "critical");
 }, [mode]);

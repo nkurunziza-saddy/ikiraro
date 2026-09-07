@@ -270,7 +270,7 @@ class WebSpeechProvider {
   dispose(): void {
     this.cancel();
     if (this.audioContext && this.audioContext.state !== "closed") {
-      this.audioContext.close();
+      void this.audioContext.close().catch(() => {});
     }
     WebSpeechProvider.instance = null as any;
   }
