@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/cn";
+import { cn } from "cn";
 
 interface TokenOption {
   token: string;

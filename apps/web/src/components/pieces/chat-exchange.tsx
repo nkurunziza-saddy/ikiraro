@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { cn } from "@/lib/cn";
+import { cn } from "cn";
 
 interface ChatExchangeProps {
   user?: string;

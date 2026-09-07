@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/cn";
+import { cn } from "cn";
 
 type Tone = "primary" | "foreground" | "violet" | "emerald" | "sky" | "amber";
 

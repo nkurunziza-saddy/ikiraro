@@ -2,7 +2,7 @@
 import type { TargetAndTransition, Transition, Variant, Variants } from "motion/react";
 import { AnimatePresence, motion } from "motion/react";
 import React from "react";
-import { cn } from "@/lib/cn";
+import { cn } from "cn";
 
 export type PresetType = "blur" | "fade-in-blur" | "scale" | "fade" | "slide";
 
