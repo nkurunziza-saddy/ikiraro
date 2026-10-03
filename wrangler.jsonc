@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/wrangler/config-schema.json",
+  "name": "ikiraro-web",
+  "compatibility_date": "2026-05-29",
+  "assets": { "directory": "./dist" },
+}

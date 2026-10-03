@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ikiraro</title>
+    <meta
+      name="description"
+      content="Type a word and watch it fingerspelled in American Sign Language. No model file, no rig: the hand is a pure function of time."
+    />
+    <meta name="theme-color" content="#121016" />
+    <meta property="og:title" content="Ikiraro" />
+    <meta property="og:description" content="ASL fingerspelling as a pure function of time." />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  </head>
+  <body>
+    <canvas id="stage" aria-label="A figure fingerspelling the text below"></canvas>
+
+    <header>
+      <h1>ikiraro</h1>
+      <p>Fingerspelling in American Sign Language. <span id="note"></span></p>
+    </header>
+
+    <main>
+      <p id="caption" aria-live="polite"></p>
+      <form id="say" autocomplete="off">
+        <button id="toggle" type="button" aria-label="Play"></button>
+        <input
+          id="text"
+          type="text"
+          maxlength="80"
+          placeholder="Type a word"
+          spellcheck="false"
+          aria-label="Text to fingerspell"
+        />
+        <select id="speed" aria-label="Speed">
+          <option value="0.5">0.5×</option>
+          <option value="1" selected>1×</option>
+          <option value="1.5">1.5×</option>
+          <option value="2">2×</option>
+        </select>
+      </form>
+      <input id="scrub" type="range" min="0" max="1" step="0.001" value="0" aria-label="Position" />
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

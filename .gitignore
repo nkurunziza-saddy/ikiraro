@@ -1,48 +1,11 @@
-# Dependencies
 node_modules
-.pnp
-.pnp.js
-
-# Build outputs
 dist
-build
 *.tsbuildinfo
-
-# Environment variables
 .env
 .env*.local
-
-# IDEs and editors
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.idea
-*.swp
-*.swo
-*~
+.wrangler
 .DS_Store
-
-# Logs
-logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-.pnpm-debug.log*
 
-
-# Testing
-coverage
-.nyc_output
-
-# Misc
-*.tgz
-.cache
-tmp
-temp
-# Kaggle ASL fingerspelling landmark data (large, not for git)
+# Raw landmark datasets used by scripts/build-letters.ts (large, not for git)
 train_landmarks/
-plans/

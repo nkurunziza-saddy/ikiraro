@@ -1,25 +1,14 @@
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
-  resolve: {
-    tsconfigPaths: true,
-  },
   fmt: {
-    ignorePatterns: ["dist/**", "**/routeTree.gen.ts"],
+    ignorePatterns: ["dist/**", "src/signing/letters.ts"],
   },
   lint: {
-    ignorePatterns: ["dist/**", "scripts/**", "**/routeTree.gen.ts"],
+    ignorePatterns: ["dist/**"],
     jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
     rules: { "vite-plus/prefer-vite-plus-imports": "error" },
     options: { typeAware: true, typeCheck: true },
-    overrides: [
-      {
-        files: ["**/*.test.ts", "**/*.spec.ts"],
-        rules: {
-          "typescript/unbound-method": "off",
-        },
-      },
-    ],
   },
   staged: {
     "*.{js,jsx,ts,tsx}": "vp check --fix",

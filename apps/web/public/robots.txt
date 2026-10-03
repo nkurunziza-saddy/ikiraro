@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://ikiraro-web.main-95e.workers.dev/sitemap.xml

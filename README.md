@@ -1,449 +1,50 @@
-# Ikiraro Bridge
+# Ikiraro
 
-**Ikiraro** (_/ˌi-ki-ˈra-ro/_, Kinyarwanda for _bridge_) is an open-source TypeScript SDK that renders American Sign Language through a 3D avatar — directly in the browser. No server round-trips. No dependencies beyond a WebGL context.
-
-The SDK exposes a complete pipeline from input to motion: text, voice, and camera all feed a single translation engine that produces frame-perfect ASL animation. The avatar is a rigged GLTF mesh driven by dual-spring kinematics for natural human cadence — stiff enough to hit precise sign poses, loose enough to flow between them.
-
----
-
-## Why Ikiraro
-
-Sign language accessibility has historically required either pre-recorded video clips or server-side avatar rendering services. Both approaches fail at the intersection of dynamism and latency: pre-recorded video cannot handle arbitrary text, and server rendering adds round-trip cost that makes real-time conversation impractical.
-
-Ikiraro moves the entire pipeline into the browser using WebAssembly for ML inference, WebGL for rendering, and the Web Speech API for voice capture. A deaf user on a slow connection gets the same fidelity as one on fiber. The SDK is composable enough to embed in any web application — a video call, a public kiosk, a healthcare portal — without infrastructure changes.
-
----
-
-## Documentation
-
-For full API reference, architecture details, and advanced guides, visit the [docs/](docs/) directory.
-
----
-
-## Packages
-
-The SDK is split into four focused packages. Each can be used independently; `@ikiraro/sdk` wires them together.
-
-| Package             | Role                                                            | Key exports                                             |
-| ------------------- | --------------------------------------------------------------- | ------------------------------------------------------- |
-| `@ikiraro/sdk`      | **Facade API · recommended entry point**. Re-exports the below. | `createIkiraroClient`, `useIkiraro`, `AvatarViewer`     |
-| `@ikiraro/engine`   | ML inference · sign recognition                                 | `SignAllRecognizer`, `LinguisticBuffer`, `FrameBuilder` |
-| `@ikiraro/runtime`  | Orchestration · plugin lifecycle                                | `IkiraroRuntime`, `AudioQueue`, `useAccessibilityMode`  |
-| `@ikiraro/renderer` | WebGL avatar · visual output                                    | `AvatarViewer`, `HandOverlay`, `AudioVisualizer`        |
-
----
-
-## Installation
-
-The `@ikiraro/sdk` package is a curated facade over the internal engine, runtime, and renderer packages. You only need to install the SDK and its peer dependencies.
+_Ikiraro_ is Kinyarwanda for _bridge_. Type a word and a figure fingerspells it in American Sign Language, in the browser, drawn with WebGPU.
 
 ```bash
-# Install the SDK
-bun add @ikiraro/sdk
-
-# Required peers for 3D rendering
-bun add effect three @react-three/fiber @react-three/drei
-
-# Optional — only needed if you use useHandTracking (camera sign input)
-bun add @mediapipe/tasks-vision
-
-# npm / pnpm also work
-npm install @ikiraro/sdk
+vp install
+vp dev
 ```
 
-### Install the Agent Skill
+## How it works
 
-If you are working with an AI coding assistant (like Claude or Gemini), install the SDK skill to give the agent context about the codebase:
+There is no model file, no rig and no animation clips. Four ideas replace them.
+
+**A hand is twenty directions.** A hand has 21 joints and so 20 bones. A handshape is one unit vector per bone, each expressed relative to the bone before it ([`hand.ts`](src/signing/hand.ts)). Bone lengths are fixed, so no blend of two shapes can stretch a finger, and because every joint bends by well under a half turn, blending never has to guess which way round a finger should travel.
+
+**Letters are measured, not drawn.** Twenty letters come from the median of real hands in the [ASLNow fingerspelling dataset](https://huggingface.co/datasets/sid220/asl-now-fingerspelling) (MIT). The dataset's depth is unreliable, so [`build-letters.ts`](scripts/build-letters.ts) recovers it from foreshortening: a bone that looks shorter than it is must be pointing at the camera. The other six letters are signed edge-on to a camera (G, H, P, Q) or are movements (J, Z), and are composed from measured fingers in [`alphabet.ts`](src/signing/alphabet.ts): G is A's fist with L's index finger.
+
+**Animation is a pure function of time.** [`spell.ts`](src/signing/spell.ts) turns a text into a timeline, and `poseAt(spelling, t)` returns the hand at any instant. Nothing holds state, so playback can be paused, scrubbed or linked to: `/?t=1.5#hello` opens on that exact frame. Transitions follow a minimum-jerk curve, fingers lead and lag one another, a larger turn of the hand takes longer, and a doubled letter slides sideways instead of being formed twice.
+
+**The figure is capsules.** [`body.ts`](src/signing/body.ts) places the arm with two-bone inverse kinematics and returns a list of capsules; [`stage.ts`](src/stage.ts) draws them as two instanced meshes with three.js's `WebGPURenderer`, falling back to WebGL where WebGPU is missing. The body is dark and the hands are light for the reason interpreters wear black.
+
+## Layout
+
+```
+src/signing/   math, hand, letters (generated), alphabet, spell, body
+src/stage.ts   the renderer
+src/main.ts    the page
+scripts/       build-letters.ts, which regenerates src/signing/letters.ts
+```
+
+To rebuild the letter data:
 
 ```bash
-npx ikiraro-sdk
+git clone --depth 1 https://huggingface.co/datasets/sid220/asl-now-fingerspelling train_landmarks/aslnow
+vp run letters
 ```
 
----
-
-## Quick Start
-
-### React
-
-```tsx
-import { createIkiraroClient, AvatarViewer } from "@ikiraro/sdk";
-
-const { useIkiraro } = createIkiraroClient({
-  sdk: { groqApiKey: "gsk_…" },
-});
-
-export function SignApp() {
-  const { snapshot, translate, startSpeech, stopSpeech } = useIkiraro();
-
-  return (
-    <div>
-      {/* 3D avatar — animates automatically when envelope updates */}
-      <AvatarViewer
-        envelope={snapshot.lastEnvelope}
-        modelUrl="/models/avatar.glb"
-        className="w-full h-[400px]"
-      />
-
-      {/* Text input */}
-      <button onClick={() => translate("Hello, how are you?")}>Sign it</button>
-
-      {/* Voice input */}
-      <button onMouseDown={startSpeech} onMouseUp={stopSpeech}>
-        Hold to speak
-      </button>
-
-      {/* Current sign */}
-      <p>{snapshot.lastEnvelope?.normalizedText ?? "Idle"}</p>
-    </div>
-  );
-}
-```
-
-### With hand tracking (vision input)
-
-```tsx
-import { useHandTracking, HandOverlay } from "@ikiraro/sdk";
-
-function VisionInput() {
-  const { videoRef, tracking, isActive, start, stop } = useHandTracking();
-
-  return (
-    <div style={{ position: "relative" }}>
-      <video ref={videoRef} autoPlay playsInline muted />
-      <HandOverlay tracking={tracking} />
-
-      <p>Current sign: {tracking.classification?.sign ?? "—"}</p>
-      <p>Confidence: {Math.round((tracking.classification?.confidence ?? 0) * 100)}%</p>
-      <p>Sentence: {tracking.sentenceText}</p>
-
-      <button onClick={isActive ? stop : () => void start()}>
-        {isActive ? "Stop camera" : "Start camera"}
-      </button>
-    </div>
-  );
-}
-```
-
----
-
-## How the Pipeline Works
-
-```
-Input layer             Translation            Planning              Rendering
-────────────────        ───────────────        ──────────────        ──────────────
-Text string        →
-Voice (Speech API  →    LLM gloss         →    LinguisticBuffer →    FrameBuilder  →  AvatarViewer
-  or Whisper)           notation               phonetic              animation        WebGL 3D
-Camera (MediaPipe  →    SignAllRecognizer  →    segmentation          envelopes        spring
-  landmarks)            centroid match         plateau detect                         physics
-```
-
-### Stage 1 — Input
-
-Three input channels feed the pipeline:
-
-- **Text**: A plain string passed to `translate(text)`. Tokenized immediately.
-- **Voice**: Web Speech API (via `startSpeech()`) or a Whisper model. The speech transcript is piped to the same translation step as text.
-- **Camera**: MediaPipe Hands extracts 21 3D landmarks per hand at up to 30 fps. Landmark streams are processed by the engine's `SignAllRecognizer`.
-
-### Stage 2 — Translation
-
-English text is converted to ASL **gloss notation** — a stripped linguistic representation that removes English morphology and applies ASL grammar rules.
-
-Examples:
-
-```
-English → ASL Gloss
-"I am going to the store"  →  STORE GO I
-"Did you eat?"             →  EAT FINISH YOU?
-"I love you"               →  I LOVE YOU
-```
-
-Gloss reordering follows topic-comment structure, applies NMM (non-manual markers) tokens for questions, and handles temporal aspect for verbs. The translation is performed by a small LLM prompt (Groq by default) but the client is configurable — any function that returns gloss given English works.
-
-### Stage 3 — Lexeme planning
-
-The `LinguisticBuffer` receives the gloss stream and:
-
-1. Groups tokens into phonetic windows using a sliding temporal buffer.
-2. Identifies sign boundaries using **velocity-based plateau detection** — a research-informed algorithm that finds the deceleration and hold phase between signs. This reduces pipeline latency by approximately 250 ms compared to frame-counting approaches.
-3. Emits `LexemeEnvelope` objects: normalized sign tokens with timing metadata.
-
-### Stage 4 — Frame building
-
-`FrameBuilder` converts lexeme envelopes into animation envelopes:
-
-1. Looks up each sign in the motion library (a set of pre-authored keyframe sequences).
-2. Applies **coarticulation** — the spatial blending of the hand trajectory between the exit pose of sign _n_ and the entry pose of sign _n+1_. Without coarticulation, signed sentences look mechanical; with it, they approximate natural Deaf fluency.
-3. Computes transition curves using a `cubic-bezier(0.34, 1.02, 0.64, 1)` easing — slightly springy on arrival, matching the motor signature of human sign production.
-4. Emits the final `AnimationEnvelope` consumed by the renderer.
-
-### Stage 5 — Rendering
-
-`AvatarViewer` drives a rigged GLTF avatar:
-
-- **Dual-spring kinematics**: Each joint runs two parallel spring systems. The _reach spring_ (high stiffness, low damping) handles large-amplitude motion like shoulder abduction and elbow extension. The _shape spring_ (lower stiffness, higher damping) handles fine fingershape precision. The two layers are summed before application, producing motion that feels both accurate and natural.
-- **60 fps target**: The animation loop runs via `requestAnimationFrame` and skips frames under load rather than queuing, preventing the avatar from falling behind the audio stream.
-- **GLTF standard**: Any rigged avatar exported as `.glb` with the standard human skeleton works. The default model ships with the renderer package.
-
----
-
-## Architecture Deep-Dive
-
-### `SignAllRecognizer`
-
-The vision engine uses **orientation-invariant Procrustes alignment** to normalize hand landmarks before matching:
-
-1. Translate landmarks so the wrist is at the origin.
-2. Scale so the middle finger MCP joint is at unit distance.
-3. Apply an SVD-based rotation to align the palm normal with the canonical orientation.
-4. Compute cosine similarity against ~200 ASL sign centroids (derived from research-grade mocap datasets).
-
-This makes recognition invariant to signer handedness, camera angle, and arm position — critical for real-world use where the camera is not ideally positioned.
-
-### `LinguisticBuffer`
-
-The buffer implements a **three-phase phonological window**:
-
-```
-Preparation → Stroke → Hold → Retraction
-              └─ sign duration ─┘
-```
-
-The velocity plateau (near-zero velocity during the hold phase) is detected using a weighted moving average of landmark velocity. The buffer fires a sign detection event at the start of the hold phase rather than the end, eliminating the retraction delay from the user experience.
-
-### `FrameBuilder` and coarticulation
-
-Coarticulation in Ikiraro is implemented as **spatial path interpolation** between sign exit and sign entry poses. For each pair of adjacent signs:
-
-1. Compute the dominant hand's exit vector (velocity direction at the end of sign _n_).
-2. Compute the entry vector (velocity direction at the start of sign _n+1_).
-3. Generate a cubic Bézier path that transitions smoothly between the two, respecting the "path holds" that characterize natural ASL production.
-
-The transition duration is computed from the linguistic distance between signs — longer for phonologically dissimilar pairs — with a minimum of 80 ms and a maximum of 220 ms.
-
----
-
-## API Reference
-
-### `createIkiraroClient(config)`
-
-Creates a client instance with a bound `useIkiraro` hook.
-
-```ts
-const { useIkiraro } = createIkiraroClient({
-  sdk: {
-    groqApiKey: string;       // required for LLM translation
-    model?: string;           // default: "openai/gpt-oss-120b"
-  };
-  runtime?: {
-    accessibilityMode?: "standard" | "audio-first" | "visual-first";
-    plugins?: IkiraroPlugin[];
-  };
-});
-```
-
-### `useIkiraro()`
-
-```ts
-const {
-  snapshot, // IkiraroSnapshot — reactive state
-  translate, // (text: string) => void
-  startSpeech, // () => void
-  stopSpeech, // () => void
-  onTranslated, // (cb: (envelope: AnimationEnvelope) => void) => () => void
-} = useIkiraro();
-```
-
-**`snapshot` shape:**
-
-```ts
-interface IkiraroSnapshot {
-  lastEnvelope: AnimationEnvelope | null;
-  isTranslating: boolean;
-  speechStatus: "idle" | "capturing" | "processing";
-  speechLevel: number; // 0–1 audio amplitude
-  error: string | null;
-}
-```
-
-### `AvatarViewer`
-
-```tsx
-<AvatarViewer
-  envelope={snapshot.lastEnvelope} // AnimationEnvelope | null | undefined
-  modelUrl="/models/avatar.glb" // path to .glb file
-  className="w-full h-full"
-/>
-```
-
-### `useHandTracking()`
-
-```ts
-const {
-  videoRef, // RefObject<HTMLVideoElement> — attach to <video>
-  tracking, // HandTrackingState
-  isActive, // boolean
-  fps, // number
-  delegate, // "GPU" | "CPU" | null
-  start, // () => Promise<void>
-  stop, // () => void
-} = useHandTracking();
-```
-
-**`tracking` shape:**
-
-```ts
-interface HandTrackingState {
-  landmarks: NormalizedLandmark[][] | null;
-  classification: { sign: string; confidence: number } | null;
-  currentWord: string;
-  sentenceText: string;
-}
-```
-
-### `AudioQueue`
-
-```ts
-const queue = AudioQueue.getInstance(
-  (text) => tts.speak(text), // speak function
-  () => tts.cancel(), // cancel function
-);
-
-queue.speak(text, "normal"); // priority: "critical" | "high" | "normal" | "low"
-await queue.speakAsync(text); // wait for completion
-queue.stop(); // cancel current + clear queue
-```
-
-### `useAccessibilityMode()`
-
-```ts
-const { mode, setMode } = useAccessibilityMode();
-// mode: "standard" | "audio-first" | "visual-first"
-```
-
----
-
-## Plugin System
-
-Every input and output adapter in Ikiraro is a plugin. You can add new ones or replace built-ins without touching the core pipeline.
-
-```ts
-import type { IkiraroPlugin } from "@ikiraro/runtime";
-
-const transcriptPlugin: IkiraroPlugin = {
-  name: "transcript-overlay",
-  onTranslated(envelope, runtime) {
-    document.getElementById("transcript")!.textContent = envelope.normalizedText;
-  },
-};
-
-const { useIkiraro } = createIkiraroClient({
-  sdk: { groqApiKey: "gsk_…" },
-  runtime: { plugins: [transcriptPlugin] },
-});
-```
-
-**Plugin lifecycle hooks:**
-
-| Hook                               | When it fires              |
-| ---------------------------------- | -------------------------- |
-| `onMount(runtime)`                 | Plugin registered          |
-| `onTranslated(envelope, runtime)`  | Each completed translation |
-| `onSpeechStart(runtime)`           | Voice capture begins       |
-| `onSpeechEnd(transcript, runtime)` | Voice capture ends         |
-| `onError(error, runtime)`          | Any pipeline error         |
-| `onUnmount(runtime)`               | Plugin removed             |
-
----
-
-## Accessibility Modes
-
-The runtime ships three modes that control which plugins activate and what sensory output is produced:
-
-| Mode           | Description                                                                                            |
-| -------------- | ------------------------------------------------------------------------------------------------------ |
-| `standard`     | All inputs and outputs active. Default.                                                                |
-| `audio-first`  | Prioritizes audio cues; avatar animation is secondary. For users who rely primarily on audio feedback. |
-| `visual-first` | No audio output. For deaf users for whom audio prompts would be intrusive or meaningless.              |
-
-Mode is set at initialization or changed at runtime via `setMode()`. It gates the audio queue, earcon system, and any plugins that check `runtime.accessibilityMode`.
-
----
-
-## Development
-
-### Prerequisites
-
-- [Bun](https://bun.sh) ≥ 1.1
-- Node.js ≥ 20 (for tooling)
-
-### Setup
+## Checks
 
 ```bash
-git clone https://github.com/nkurunziza-saddy/ikiraro
-cd ikiraro
-bun install
+vp check   # format, lint, types
+vp test    # hand, alphabet, timeline and body
+vp build
 ```
 
-### Running the web app
+## Limits
 
-```bash
-cd apps/web
-bun dev
-```
-
-### Running tests
-
-```bash
-# Engine unit tests (Vitest)
-cd packages/engine
-bun test
-
-# Type check all packages
-bun run check-types
-```
-
-### Monorepo structure
-
-```
-ikiraro/
-├── apps/
-│   └── web/                    # Marketing site + playground (TanStack Start)
-├── packages/
-│   ├── engine/                 # ML inference, sign recognition, planning
-│   │   └── src/
-│   │       ├── planning/       # FrameBuilder, coarticulation, trajectories
-│   │       └── vision/         # SignAllRecognizer, LinguisticBuffer, pipeline
-│   ├── runtime/                # IkiraroRuntime, plugins, audio, accessibility
-│   ├── renderer/               # AvatarViewer, HandOverlay, Three.js integration
-│   └── sdk/                    # Public API, createIkiraroClient, useIkiraro
-└── README.md
-```
-
----
-
-## Contributing
-
-Contributions are welcome. Before opening a pull request:
-
-1. Check the open issues for existing discussion on your topic.
-2. For substantial changes, open an issue first to discuss approach.
-3. Run `bun test` and `bun run check-types` before pushing.
-4. Keep pull requests focused — one concern per PR.
-
-The areas most in need of contribution:
-
-- **More sign coverage**: The current centroid library covers ~200 common ASL signs. Expanding it requires mocap data and validation against native signers.
-- **Non-ASL languages**: The architecture supports other sign languages; the bottleneck is linguistic data and gloss translation models.
-- **Avatar quality**: The default GLTF avatar is functional but not expressive. Contributions of higher-quality rigs are welcome.
-
----
-
-## License
-
-MIT — see [LICENSE](./LICENSE).
-
----
-
-_ikiraro — bridge._
+- Fingerspelling only: A to Z. There are no signs for whole words, no digits and no facial grammar, so this is not ASL translation.
+- The handshapes have not been reviewed by a fluent signer. The six composed letters, and the paths of J and Z, are an interpretation of reference material rather than measurements.
+- Recovered depth is approximate. The figure reads best from the front, which is how it is framed.
