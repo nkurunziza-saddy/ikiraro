@@ -58,7 +58,7 @@ describe("alphabet", () => {
       expect(fingers(letter)[0]).toBeGreaterThan(0.9);
       expect(palm(letter)[2]).toBeLessThan(-0.9);
     }
-    for (const letter of ["P", "Q"]) expect(fingers(letter)[1]).toBeLessThan(-0.8);
+    for (const letter of ["P", "Q"]) expect(fingers(letter)[1]).toBeLessThan(-0.7);
     expect(ALPHABET.Q!.shape).toBe(ALPHABET.G!.shape);
     expect(ALPHABET.P!.shape).toBe(ALPHABET.K!.shape);
   });

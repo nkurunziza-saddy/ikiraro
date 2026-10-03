@@ -1,7 +1,19 @@
 import { RELAXED } from "./alphabet.ts";
 import { BONE_COUNT, boneStart, toJoints } from "./hand.ts";
 import type { Handshape } from "./hand.ts";
-import { add, basis, cross, distance, dot, mix, normalize, rotate, scale, sub } from "./math.ts";
+import {
+  add,
+  axisAngle,
+  cross,
+  distance,
+  dot,
+  mix,
+  normalize,
+  rotate,
+  scale,
+  sub,
+  X,
+} from "./math.ts";
 import type { Quat, V3 } from "./math.ts";
 
 /**
@@ -10,8 +22,8 @@ import type { Quat, V3 } from "./math.ts";
  * the viewer. The signing hand is the signer's right, on the viewer's left.
  */
 
-/** Wrist to middle knuckle. Half as large again as life, so handshapes read at a distance. */
-export const PALM = 0.145;
+/** Wrist to middle knuckle. A touch over life size; the camera comes closer instead. */
+export const PALM = 0.108;
 export const UPPER_ARM = 0.27;
 export const FOREARM = 0.25;
 export const SHOULDER: V3 = [-0.185, 0, 0];
@@ -26,14 +38,24 @@ export type Pose = {
 };
 
 /** Where fingerspelling happens: in front of the shoulder, clear of the face. */
-export const HOME: V3 = [-0.25, -0.08, 0.2];
+export const HOME: V3 = [-0.25, -0.04, 0.2];
 
-/** The arm hanging at the side, fingers down, palm towards the leg. */
+/**
+ * The arm hanging at the side, fingers down, palm to the back. From here the
+ * shortest turn to an upright hand swings the fingers forwards and up, which is
+ * what a forearm does when it is raised.
+ */
 export const REST: Pose = {
   shape: RELAXED,
-  turn: basis([0.05, -1, 0.12], [1, 0, 0]),
-  place: [-0.25, -0.47, 0.06],
+  turn: axisAngle(X, 2.9),
+  place: [-0.24, -0.47, 0.05],
 };
+
+/**
+ * Where the elbow wants to be: under the shoulder, a little out and back. An
+ * arm is heavy, so the elbow stays near the body and the wrist does the pointing.
+ */
+const ELBOW_HOME: V3 = add(SHOULDER, [-0.06, -0.26, -0.05]);
 
 /** A capsule: a rounded bone from `a` to `b`. The renderer draws nothing else. */
 export type Capsule = { a: V3; b: V3; radius: number; skin: boolean };
@@ -60,19 +82,16 @@ const boneRadius = (bone: number): number => {
   return (thumb ? 0.145 : 0.125) - (segment - 1) * 0.012;
 };
 
-function arm(pose: Pose, mirror: boolean): Capsule[] {
+function arm(pose: Pose, shoulder: V3, mirror: boolean): Capsule[] {
   const flip = (p: V3): V3 => (mirror ? [-p[0], p[1], p[2]] : p);
   const joints = toJoints(pose.shape).map((joint) =>
     add(pose.place, rotate(pose.turn, scale(joint, PALM))),
   );
-  // A wrist cannot fold back on itself, so the elbow trails behind the hand;
-  // and an arm is heavy, so it also hangs down and a little out.
-  const behind = sub(pose.place, scale(rotate(pose.turn, [0, 1, 0]), FOREARM));
   const wrist = joints[0]!;
-  const bend = elbow(SHOULDER, wrist, add(behind, [-0.06, -0.3, -0.06]));
+  const bend = elbow(shoulder, wrist, ELBOW_HOME);
   const capsules: Capsule[] = [
-    { a: SHOULDER, b: bend, radius: 0.043, skin: false },
-    { a: bend, b: wrist, radius: 0.03, skin: false },
+    { a: shoulder, b: bend, radius: 0.034, skin: false },
+    { a: bend, b: wrist, radius: 0.027, skin: false },
     // The heel of the hand, a little wider than the sleeve it comes out of.
     { a: wrist, b: wrist, radius: 0.23 * PALM, skin: true },
   ];
@@ -100,18 +119,27 @@ function arm(pose: Pose, mirror: boolean): Capsule[] {
   return capsules.map((c) => ({ ...c, a: flip(c.a), b: flip(c.b) }));
 }
 
-const TORSO: Capsule[] = [
-  // Head, neck, shoulders, and a trunk that runs out of frame.
-  { a: [0, 0.265, 0.02], b: [0, 0.31, 0.015], radius: 0.098, skin: false },
-  { a: [0, 0.08, 0], b: [0, 0.18, 0.01], radius: 0.04, skin: false },
-  { a: [-0.13, -0.03, 0], b: [0.13, -0.03, 0], radius: 0.08, skin: false },
-  { a: [0, -0.12, 0], b: [0, -2, 0], radius: 0.15, skin: false },
-];
+/** How far a full breath lifts the chest, and the shoulders and head with it. */
+const BREATH = 0.004;
 
-/** The other hand, at rest. Posed in the signing hand's space, then mirrored. */
-const IDLE = arm(REST, true);
-
-/** The whole figure for one pose of the signing hand. Always the same number of capsules. */
-export function figure(pose: Pose): Capsule[] {
-  return [...TORSO, ...IDLE, ...arm(pose, false)];
+/**
+ * The whole figure for one pose of the signing hand: a head, a trunk that runs
+ * out of frame, the other arm at rest, and the signing arm. Always the same
+ * number of capsules. `breath` runs from -1 to 1.
+ */
+export function figure(pose: Pose, breath = 0): Capsule[] {
+  const lift: V3 = [0, breath * BREATH, 0];
+  const shoulder = add(SHOULDER, lift);
+  return [
+    {
+      a: add([0, 0.27, 0], scale(lift, 1.5)),
+      b: add([0, 0.27, 0], scale(lift, 1.5)),
+      radius: 0.1,
+      skin: false,
+    },
+    { a: add([0, -0.07, 0], lift), b: [0, -2, 0], radius: 0.172, skin: false },
+    // Posed as a right arm, then mirrored.
+    ...arm(REST, shoulder, true),
+    ...arm(pose, shoulder, false),
+  ];
 }

@@ -8,13 +8,13 @@ import type { Capsule } from "./signing/body.ts";
  */
 
 // Interpreters wear black for a reason: the body recedes and the hands are all you see.
-const INK = new THREE.Color("#3a3547");
-const SKIN = new THREE.Color("#f4e6cf");
+const INK = new THREE.Color("#3b3b40");
+const SKIN = new THREE.Color("#efe4d2");
 /** The part of the figure the camera keeps in frame, in metres. The controls cover the bottom of it. */
-const FRAME = { centre: new THREE.Vector3(-0.06, -0.19, 0), width: 0.95, height: 1.26 };
+const FRAME = { centre: new THREE.Vector3(-0.07, -0.08, 0), width: 0.8, height: 0.98 };
 const FOV = 24;
 /** How far the pointer can swing the camera, in radians. */
-const SWING = { yaw: 0.32, pitch: 0.1 };
+const SWING = { yaw: 0.14, pitch: 0.05 };
 
 export type Stage = {
   draw(capsules: readonly Capsule[]): void;
@@ -35,8 +35,8 @@ export async function createStage(canvas: HTMLCanvasElement, capsuleCount: numbe
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 20);
 
-  scene.add(new THREE.HemisphereLight("#ffffff", "#6f6a80", 1.1));
-  const key = new THREE.DirectionalLight("#fff3e2", 2.8);
+  scene.add(new THREE.HemisphereLight("#ffffff", "#77777c", 1.5));
+  const key = new THREE.DirectionalLight("#fff8ee", 2.2);
   key.position.set(-0.9, 1.5, 2.2);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
@@ -53,12 +53,10 @@ export async function createStage(canvas: HTMLCanvasElement, capsuleCount: numbe
   });
   key.target.position.copy(FRAME.centre);
   scene.add(key, key.target);
-  // Two lights from behind pick the dark body's outline out of the dark.
-  for (const side of [-1, 1]) {
-    const rim = new THREE.DirectionalLight("#b9a8ff", 2.2);
-    rim.position.set(1.6 * side, 0.7, -1.3);
-    scene.add(rim);
-  }
+  // A faint light from behind, just enough to lift the body's outline off the background.
+  const rim = new THREE.DirectionalLight("#ffffff", 0.7);
+  rim.position.set(1.2, 0.9, -1.6);
+  scene.add(rim);
 
   const material = new THREE.MeshStandardNodeMaterial({ roughness: 0.78, metalness: 0 });
   const bones = new THREE.InstancedMesh(

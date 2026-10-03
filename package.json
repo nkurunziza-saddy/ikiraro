@@ -15,6 +15,7 @@
     "preview": "vp preview",
     "test": "vp test run",
     "check": "vp check",
+    "say": "node src/cli.ts",
     "letters": "node scripts/build-letters.ts train_landmarks/aslnow",
     "deploy": "vp build && pnpm dlx wrangler deploy",
     "prepare": "vp config"

@@ -10,6 +10,8 @@ export type Letter = {
   shape: Handshape;
   /** Where the hand points: the rotation from hand space to the signer's space. */
   turn: Quat;
+  /** Where the wrist goes, in palm lengths from the usual place, for letters signed elsewhere. */
+  reach?: V3;
   /** For letters that are a movement: the wrist's path in palm lengths, `u` running 0 to 1. */
   path?: (u: number) => V3;
   /** For letters that end turned: the orientation reached at the end of the path. */
@@ -38,7 +40,9 @@ const QUARTER = axisAngle(Y, 0.7);
 /** Fingers across the body, palm towards the signer. */
 const ACROSS = basis([1, 0.12, 0], [0, 0, -1]);
 /** Fingers hanging down, back of the hand to the viewer. */
-const DOWN = axisAngle(X, 2.6);
+const DOWN = axisAngle(X, 2.4);
+/** A hand can only hang from a wrist that has dropped and come forwards. */
+const DROPPED: V3 = [0.2, -0.8, 0.65];
 /** Palm turned part of the way in, where the hand ends up after the little finger draws a J. */
 const HOOKED = axisAngle(Y, 1.1);
 
@@ -70,8 +74,8 @@ export const ALPHABET: Record<string, Letter> = {
   // camera and two are movements. Each is built from measured fingers.
   G: { shape: pinch, turn: ACROSS },
   H: { shape: U, turn: ACROSS },
-  P: { shape: K, turn: DOWN },
-  Q: { shape: pinch, turn: DOWN },
+  P: { shape: K, turn: DOWN, reach: DROPPED },
+  Q: { shape: pinch, turn: DOWN, reach: DROPPED },
   J: {
     shape: I,
     turn: UPRIGHT,
