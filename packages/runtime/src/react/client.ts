@@ -24,12 +24,13 @@ export interface IkiraroReactClient {
     isReady: boolean;
     error: string | null;
     snapshot: RuntimeSnapshot;
-    translate: (text: string, options?: { context?: TranslationContext }) => void;
+    translate: (text: string, options?: { context?: TranslationContext; model?: string }) => void;
     translateUnits: (units: string[]) => void;
     startSpeech: (options?: {
       sttModel?: SttModel;
       prompt?: string;
       context?: TranslationContext;
+      model?: string;
     }) => void;
     stopSpeech: () => void;
     cancel: () => void;
@@ -137,14 +138,22 @@ export function createIkiraroClient(config: IkiraroDefaultConfig): IkiraroReactC
       isReady: !!runtime,
       error: initError,
       snapshot,
-      translate: useCallback((text: string, opts?: { context?: TranslationContext }) => {
-        runtime?.translate(text, opts);
-      }, []),
+      translate: useCallback(
+        (text: string, opts?: { context?: TranslationContext; model?: string }) => {
+          runtime?.translate(text, opts);
+        },
+        [],
+      ),
       translateUnits: useCallback((units: string[]) => {
         runtime?.translateUnits(units);
       }, []),
       startSpeech: useCallback(
-        (opts?: { sttModel?: SttModel; prompt?: string; context?: TranslationContext }) => {
+        (opts?: {
+          sttModel?: SttModel;
+          prompt?: string;
+          context?: TranslationContext;
+          model?: string;
+        }) => {
           runtime?.startSpeech(opts);
         },
         [],

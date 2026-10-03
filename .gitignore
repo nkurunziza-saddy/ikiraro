@@ -33,8 +33,6 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
-# Turbo
-.turbo
 
 # Testing
 coverage

@@ -35,7 +35,7 @@ To fetch more Kaggle files: `kaggle competitions download -c asl-fingerspelling 
 The primary metric is held-out letter accuracy. We split the isolated letter dataset (sid220) deterministically: even-numbered files for templates, odd-numbered for evaluation.
 
 ```bash
-# Evaluate shipped recognizer
+# Diagnostic only: shipped templates overlap these samples
 bun scripts/eval-recognition.ts train_landmarks/aslnow --baseline
 
 # Rebuild templates + evaluate
@@ -43,7 +43,7 @@ bun scripts/build-letter-templates.ts train_landmarks/aslnow --write
 bun scripts/eval-recognition.ts train_landmarks/aslnow
 ```
 
-Target: >85% top-1 accuracy on held-out palm-forward samples.
+Target: >85% top-1 accuracy on held-out palm-forward samples. This split is by sample, not signer; it cannot establish signer-independent accuracy or conversation recognition. The `--baseline` mode uses shipped templates built from all samples, so it is not a held-out benchmark.
 
 ### 2. Kinematic Naturalness
 

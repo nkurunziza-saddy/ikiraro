@@ -12,13 +12,14 @@ import { SttGroqLive } from "./services/groq/stt";
 export interface IkiraroConfig {
   readonly groqApiKey: string;
   readonly groqBaseUrl?: string;
+  readonly model?: string;
 }
 
 /** @internal */
-export const translateTextEffect = (text: string) =>
+export const translateTextEffect = (text: string, model?: string) =>
   Effect.gen(function* (_) {
     const gloss = yield* _(GlossService);
-    const intent = yield* _(gloss.generate(text));
+    const intent = yield* _(gloss.generate(text, model));
     const plan = buildPlanFromGloss(intent);
     return createEnvelope(plan, {
       mode: "text",
@@ -32,12 +33,13 @@ export const translateSpeechEffect = (
   audio: File,
   model: SttModel = "whisper-large-v3",
   prompt?: string,
+  glossModel?: string,
 ) =>
   Effect.gen(function* (_) {
     const stt = yield* _(SttService);
     const gloss = yield* _(GlossService);
     const intake = yield* _(stt.transcribe(audio, model, prompt));
-    const intent = yield* _(gloss.generate(intake.text));
+    const intent = yield* _(gloss.generate(intake.text, glossModel));
     const plan = buildPlanFromGloss(intent, intake);
     return createEnvelope(plan, {
       mode: "speech",

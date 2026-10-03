@@ -39,6 +39,8 @@ const SIGNING_REST = {
   rForeY: 0.48,
   rForeZ: -1.5,
   rHandX: 0,
+  rHandY: 0,
+  rHandZ: 0,
   lArmX: 0.82,
   lArmY: -0.28,
   lArmZ: 0.34,
@@ -46,6 +48,8 @@ const SIGNING_REST = {
   lForeY: -0.34,
   lForeZ: 1.42,
   lHandX: -0.18,
+  lHandY: 0,
+  lHandZ: 0,
 } as const;
 
 const BASE_JOINTS = Object.keys(SIGNING_REST) as Array<keyof typeof SIGNING_REST>;
@@ -130,6 +134,7 @@ export class KinematicController implements IKinematicController {
 
   snapToTarget(target: ArmTarget) {
     this.currentTarget = target;
+    this.activeDelta = null;
     const t = target;
 
     for (const key of BASE_JOINTS) {
@@ -140,12 +145,13 @@ export class KinematicController implements IKinematicController {
     for (const key in this.baseState) {
       this.baseState[key as keyof JointStateRecord].velocity = 0;
       this.motionState[key as keyof JointStateRecord].velocity = 0;
+      this.motionState[key as keyof JointStateRecord].value = 0;
     }
   }
 
   solve(dtMs: number): KinematicPose {
     // Cap dt at 50ms to prevent instability.
-    const dt = Math.min(dtMs, 50) / 1000;
+    const dt = Number.isFinite(dtMs) ? Math.max(0, Math.min(dtMs, 50)) / 1000 : 0;
 
     if (dt <= 0) return this.synthesize();
 
@@ -238,6 +244,8 @@ export class KinematicController implements IKinematicController {
   }
 
   reset() {
+    this.currentTarget = {};
+    this.activeDelta = null;
     this.initializeStates();
   }
 }

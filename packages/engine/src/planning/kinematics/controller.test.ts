@@ -117,3 +117,27 @@ describe("KinematicController", () => {
     expect(pose.rArm.x).toBeCloseTo(SIGNING_REST.rArmX);
   });
 });
+
+describe("wrist target and reset regressions", () => {
+  it("honors all wrist axes and removes residual motion when snapping", () => {
+    const controller = new KinematicController();
+    controller.setMotionDelta({
+      rArmXDelta: 1,
+      rArmZDelta: 0,
+      rForeYDelta: 0,
+      rForeZDelta: 0,
+      rHandYDelta: 0.5,
+    });
+    for (let i = 0; i < 30; i++) controller.solve(16);
+    controller.snapToTarget({ rHandY: 0.3, rHandZ: -0.4, lHandY: -0.2, lHandZ: 0.6 });
+    const pose = controller.solve(16);
+    expect(pose.rHand.y).toBeCloseTo(0.3);
+    expect(pose.rHand.z).toBeCloseTo(-0.4);
+    expect(pose.lHand.y).toBeCloseTo(-0.2);
+    expect(pose.lHand.z).toBeCloseTo(0.6);
+    expect(pose.rArm.x).toBeCloseTo(0.76);
+    controller.reset();
+    for (let i = 0; i < 30; i++) controller.solve(16);
+    expect(controller.solve(NaN).rHand.y).toBe(0);
+  });
+});

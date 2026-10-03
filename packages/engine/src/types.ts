@@ -98,6 +98,8 @@ export type ArmTarget = {
   rForeY?: number;
   rForeZ?: number;
   rHandX?: number;
+  rHandY?: number;
+  rHandZ?: number;
   lArmX?: number;
   lArmZ?: number;
   lArmY?: number;
@@ -105,8 +107,12 @@ export type ArmTarget = {
   lForeY?: number;
   lForeZ?: number;
   lHandX?: number;
+  lHandY?: number;
+  lHandZ?: number;
 };
 export type FrameItem = {
+  handshape?: Handshape;
+  leftHandshape?: Handshape;
   type: "lexeme" | "fingerspell" | "number" | "pause" | "pointing";
   value: string;
   label: string;
@@ -140,6 +146,7 @@ export interface SignLanguagePlugin {
   getHandshape: (key: string) => Handshape | null;
   getLexemePose: (gloss: string) => {
     handshape: Handshape;
+    leftHandshape?: Handshape;
     armTarget?: ArmTarget;
     motion: MotionType;
   } | null;

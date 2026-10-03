@@ -15,7 +15,7 @@ export class TranslationPlugin implements IkiraroPlugin<TranslationState> {
   initialState: TranslationState = { isTranslating: false };
   private planners: TranslationPlanner[] = [];
   setup(ctx: PluginContext<TranslationState>) {
-    this.planners = createTranslationPlanners(ctx.config.sdk);
+    this.planners = [...(ctx.config.planners ?? []), ...createTranslationPlanners(ctx.config.sdk)];
     ctx.subscribe("translation:cmd:request", async (event) => {
       const state = ctx.getPluginState();
       if (state?.isTranslating) return;

@@ -35,6 +35,7 @@ import {
 import { cn } from "cn";
 import {
   ACCESSIBILITY_OPTIONS,
+  AVATAR_MODEL_OPTIONS,
   PLAYGROUND_TABS,
   type PlaygroundTab,
   TTS_PROVIDER_OPTIONS,
@@ -64,6 +65,8 @@ interface SidebarProps {
   setTtsApiKey: (key: string) => void;
   fps: number;
   delegate?: "GPU" | "CPU" | null;
+  selectedModel: string;
+  setSelectedModel: (model: string) => void;
 }
 
 export function Sidebar({
@@ -89,6 +92,8 @@ export function Sidebar({
   setTtsApiKey,
   fps,
   delegate,
+  selectedModel,
+  setSelectedModel,
 }: SidebarProps) {
   return (
     <aside className="w-full max-w-[320px] border-r border-border flex flex-col shrink-0 relative z-10 bg-background/50 backdrop-blur-md h-full">
@@ -287,6 +292,32 @@ export function Sidebar({
                 forceMount
                 className={cn("space-y-3 mt-0", activeTab !== "settings" && "hidden")}
               >
+                <div>
+                  <div className="text-[13px] font-medium text-foreground mb-3">Avatar model</div>
+                  <div className="space-y-3">
+                    <Select
+                      value={selectedModel}
+                      onValueChange={(val) => {
+                        if (val) setSelectedModel(val);
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select avatar model" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {AVATAR_MODEL_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[12px] text-muted-foreground/70">
+                      {AVATAR_MODEL_OPTIONS.find((o) => o.value === selectedModel)?.description}
+                    </p>
+                  </div>
+                </div>
+
                 <div>
                   <div className="text-[13px] font-medium text-foreground mb-3">
                     Accessibility mode

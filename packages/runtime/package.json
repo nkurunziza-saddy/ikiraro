@@ -17,7 +17,8 @@
     "./react": "./src/react/client.ts",
     "./hand-tracking": "./src/react/use-hand-tracking.ts",
     "./accessibility": "./src/react/use-accessibility-mode.ts",
-    "./audio": "./src/audio/priority-queue.ts"
+    "./audio": "./src/audio/priority-queue.ts",
+    "./core": "./src/core.ts"
   },
   "scripts": {
     "check-types": "tsc --noEmit"

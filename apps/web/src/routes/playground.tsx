@@ -15,7 +15,7 @@ export const Route = createFileRoute("/playground")({
   component: SDKPlayground,
 });
 
-const MODEL_URL = "/models/avatar.glb";
+const DEFAULT_MODEL_URL = "/models/avatar-aj-signer-v9.glb";
 const tts = WebSpeechProvider.getInstance();
 const audioQueue = AudioQueue.getInstance(
   (text) => tts.speak(text).catch((err) => console.error("TTS failed:", err)),
@@ -40,6 +40,7 @@ function SDKPlayground() {
   const { mode: accessMode, setMode: setAccessMode } = useAccessibilityMode();
   const videoElRef = useRef<HTMLVideoElement | null>(null);
 
+  const [modelUrl, setModelUrl] = useState<string>(DEFAULT_MODEL_URL);
   const [text, setText] = useState("");
   const [activeTab, setActiveTab] = useState<PlaygroundTab>("stream");
   const [logs, setLogs] = useState<string[]>([]);
@@ -147,6 +148,8 @@ function SDKPlayground() {
               setTtsApiKey={setTtsApiKey}
               fps={fps}
               delegate={delegate}
+              selectedModel={modelUrl}
+              setSelectedModel={setModelUrl}
             />
             {isMobile && (
               <Button
@@ -177,7 +180,7 @@ function SDKPlayground() {
         )}
         <Viewport
           activeEnvelope={activeEnvelope}
-          modelUrl={MODEL_URL}
+          modelUrl={modelUrl}
           text={text}
           setText={setText}
           isTranslating={isTranslating}

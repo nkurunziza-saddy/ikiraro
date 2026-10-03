@@ -50,6 +50,7 @@ export function Viewport({
           envelope={activeEnvelope}
           modelUrl={modelUrl}
           zoom={0.9}
+          style={{ position: "absolute", inset: 0 }}
           className="w-full h-full absolute inset-0"
         />
         <AnimatePresence>

@@ -11,7 +11,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { GlobalErrorBoundary, ThemeProvider } from "@/components";
 import appCss from "../index.css?url";
 
-preloadAvatarModel("/models/avatar.glb");
+preloadAvatarModel("/models/avatar-aj-signer-v6.glb");
 
 export type RouterAppContext = {};
 

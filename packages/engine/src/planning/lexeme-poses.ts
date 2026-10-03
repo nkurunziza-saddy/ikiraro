@@ -4,6 +4,7 @@ import type { Handshape } from "./pose-library";
 import { ASL_HAND_POSES } from "./pose-library";
 export type LexemePose = {
   handshape: Handshape;
+  leftHandshape?: Handshape;
   armTarget?: ArmTarget;
   motion: MotionType;
 };
@@ -56,18 +57,28 @@ export const LEXEME_POSES: Record<string, LexemePose> = {
   AGAIN: { handshape: A, armTarget: NEUTRAL, motion: "outward-sweep" },
   BAD: { handshape: B, armTarget: CHIN, motion: "forward-push" },
   DOCTOR: { handshape: M, armTarget: LOW, motion: "none" },
-  FAMILY: { handshape: F, armTarget: BOTH_CENTER, motion: "circle" },
+  FAMILY: { handshape: F, leftHandshape: F, armTarget: BOTH_CENTER, motion: "circle" },
   GO: { handshape: D, armTarget: NEUTRAL, motion: "outward-sweep" },
   GOOD: { handshape: B, armTarget: CHIN, motion: "forward-push" },
   HELLO: { handshape: B, armTarget: NEUTRAL, motion: "wave" },
-  HELP: { handshape: A, armTarget: { ...BOTH_CENTER, rArmX: 0.7 }, motion: "forward-push" },
+  HELP: {
+    handshape: A,
+    leftHandshape: B,
+    armTarget: { ...BOTH_CENTER, rArmX: 0.7 },
+    motion: "forward-push",
+  },
   HOW: { handshape: H, armTarget: BOTH_CENTER, motion: "circle" },
   INTERPRETER: { handshape: I, armTarget: BOTH_CENTER, motion: "circle" },
-  LOVE: { handshape: A, armTarget: BOTH_CHEST, motion: "none" },
-  MEDICINE: { handshape: M, armTarget: { ...LOW, ...LEFT_LOW_PALM }, motion: "circle" },
+  LOVE: { handshape: A, leftHandshape: A, armTarget: BOTH_CHEST, motion: "none" },
+  MEDICINE: {
+    handshape: M,
+    leftHandshape: B,
+    armTarget: { ...LOW, ...LEFT_LOW_PALM },
+    motion: "circle",
+  },
   PLEASE: { handshape: B, armTarget: CHEST, motion: "circle" },
   SEE: { handshape: V, armTarget: FOREHEAD, motion: "forward-push" },
-  SIGN: { handshape: D, armTarget: BOTH_CENTER, motion: "circle" },
+  SIGN: { handshape: D, leftHandshape: D, armTarget: BOTH_CENTER, motion: "circle" },
   "THANK-YOU": { handshape: B, armTarget: CHIN, motion: "forward-push" },
   WHEN: { handshape: D, armTarget: NEUTRAL, motion: "circle" },
   WHO: { handshape: L, armTarget: CHIN, motion: "circle" },

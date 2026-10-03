@@ -14,8 +14,6 @@ export class DefaultRhythmEngine implements IRhythmEngine {
 
     switch (motion) {
       case "arc":
-      case "chest-pat":
-      case "wrist-twist":
         return this.peakEnvelope(p);
 
       case "salute":
@@ -44,6 +42,8 @@ export class DefaultRhythmEngine implements IRhythmEngine {
         };
       }
 
+      case "chest-pat":
+      case "wrist-twist":
       case "wave":
       case "circle":
       case "music-sweep":

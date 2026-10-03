@@ -26,22 +26,25 @@ export class DeterministicUnitsPlanner implements TranslationPlanner {
 }
 export class GroqSemanticPlanner implements TranslationPlanner {
   private effectRuntime: ManagedRuntime.ManagedRuntime<any, never>;
+  private glossModel?: string;
   constructor(config: import("../sdk").IkiraroConfig) {
     this.effectRuntime = ManagedRuntime.make(makeGroqLayer(config));
+    this.glossModel = config.model;
   }
   canPlan(request: TranslationRequest): boolean {
     return request.mode === "text" || request.mode === "speech";
   }
   async plan(request: TranslationRequest): Promise<TranslationEnvelope> {
+    const glossModel = request.model ?? this.glossModel;
     if (request.mode === "speech" && request.audio) {
       const ext = getAudioFileExtension(request.audio.type);
       const file = new File([request.audio], `speech.${ext}`, { type: request.audio.type });
       return this.effectRuntime.runPromise(
-        translateSpeechEffect(file, request.sttModel, request.prompt),
+        translateSpeechEffect(file, request.sttModel, request.prompt, glossModel),
       );
     }
     if (request.mode === "text" && request.text) {
-      return this.effectRuntime.runPromise(translateTextEffect(request.text));
+      return this.effectRuntime.runPromise(translateTextEffect(request.text, glossModel));
     }
     throw new Error(`Unsupported or invalid translation request: ${request.mode}`);
   }
@@ -54,7 +57,7 @@ export function createTranslationPlanners(
   config?: import("../sdk").IkiraroConfig,
 ): TranslationPlanner[] {
   const planners: TranslationPlanner[] = [new DeterministicUnitsPlanner()];
-  if (config) {
+  if (config?.groqApiKey.trim() && config.groqApiKey !== "YOUR_GROQ_API_KEY") {
     planners.push(new GroqSemanticPlanner(config));
   }
   return planners;

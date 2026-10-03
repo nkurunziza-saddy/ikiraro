@@ -20,6 +20,49 @@ If you are working with an AI coding assistant (like Claude or Gemini), install 
 npx ikiraro-sdk
 ```
 
+## Integration entries
+
+| Import                    | Purpose                                                         |
+| ------------------------- | --------------------------------------------------------------- |
+| `@ikiraro/sdk`            | Existing React facade and hooks                                 |
+| `@ikiraro/sdk/core`       | Runtime and translation planners without React or WebGL imports |
+| `@ikiraro/sdk/engine`     | Sign planning, frames, kinematics, and output adapters          |
+| `@ikiraro/sdk/vision`     | Landmark recognition and buffering without a camera dependency  |
+| `@ikiraro/sdk/components` | Browser presentation components                                 |
+
+Deterministic signing works without credentials:
+
+```ts
+import { createIkiraro } from "@ikiraro/sdk/core";
+
+const runtime = await createIkiraro();
+const unsubscribe = runtime.onTranslated((envelope) => {
+  // Send rendererQueue to your renderer or device adapter.
+  console.log(envelope.rendererQueue);
+});
+runtime.translateUnits(["HELLO", "A", "B"]);
+// When finished: unsubscribe(); await runtime.stop();
+```
+
+Supply `sdk: { groqApiKey }` for the built-in semantic provider, or supply
+`planners: [{ canPlan(request), async plan(request) }]` for your own provider.
+Custom planners take precedence; their optional `dispose()` is called on shutdown.
+Text/speech requests without a matching provider produce a translation error.
+
+For a native render loop, construct `new RendererDirector(canvas, null)`, set
+its queue, call `play()`, and call `advance(elapsedMilliseconds)` each tick.
+The default constructor retains browser animation-frame scheduling. A custom
+`PlaybackClock` is also accepted. `SignCanvas.setLeftPose` optionally receives
+independent left-hand shapes; existing single-hand adapters remain compatible.
+
+`AvatarViewer` fills its parent without requiring Tailwind CSS. Give the parent
+a height, or pass `style={{ height: 480 }}` to the viewer.
+
+The bundled recognizer is a template-based fingerspelling baseline. It does
+not recognize continuous ASL conversations. Its scores are similarities, not
+calibrated probabilities. Sustained holds produce one letter; explicit movement
+followed by a stable pose can release a repeated letter.
+
 ## Core Components
 
 - **`IkiraroRuntime`**: The main class for non-React environments.

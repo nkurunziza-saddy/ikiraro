@@ -5,7 +5,12 @@
  * For non-React or custom-framework integrations, import from @ikiraro/runtime directly.
  */
 
-export type { PlaybackOptions, RendererState, SignCanvas } from "@ikiraro/engine/planning";
+export type {
+  PlaybackClock,
+  PlaybackOptions,
+  RendererState,
+  SignCanvas,
+} from "@ikiraro/engine/planning";
 // Advanced / custom renderers
 export { RendererDirector } from "@ikiraro/engine/planning";
 export type {

@@ -14,7 +14,7 @@
  *                 rebuilt ones (templates built from the train half)
  */
 
-import { SignAllRecognizer } from "../src/vision/sign-all-recognizer";
+import { SignAllRecognizer } from "../packages/engine/src/vision/sign-all-recognizer";
 import { type LetterSamples, loadSplit } from "./build-letter-templates";
 
 function evaluate(recognizer: SignAllRecognizer, split: Map<string, LetterSamples>) {
@@ -99,6 +99,7 @@ async function main() {
     process.exit(1);
   }
   const split = loadSplit(args[0]);
+  if (split.size === 0) throw new Error("No labeled letter samples found.");
   const counts = [...split.values()].map((s) => s.test.length);
   console.log(
     `letters: ${split.size}, eval samples: ${counts.reduce((s, v) => s + v, 0)} ` +
@@ -106,7 +107,10 @@ async function main() {
   );
 
   if (baseline) {
-    report("baseline (shipped templates + scoring)", evaluate(new SignAllRecognizer(), split));
+    console.warn(
+      "Shipped templates include these samples: this is a diagnostic, not held-out accuracy.",
+    );
+    report("shipped templates (training overlap)", evaluate(new SignAllRecognizer(), split));
   } else {
     const { buildTemplates } = await import("./build-letter-templates");
     const templates = buildTemplates(split);

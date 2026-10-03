@@ -46,3 +46,23 @@ export const TTS_PROVIDER_OPTIONS = [
 ] as const;
 
 export type TtsProvider = "browser" | "openai" | "elevenlabs";
+
+export const AVATAR_MODEL_OPTIONS = [
+  {
+    value: "/models/avatar-aj-signer-v9.glb",
+    label: "Aj Signer",
+    description: "Warm tan skin, light-blue polo, and articulated hands.",
+  },
+  {
+    value: "/models/avatar-aj.glb?v=2",
+    label: "Aj Original (Mixamo)",
+    description: "Original build with backward cap, backpack, and default styling.",
+  },
+  {
+    value: "/models/avatar-signing.glb",
+    label: "Signing Avatar (Default)",
+    description: "Standard Ikiraro signing avatar.",
+  },
+] as const;
+
+export type AvatarModelOption = (typeof AVATAR_MODEL_OPTIONS)[number]["value"];

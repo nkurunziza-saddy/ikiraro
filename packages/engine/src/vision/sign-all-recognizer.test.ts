@@ -124,7 +124,7 @@ describe("SignAllRecognizer", () => {
     expect(result.sign).toBeNull();
   });
 
-  it("characterization: displacement over 0.08 normalized units isMoving === true (looks wrong - see note)", () => {
+  it("measures displacement before wrist normalization", () => {
     const recognizer = new SignAllRecognizer([]);
 
     // Frame 1
@@ -134,8 +134,7 @@ describe("SignAllRecognizer", () => {
     const displaced = flatHand.map((p) => ({ x: p.x + 100, y: p.y + 100, z: p.z }));
     const result = recognizer.process(displaced);
 
-    // BUG: normalization sets wrist to (0,0,0) in all frames, so velocity is always 0.
-    // Pinned to current behavior.
-    expect(result.isMoving).toBe(false);
+    expect(result.isMoving).toBe(true);
+    expect(result.velocity).toEqual({ x: 100, y: 100, z: 0 });
   });
 });

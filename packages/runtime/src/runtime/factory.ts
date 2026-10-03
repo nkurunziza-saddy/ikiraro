@@ -9,7 +9,9 @@ import { TranslationPlugin } from "./plugins/translation";
 import { VisionPlugin } from "./plugins/vision";
 import type { IkiraroPlugin } from "./types";
 export interface IkiraroDefaultConfig {
-  sdk: IkiraroConfig;
+  sdk?: IkiraroConfig;
+  /** Custom planners are tried before built-in planners. */
+  planners?: import("./translation-planner").TranslationPlanner[];
   baseUrl?: string;
   vision?: {
     processor: HandProcessor;
@@ -22,16 +24,7 @@ export interface IkiraroDefaultConfig {
 /**
  * Creates and starts the Ikiraro Runtime with default plugins.
  */
-export async function createIkiraro(config: IkiraroDefaultConfig) {
-  const key = config.sdk.groqApiKey;
-  if (!key || key.trim() === "" || key === "YOUR_GROQ_API_KEY") {
-    throw new Error(
-      "Ikiraro: a valid Groq API key is required. " +
-        "Pass it via createIkiraro({ sdk: { groqApiKey: '...' } }) " +
-        "or set VITE_GROQ_API_KEY in your environment.",
-    );
-  }
-
+export async function createIkiraro(config: IkiraroDefaultConfig = {}) {
   const plugins: IkiraroPlugin<any>[] = [
     new SessionPlugin(),
     new CompositionPlugin(),

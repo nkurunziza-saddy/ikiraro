@@ -1,4 +1,56 @@
-# Ikiraro — System Status
+# Current refactor status — September 2026
+
+The SDK remains experimental for linguistic accuracy. The historical feature
+checklist below describes implemented mechanisms, not validated ASL fluency.
+
+Implemented in this refactor:
+
+- Blender rework in `assets/avatar/signing-avatar.blend`, with a separate
+  `avatar-signing.glb`: 12% larger hands, matte clothing, six facial controls,
+  retained joint axes, and 43.1% smaller GLB. The original model is preserved.
+
+- Separate `core` and `vision` SDK entries; deterministic runtime startup without
+  Groq credentials; custom translation planners and external playback clocks.
+- Per-clause expression planning, explicit transition hints, independent left
+  handshapes, pause continuity, wrist orientation targets, and clean motion resets.
+- Gesture rhythm no longer holds cyclic trajectories at zero displacement.
+- Avatar pose updates bypass React state; signing suppresses decorative sway;
+  zoom changes camera distance once instead of also changing field of view.
+  Viewer sizing and overlays work without host Tailwind CSS, with a style override.
+- Recognition measures wrist displacement before normalization, resets motion
+  after hand loss, rejects non-finite input, and interrupts candidate stability
+  across missing frames. A long hold no longer invents a duplicate letter.
+
+Validation: the rebuilt-template evaluation on 1,054 cached isolated samples
+reproduces **66.7% correct / 6.5% wrong / 26.8% rejected**. This is a deterministic
+sample split, not a signer-independent or continuous-sequence benchmark. The
+shipped-template diagnostic overlaps training data and must not be reported as
+held-out accuracy. Recognition accuracy has not increased in this refactor.
+
+Remaining work before claiming fluent signing or robust recognition:
+
+1. Temporal recognition and sequence evaluation (character error rate, repeated
+   letters, J/Z, occlusion, hand switching, signer-independent splits).
+2. Validate and replace approximate lexical trajectories, including contact,
+   coordinated two-hand movement, palm orientation, and sentence transitions.
+3. Calibrate the six facial controls added to the rebuilt Blender avatar and extend
+   them for ASL non-manual grammar. The original GLB had no facial morph targets.
+4. Finish visual validation of hand flexion and signing-space visibility on smaller
+   screens. An isolated browser preview verifies sizing and both-hand articulation;
+   the playground now uses workspace source during development to avoid missing
+   SDK entries during rebuilds. Lexical accuracy and
+   palm/contact geometry remain unverified.
+5. Runtime request cancellation/concurrency and resource isolation need a separate
+   lifecycle review; this change does not resolve those existing limitations.
+
+Public references: [FSboard](https://arxiv.org/abs/2407.15806),
+[Kaggle fingerspelling data](https://www.kaggle.com/competitions/asl-fingerspelling/data),
+and [isolated letter samples](https://huggingface.co/datasets/sid220/asl-now-fingerspelling).
+Public benchmarks complement, but do not replace, fluent ASL review of avatar output.
+
+---
+
+## Historical status (June 2026; some claims superseded above)
 
 _Last updated: 2026-06-12. Companion to [guides/sign-quality-workflow.md](guides/sign-quality-workflow.md), which has the data sources, calibration scripts, and measurement methodology behind every number here._
 

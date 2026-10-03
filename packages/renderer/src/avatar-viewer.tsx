@@ -3,7 +3,7 @@ import { REST_POSE, RendererDirector } from "@ikiraro/engine/planning";
 import type { ArmTarget, MotionType, TranslationEnvelope } from "@ikiraro/engine/types";
 import { ContactShadows, Environment, PerspectiveCamera, useGLTF } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { SignModelGLTF } from "./sign-model-gltf";
 
@@ -11,6 +11,7 @@ interface AvatarViewerProps {
   envelope: TranslationEnvelope | null;
   modelUrl: string;
   className?: string;
+  style?: CSSProperties;
   hidden?: boolean;
   /** Camera zoom multiplier. */
   zoom?: number;
@@ -20,16 +21,19 @@ export type SignFrameState = {
   motion: MotionType;
   progress: number;
   armTarget: ArmTarget | null;
+  expression?: string;
 };
 
 export function AvatarViewer({
   envelope,
   modelUrl,
   className,
+  style,
   hidden = false,
   zoom = 1,
 }: AvatarViewerProps) {
-  const [pose, setPose] = useState<Handshape>(REST_POSE);
+  const poseRef = useRef<Handshape>(REST_POSE);
+  const leftPoseRef = useRef<Handshape>(REST_POSE);
   const [active, setActive] = useState(false);
   const [overlay, setOverlayText] = useState<{
     label: string;
@@ -45,10 +49,22 @@ export function AvatarViewer({
 
   const adapter = useMemo<SignCanvas>(
     () => ({
-      setPose,
+      setPose: (pose) => {
+        poseRef.current = pose;
+      },
+      setLeftPose: (pose) => {
+        leftPoseRef.current = pose ?? REST_POSE;
+      },
       setOverlay: (label, sublabel) => {
-        if (label) setOverlayText({ label, sublabel });
-        else setOverlayText(null);
+        setOverlayText((previous) => {
+          if (!label) return null;
+          return previous?.label === label && previous.sublabel === sublabel
+            ? previous
+            : { label, sublabel };
+        });
+      },
+      setExpression: (expression) => {
+        signFrameRef.current.expression = expression;
       },
       setMotion: (motion, progress, armTarget) => {
         signFrameRef.current.motion = motion;
@@ -57,8 +73,8 @@ export function AvatarViewer({
       },
 
       clear: () => {
-        setPose(REST_POSE);
-        setActive(false);
+        poseRef.current = REST_POSE;
+        leftPoseRef.current = REST_POSE;
         setOverlayText(null);
         signFrameRef.current = {
           motion: "none",
@@ -73,7 +89,7 @@ export function AvatarViewer({
   const director = useMemo(() => new RendererDirector(adapter), [adapter]);
 
   useEffect(() => {
-    const queue = envelope?.rendererQueue ?? [];
+    const queue = hidden ? [] : (envelope?.rendererQueue ?? []);
     director.setQueue(queue);
     if (queue.length > 0) {
       setActive(true);
@@ -89,14 +105,17 @@ export function AvatarViewer({
       unsub();
       director.dispose();
     };
-  }, [director, envelope]);
+  }, [director, envelope, hidden]);
 
   if (hidden) return null;
 
   return (
-    <div className={`relative w-full h-full overflow-hidden ${className || ""}`}>
+    <div
+      className={className}
+      style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden", ...style }}
+    >
       <Canvas
-        className="w-full h-full"
+        style={{ width: "100%", height: "100%" }}
         shadows
         dpr={[1, 1.5]}
         gl={{
@@ -114,28 +133,36 @@ export function AvatarViewer({
         <PerspectiveCamera
           makeDefault
           position={[0, 0.08, 2.2 / Math.max(0.2, zoom)]}
-          fov={42 / Math.max(0.2, zoom)}
+          fov={42}
           near={0.01}
           far={10}
         />
 
-        <ambientLight intensity={0.22} color="#f8ece2" />
+        <ambientLight intensity={0.12} color="#f8ece2" />
         <directionalLight
           position={[2.2, 4.5, 3.2]}
-          intensity={2.4}
+          intensity={1.8}
           color="#fff2e2"
           castShadow
-          shadow-mapSize={[512, 512]}
+          shadow-mapSize={[1024, 1024]}
+          shadow-camera-left={-1.5}
+          shadow-camera-right={1.5}
+          shadow-camera-top={1.5}
+          shadow-camera-bottom={-1.5}
+          shadow-normalBias={0.012}
+          shadow-bias={-0.0001}
+          shadow-radius={3}
         />
-        <directionalLight position={[-2.8, 1.4, 1.8]} intensity={0.55} color="#e2ecff" />
+        <directionalLight position={[-2.8, 1.4, 1.8]} intensity={0.3} color="#e2ecff" />
         <directionalLight position={[0.4, 2.6, -3.5]} intensity={0.85} color="#ffd9b8" />
 
         <Suspense fallback={null}>
-          <Environment preset="apartment" background={false} />
+          <Environment preset="apartment" background={false} environmentIntensity={0.4} />
 
           <SignModelGLTF
             url={modelUrl}
-            pose={pose}
+            poseRef={poseRef}
+            leftPoseRef={leftPoseRef}
             active={active}
             signFrameRef={signFrameRef}
             scale={1}
@@ -153,9 +180,28 @@ export function AvatarViewer({
         </Suspense>
       </Canvas>
       {overlay && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none text-center bg-black/60 backdrop-blur-sm text-white px-4 py-2 rounded-2xl flex flex-col items-center">
-          <span className="text-xl font-bold tracking-wide">{overlay.label}</span>
-          {overlay.sublabel && <span className="text-sm opacity-80">{overlay.sublabel}</span>}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 24,
+            left: "50%",
+            transform: "translateX(-50%)",
+            pointerEvents: "none",
+            textAlign: "center",
+            background: "rgba(0,0,0,0.6)",
+            color: "white",
+            padding: "8px 16px",
+            borderRadius: 16,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            fontFamily: "system-ui, sans-serif",
+          }}
+        >
+          <span style={{ fontSize: 20, fontWeight: 700 }}>{overlay.label}</span>
+          {overlay.sublabel && (
+            <span style={{ fontSize: 14, opacity: 0.8 }}>{overlay.sublabel}</span>
+          )}
         </div>
       )}
     </div>

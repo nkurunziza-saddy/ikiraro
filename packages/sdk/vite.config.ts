@@ -53,6 +53,8 @@ export default defineConfig({
   pack: {
     entry: {
       index: "src/index.ts",
+      core: "src/core.ts",
+      vision: "src/vision.ts",
       components: "src/components.ts",
       engine: "src/engine.ts",
       "holistic-landmarker.worker": "../runtime/src/workers/holistic-landmarker.worker.ts",
@@ -60,7 +62,7 @@ export default defineConfig({
     format: ["esm"],
     outExtensions: () => ({ js: ".js", dts: ".d.ts" }),
     dts: {
-      entry: ["src/index.ts", "src/components.ts", "src/engine.ts"],
+      entry: ["src/index.ts", "src/components.ts", "src/engine.ts", "src/core.ts", "src/vision.ts"],
     },
     clean: true,
     sourcemap: true,

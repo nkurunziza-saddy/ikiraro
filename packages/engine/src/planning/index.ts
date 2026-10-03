@@ -22,7 +22,7 @@ export { computeMotionDelta } from "./motion-paths";
 export { normalizeText } from "./normalizer";
 export * from "./pose-library";
 export { RendererDirector } from "./renderer-director";
-export type { PlaybackOptions, RendererState, SignCanvas } from "./renderer-types";
+export type { PlaybackClock, PlaybackOptions, RendererState, SignCanvas } from "./renderer-types";
 export * from "./services";
 export { buildPlanFromGloss, buildPlanFromUnits, createEnvelope } from "./tokenizer";
 export {

@@ -102,10 +102,10 @@ export class IkiraroRuntime {
   }
 
   /** Translate text to signing. */
-  translate(text: string, options: { context?: TranslationContext } = {}): void {
+  translate(text: string, options: { context?: TranslationContext; model?: string } = {}): void {
     this.dispatch({
       type: "session:cmd:start",
-      payload: { mode: "text", text, context: options.context },
+      payload: { mode: "text", text, context: options.context, model: options.model },
       timestamp: Date.now(),
       source: "sdk",
     });
@@ -121,7 +121,12 @@ export class IkiraroRuntime {
   }
   /** Begin microphone capture. */
   startSpeech(
-    options: { sttModel?: SttModel; prompt?: string; context?: TranslationContext } = {},
+    options: {
+      sttModel?: SttModel;
+      prompt?: string;
+      context?: TranslationContext;
+      model?: string;
+    } = {},
   ): void {
     this.dispatch({
       type: "session:cmd:start",

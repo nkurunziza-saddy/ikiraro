@@ -52,16 +52,15 @@ export class OutwardSweepTrajectory implements ITrajectory {
 
 export class WaveTrajectory implements ITrajectory {
   evaluate(p: number): MotionDelta {
-    const wave = Math.sin(p * Math.PI * 6);
+    // Two restrained sweeps, eased at both ends so entering/leaving a hold
+    // does not inject an abrupt shoulder jerk.
+    const envelope = Math.sin(p * Math.PI) ** 2;
+    const wave = Math.sin(p * Math.PI * 4) * envelope;
     return {
       ...ZERO_DELTA,
-      rArmXDelta: 0.35 * wave,
-      rArmYDelta: 0.45 * wave,
-      rArmZDelta: 0.4 * wave,
-      rForeZDelta: 0.45 * wave,
-      rHandXDelta: -0.25 * wave,
-      rHandYDelta: 0.25 * wave,
-      rHandZDelta: 0.05 * wave,
+      rArmZDelta: 0.035 * wave,
+      rForeZDelta: 0.1 * wave,
+      rHandZDelta: 0.22 * wave,
     };
   }
 }

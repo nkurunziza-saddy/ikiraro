@@ -21,7 +21,7 @@ First off, thank you for considering contributing to Ikiraro! It's people like y
 
 ## Repository Structure
 
-Ikiraro is a monorepo utilizing Turborepo and Bun workspaces.
+Ikiraro is a monorepo utilizing pnpm workspaces.
 
 - `apps/web`: The documentation and playground dashboard (React/Vite).
 - `packages/sdk`: The public-facing entry point.

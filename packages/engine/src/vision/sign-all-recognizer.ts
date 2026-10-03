@@ -38,24 +38,36 @@ export class SignAllRecognizer implements SignRecognizer {
   private threshold = 0.48;
   private margin = 0.05;
 
-  private history: HandLandmarks[] = [];
-  private windowSize = 10;
+  private previousWrist: Point3D | null = null;
+  private velocity: Point3D = { x: 0, y: 0, z: 0 };
 
   constructor(dataset: TrainedSign[] = LETTER_TEMPLATES) {
     this.dataset = dataset;
   }
 
-  process(worldLandmarks: HandLandmarks, _imageLandmarks?: HandLandmarks): ClassificationResult {
-    if (worldLandmarks.length < 21) {
-      this.history = [];
+  process(worldLandmarks: HandLandmarks, imageLandmarks?: HandLandmarks): ClassificationResult {
+    if (
+      worldLandmarks.length !== 21 ||
+      worldLandmarks.some(
+        (point) =>
+          !Number.isFinite(point.x) || !Number.isFinite(point.y) || !Number.isFinite(point.z),
+      )
+    ) {
+      this.reset();
       return this.noMatch();
     }
 
     const normalized = normalizeHand(worldLandmarks);
     const mirrored = mirrorX(normalized);
 
-    this.history.push(normalized);
-    if (this.history.length > this.windowSize) this.history.shift();
+    // Normalization places the wrist at the origin: motion must be measured
+    // before normalization, preferably in camera space (world landmarks are hand-relative).
+    const wrist = imageLandmarks?.[0] ?? worldLandmarks[0]!;
+    const previous = this.previousWrist;
+    this.velocity = previous
+      ? { x: wrist.x - previous.x, y: wrist.y - previous.y, z: wrist.z - previous.z }
+      : { x: 0, y: 0, z: 0 };
+    this.previousWrist = { ...wrist };
 
     // Best score per letter across its templates and both chiralities.
     const byLetter = new Map<string, number>();
@@ -83,25 +95,23 @@ export class SignAllRecognizer implements SignRecognizer {
       confidence: isMatch ? best[1] : 0,
       velocity: this.getVelocity(),
       isMoving: this.detectIsMoving(),
+      isTransitioning: this.detectIsMoving(),
       candidates: ranked.slice(0, 3).map(([name, score]) => ({ name, score })),
     };
   }
 
   reset(): void {
-    this.history = [];
+    this.previousWrist = null;
+    this.velocity = { x: 0, y: 0, z: 0 };
   }
 
   private detectIsMoving(): boolean {
-    if (this.history.length < 2) return false;
     const v = this.getVelocity();
     return Math.sqrt(v.x ** 2 + v.y ** 2 + v.z ** 2) > 0.08;
   }
 
   private getVelocity(): Point3D {
-    if (this.history.length < 2) return { x: 0, y: 0, z: 0 };
-    const curr = this.history[this.history.length - 1]![0]!;
-    const prev = this.history[this.history.length - 2]![0]!;
-    return { x: curr.x - prev.x, y: curr.y - prev.y, z: curr.z - prev.z };
+    return { ...this.velocity };
   }
 
   private noMatch(): ClassificationResult {

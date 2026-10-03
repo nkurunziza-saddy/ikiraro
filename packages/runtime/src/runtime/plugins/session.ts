@@ -27,8 +27,8 @@ export class SessionPlugin implements IkiraroPlugin<SessionState> {
   };
   setup(ctx: PluginContext<SessionState>) {
     ctx.subscribe("session:cmd:start", (event) => {
-      const { mode, text, units, sttModel, prompt, context } = event.payload;
-      this.handleStart(ctx, mode, { text, units, sttModel, prompt, context });
+      const { mode, text, units, sttModel, prompt, context, model } = event.payload;
+      this.handleStart(ctx, mode, { text, units, sttModel, prompt, context, model });
     });
     ctx.subscribe("session:cmd:stop", () => {
       this.handleStop(ctx);
@@ -102,6 +102,7 @@ export class SessionPlugin implements IkiraroPlugin<SessionState> {
       text?: string;
       units?: string[];
       sttModel?: SttModel;
+      model?: string;
       prompt?: string;
       context?: TranslationContext;
     },
@@ -116,7 +117,12 @@ export class SessionPlugin implements IkiraroPlugin<SessionState> {
     } else if (mode === "text" && options.text) {
       ctx.emit({
         type: "translation:cmd:request",
-        payload: { mode: "text", text: options.text, context: options.context },
+        payload: {
+          mode: "text",
+          text: options.text,
+          context: options.context,
+          model: options.model,
+        },
         timestamp: Date.now(),
         source: this.name,
       });

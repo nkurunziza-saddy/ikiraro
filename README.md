@@ -234,7 +234,7 @@ Creates a client instance with a bound `useIkiraro` hook.
 const { useIkiraro } = createIkiraroClient({
   sdk: {
     groqApiKey: string;       // required for LLM translation
-    model?: string;           // default: "llama-3.1-8b-instant"
+    model?: string;           // default: "openai/gpt-oss-120b"
   };
   runtime?: {
     accessibilityMode?: "standard" | "audio-first" | "visual-first";

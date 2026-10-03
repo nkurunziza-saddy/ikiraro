@@ -36,20 +36,22 @@ export class LinguisticBuffer {
   update(sign: string | null, context: WordBufferContext = {}): SignToken | null {
     const now = performance.now();
 
-    if (context.isTransitioning) return null;
+    if (!sign || context.isTransitioning) {
+      this.signHeldSince = now;
+      for (const strategy of this.config.strategies) {
+        strategy.interrupt?.(context.isTransitioning === true);
+      }
+      if (this.currentSign && now - this.lastSignTime > this.config.pauseThresholdMs) {
+        return this.commitAll();
+      }
+      return null;
+    }
 
     // Plateau Detection: If velocity is near-zero, it indicates a stable pose.
     const isStationary = context.velocity
       ? Math.sqrt(context.velocity.x ** 2 + context.velocity.y ** 2 + context.velocity.z ** 2) <
         this.PLATEAU_VELOCITY_THRESHOLD
       : false;
-
-    if (!sign) {
-      if (this.currentSign && now - this.lastSignTime > this.config.pauseThresholdMs) {
-        return this.commitAll();
-      }
-      return null;
-    }
 
     // Track how long the same sign has been held continuously. (lastSignTime
     // updates every frame for the pause timeout, so it cannot measure holds.)

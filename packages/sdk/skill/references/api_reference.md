@@ -15,6 +15,7 @@ interface IkiraroDefaultConfig {
   sdk: {
     groqApiKey: string;
     groqBaseUrl?: string; // override for proxies / self-hosted
+    model?: string; // override default gloss model ("openai/gpt-oss-120b")
   };
   vision?: { processor: HandProcessor }; // enables camera sign-language input
   keyboard?: boolean; // mount KeyboardPlugin (A–Z → sign tokens)

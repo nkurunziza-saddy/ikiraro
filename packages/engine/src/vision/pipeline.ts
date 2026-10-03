@@ -40,6 +40,7 @@ export class SignDetectionPipeline {
    */
   tick(): SignToken | null {
     this._lastClassification = null;
+    this.recognizer.reset();
     return this.buffer.update(null);
   }
 

@@ -33,6 +33,7 @@ export type TranslationRequest = {
   audio?: Blob;
   units?: string[];
   sttModel?: SttModel;
+  model?: string;
   prompt?: string;
   context?: TranslationContext;
 };
@@ -86,6 +87,7 @@ export interface EventRegistry {
     text?: string;
     units?: string[];
     sttModel?: SttModel;
+    model?: string;
     prompt?: string;
     context?: TranslationContext;
   };
@@ -142,6 +144,7 @@ export interface IkiraroState {
 }
 
 export interface RuntimeConfig {
+  planners?: import("./translation-planner").TranslationPlanner[];
   baseUrl?: string;
   sdk?: import("../sdk").IkiraroConfig;
   plugins?: IkiraroPlugin<any>[];

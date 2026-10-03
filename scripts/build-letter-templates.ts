@@ -17,9 +17,9 @@
 
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import type { TrainedSign } from "../src/vision/canonical-landmarks";
-import { canonicalizeChirality, normalizeHand } from "../src/vision/normalize";
-import type { HandLandmarks } from "../src/vision/types";
+import type { TrainedSign } from "../packages/engine/src/vision/canonical-landmarks";
+import { canonicalizeChirality, normalizeHand } from "../packages/engine/src/vision/normalize";
+import type { HandLandmarks } from "../packages/engine/src/vision/types";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const MIN_CLUSTER = 8;
@@ -168,7 +168,7 @@ if (process.argv[1]?.endsWith("build-letter-templates.ts")) {
       `(${[...byLetter.entries()].filter(([, n]) => n > 1).length} letters got 2 clusters)`,
   );
   if (process.argv.includes("--write")) {
-    const outPath = join(import.meta.dir, "../src/vision/letter-templates.ts");
+    const outPath = join(import.meta.dir, "../packages/engine/src/vision/letter-templates.ts");
     writeFileSync(outPath, emit(templates), "utf8");
     console.log(`wrote ${outPath}`);
   }

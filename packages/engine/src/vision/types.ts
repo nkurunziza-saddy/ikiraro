@@ -39,6 +39,8 @@ export interface ILinguisticStrategy {
   readonly name: string;
   update(sign: string, context: WordBufferContext): SignToken | null;
   commit?(): SignToken | null;
+  /** Break candidate stability; explicit movement can release a repeated letter. */
+  interrupt?(isTransitioning: boolean): void;
   reset(): void;
   /** Returns the in-progress (uncommitted) text for this strategy, if any. */
   getInProgress?(): string;

@@ -18,14 +18,13 @@ export class FrameBuilder {
   /** Transforms a Plan into Frames. */
   public build(plan: SignPlan): FrameItem[] {
     const queue: FrameItem[] = [];
-    const intent = plan.clauses[0]?.intent ?? "statement";
 
     for (const clause of plan.clauses) {
       for (const token of clause.tokens) {
         if (token.type === "pause") {
           queue.push(this.buildPause(token));
         } else {
-          queue.push(...this.buildTokenFrames(token, intent));
+          queue.push(...this.buildTokenFrames(token, clause.intent ?? "statement"));
         }
       }
     }
@@ -61,6 +60,8 @@ export class FrameBuilder {
       const pose = lang.getLexemePose(token.lexemeId);
       frames.push({
         type: "lexeme",
+        handshape: pose?.handshape,
+        leftHandshape: pose?.leftHandshape,
         value: token.lexemeId,
         label: token.lexemeId,
         duration: baseDuration,
@@ -81,11 +82,12 @@ export class FrameBuilder {
         frames.push({
           type: "fingerspell",
           value: char,
+          handshape: lang.getHandshape(char) ?? undefined,
           label: char,
           duration: perLetter,
           motion: lang.fingerspellMotions[char] ?? "fs-pulse",
           facialExpression: facial,
-          coarticulation: "blend",
+          coarticulation,
         });
       }
     } else if (token.type === "number") {
@@ -96,12 +98,13 @@ export class FrameBuilder {
         frames.push({
           type: "number",
           value: digit,
+          handshape: lang.getHandshape(digit) ?? undefined,
           label: `#${digit}`,
           duration: perDigit,
           motion: lang.numberMotions[digit] ?? "none",
           armTarget: lang.numberArmTarget,
           facialExpression: facial,
-          coarticulation: "blend",
+          coarticulation,
         });
       }
     } else if (token.type === "pointing") {

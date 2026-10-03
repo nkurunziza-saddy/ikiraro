@@ -40,6 +40,14 @@
     "./engine": {
       "import": "./dist/engine.js",
       "types": "./dist/engine.d.ts"
+    },
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js"
+    },
+    "./vision": {
+      "types": "./dist/vision.d.ts",
+      "import": "./dist/vision.js"
     }
   },
   "publishConfig": {
