@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vite-plus/test";
 import { ALPHABET } from "./alphabet.ts";
-import { figure, FOREARM, HOME, REST, SHOULDER, UPPER_ARM } from "./body.ts";
+import { ARM_SIZE, figure, FOREARM, HOME, REST, SHOULDER, UPPER_ARM } from "./body.ts";
+import type { Capsule } from "./body.ts";
 import { distance } from "./math.ts";
 import { poseAt, spell } from "./spell.ts";
 
@@ -12,7 +13,7 @@ const holding = (text: string, key: number) => {
 
 describe("spell", () => {
   it("lays out one key per letter between two rests", () => {
-    const { keys, duration } = spell("hi");
+    const { keys, duration } = spell("up");
     expect(keys.map((key) => key.char)).toEqual([-1, 0, 1, -1]);
     for (let i = 1; i < keys.length; i++) {
       expect(keys[i]!.from).toBe(keys[i - 1]!.until);
@@ -94,8 +95,7 @@ describe("body", () => {
     for (let t = 0; t <= spelling.duration; t += 0.05) {
       const capsules = figure(poseAt(spelling, t));
       expect(capsules).toHaveLength(count);
-      const arm = capsules.findLast((c) => distance(c.a, SHOULDER) === 0)!;
-      const forearm = capsules.find((c) => c.a === arm.b)!;
+      const [arm, forearm] = capsules.slice(-ARM_SIZE) as [Capsule, Capsule];
       expect(distance(arm.a, arm.b)).toBeCloseTo(UPPER_ARM, 9);
       expect(distance(forearm.a, forearm.b)).toBeCloseTo(FOREARM, 6);
       for (const { a, b } of capsules)
@@ -106,16 +106,35 @@ describe("body", () => {
   it("keeps the elbow close to the body whatever the hand is doing", () => {
     const spelling = spell("hqgpjz");
     for (let t = 0; t <= spelling.duration; t += 0.02) {
-      const arm = figure(poseAt(spelling, t)).findLast((c) => distance(c.a, SHOULDER) === 0)!;
+      const arm = figure(poseAt(spelling, t)).at(-ARM_SIZE)!;
       // Never a wing: the elbow stays below the shoulder and within a hand's width of the side.
       expect(arm.b[1]).toBeLessThan(SHOULDER[1] - 0.1);
       expect(arm.b[0]).toBeGreaterThan(SHOULDER[0] - 0.2);
     }
   });
 
-  it("breathes without moving the hands", () => {
-    const [still, full] = [figure(REST), figure(REST, 1)];
-    expect(full[0]!.a[1]).toBeGreaterThan(still[0]!.a[1]);
-    expect(full.at(-1)!.b).toEqual(still.at(-1)!.b);
+  it("is alive at rest, without moving the signing hand", () => {
+    const [now, later] = [figure(REST, 0), figure(REST, 1)];
+    expect(later[0]!.a).not.toEqual(now[0]!.a);
+    expect(later.at(-1)!.b).toEqual(now.at(-1)!.b);
+  });
+
+  it("answers the hand with the rest of the body", () => {
+    const head = (capsules: Capsule[]) => capsules[0]!.b;
+    const eyes = (capsules: Capsule[]) => (capsules[1]!.a[0] + capsules[2]!.a[0]) / 2;
+    const resting = figure(REST);
+    const spelling = figure({ ...REST, place: HOME });
+    const halfway = figure({ ...REST, place: [HOME[0], (HOME[1] + REST.place[1]) / 2, HOME[2]] });
+    // The head leans to the signing side while spelling, and the eyes go to the hand on its way up.
+    expect(head(spelling)[0]).toBeLessThan(head(resting)[0] - 0.005);
+    expect(eyes(halfway)).toBeLessThan(eyes(resting) - 0.01);
+    // The signing shoulder comes forwards.
+    expect(spelling.at(-ARM_SIZE)!.a[2]).toBeGreaterThan(resting.at(-ARM_SIZE)!.a[2] + 0.01);
+  });
+
+  it("blinks", () => {
+    const eye = (clock: number) => figure(REST, clock)[1]!.radius;
+    const sizes = Array.from({ length: 200 }, (_, i) => eye(i * 0.05));
+    expect(Math.min(...sizes)).toBeLessThan(Math.max(...sizes) / 4);
   });
 });

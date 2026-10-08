@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
-import { follow, paint, WHOLE } from "./pixels.ts";
+import { cast, follow, grid, paint } from "./pixels.ts";
+import type { View } from "./pixels.ts";
 import type { Capsule } from "./signing/body.ts";
 import { figure, REST } from "./signing/body.ts";
 import { spell } from "./signing/spell.ts";
@@ -13,12 +14,14 @@ const ball = (z: number, skin: boolean): Capsule => ({
   skin,
 });
 const view = { centre: [0, 0] as const, height: 1 };
+const draw = (capsules: Capsule[], width: number, height: number, looking: View = view) =>
+  paint(cast(capsules, looking, grid(width, height)));
 const alpha = (pixels: Uint8ClampedArray, x: number, y: number, width: number) =>
   pixels[(y * width + x) * 4 + 3];
 
 describe("paint", () => {
   it("fills a capsule's outline and nothing else", () => {
-    const pixels = paint([ball(0, true)], 20, 20, view);
+    const pixels = draw([ball(0, true)], 20, 20);
     expect(alpha(pixels, 10, 10, 20)).toBe(255);
     expect(alpha(pixels, 0, 0, 20)).toBe(0);
     // A ball of radius 0.2 in a 1 m view is 8 of 20 pixels across.
@@ -27,7 +30,7 @@ describe("paint", () => {
   });
 
   it("shows whichever capsule is nearer the viewer", () => {
-    const red = (capsules: Capsule[]) => paint(capsules, 20, 20, view)[(10 * 20 + 10) * 4]!;
+    const red = (capsules: Capsule[]) => draw(capsules, 20, 20)[(10 * 20 + 10) * 4]!;
     const skinInFront = red([ball(0, false), ball(0.5, true)]);
     const inkInFront = red([ball(0.5, false), ball(0, true)]);
     expect(skinInFront).toBeGreaterThan(inkInFront);
@@ -36,13 +39,20 @@ describe("paint", () => {
 
   it("draws a slanted capsule as one unbroken shape", () => {
     const bone: Capsule = { a: [-0.3, -0.3, 0.2], b: [0.3, 0.3, -0.2], radius: 0.05, skin: true };
-    const pixels = paint([bone], 40, 40, view);
+    const pixels = draw([bone], 40, 40);
     for (let i = 9; i <= 30; i++) expect(alpha(pixels, i, 39 - i, 40)).toBe(255);
   });
 
-  it("finds the figure in both views", () => {
-    for (const looking of [WHOLE, follow(REST)]) {
-      const pixels = paint(figure(REST), 80, 44, looking);
+  it("lets a flattened capsule come less far forwards", () => {
+    const red = (capsules: Capsule[]) => draw(capsules, 20, 20)[(10 * 20 + 10) * 4]!;
+    const round = red([ball(0, false), ball(-0.05, true)]);
+    const flat = red([{ ...ball(0, false), press: [0, 0, 0.5] }, ball(-0.05, true)]);
+    expect(flat).toBeGreaterThan(round);
+  });
+
+  it("finds the figure from far off and close to", () => {
+    for (const looking of [{ centre: [-0.08, -0.07] as const, height: 0.94 }, follow(REST)]) {
+      const pixels = draw(figure(REST), 80, 44, looking);
       expect(pixels.some((value, i) => i % 4 === 3 && value > 0)).toBe(true);
     }
   });

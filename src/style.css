@@ -25,16 +25,7 @@ body {
   background: radial-gradient(120% 90% at 50% 35%, #1d1d20, var(--paper) 70%);
 }
 
-#pixels {
-  image-rendering: pixelated;
-}
-
-canvas[hidden] {
-  display: none;
-}
-
-#stage,
-#pixels {
+#stage {
   position: fixed;
   inset: 0;
   width: 100%;
@@ -130,23 +121,6 @@ input[type="text"]::placeholder {
   color: var(--quiet);
 }
 
-#look {
-  flex: none;
-  width: 34px;
-  height: 34px;
-  border: 0;
-  border-radius: 50%;
-  background: none;
-  font-size: 1rem;
-  color: var(--quiet);
-  cursor: pointer;
-}
-
-#look[aria-pressed="true"] {
-  color: var(--ink);
-  background: var(--line);
-}
-
 select {
   padding: 8px 10px;
   border: 0;
@@ -182,7 +156,7 @@ select {
   clip-path: polygon(8% 0, 38% 0, 38% 100%, 62% 100%, 62% 0, 92% 0, 92% 100%, 8% 100%);
 }
 
-:is(#toggle, #look, select, input[type="range"]):focus-visible {
+:is(#toggle, select, input[type="range"]):focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }

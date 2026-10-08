@@ -1,8 +1,12 @@
 {
   "$schema": "https://unpkg.com/wrangler/config-schema.json",
-  "name": "ikiraro-web",
+  "name": "ikiraro",
+  "account_id": "956e9453e0dd20d0e539d0650bc53b05",
   "compatibility_date": "2026-05-29",
   "main": "src/worker.ts",
   // The worker sees every request first, so that `curl` gets the terminal version.
   "assets": { "directory": "./dist", "binding": "ASSETS", "run_worker_first": true },
+  "routes": [{ "pattern": "ikiraro.saddy.me", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false,
 }

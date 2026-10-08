@@ -52,6 +52,9 @@ const pointing = fingers(S, { index: D });
 /** A fist with the index finger out and the thumb lying alongside it. */
 const pinch = fingers(A, { index: L });
 
+/** Every handshape there is to build with: the measured letters and the two composed fists. */
+export const HANDSHAPES = { ...measured, ONE: pointing, PINCH: pinch };
+
 /** A path through points, each leg eased so the hand pauses at the corners. */
 function strokes(points: readonly V3[]): (u: number) => V3 {
   return (u) => {
